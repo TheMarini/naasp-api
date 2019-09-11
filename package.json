@@ -1,0 +1,19 @@
+{
+  "name": "naasp-api",
+  "version": "1.0.0",
+  "description": "Projeto de Controle de Atendimento do NAASP",
+  "main": "index.js",
+  "repository": "https://github.com/TheMarini/naasp-api.git",
+  "author": "guigawiller <guilhermewiller@hotmail.com>",
+  "license": "MIT",
+  "private": false,
+  "dependencies": {
+    "express": "^4.17.1",
+    "mysql": "^2.17.1",
+    "sequelize": "^5.18.4",
+    "sequelize-cli": "^5.5.1"
+  },
+  "scripts": {
+    "start": "node index.js"
+  }
+}
