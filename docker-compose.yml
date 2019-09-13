@@ -1,0 +1,28 @@
+version: '3'
+services:
+    mysql_naasp:
+        image: mysql
+        command: --default-authentication-plugin=mysql_native_password
+        restart: always
+        environment:
+          MYSQL_ALLOW_EMPTY_PASSWORD: "true"
+        networks:
+            - production-network
+
+    node1_naasp:
+        build:
+            dockerfile: ./docker/node.dockerfile
+            context: .
+        image: node
+        container_name: node_naasp
+        ports:
+            - "3000:3000"
+        networks:
+            - production-network
+        depends_on:
+            - "mysql_naasp"
+
+
+networks:
+    production-network:
+        driver: bridge
