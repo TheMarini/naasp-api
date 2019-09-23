@@ -1,5 +1,6 @@
 version: '3'
 services:
+<<<<<<< HEAD
     nginx:
         build:
             dockerfile: ./docker/nginx.dockerfile
@@ -30,6 +31,30 @@ services:
             - production-network
         depends_on:
             - "mysql"
+=======
+    mysql_naasp:
+        image: mysql
+        command: --default-authentication-plugin=mysql_native_password
+        restart: always
+        environment:
+          MYSQL_ALLOW_EMPTY_PASSWORD: "true"
+        networks:
+            - production-network
+
+    node1_naasp:
+        build:
+            dockerfile: ./docker/node.dockerfile
+            context: .
+        image: node
+        container_name: node_naasp
+        ports:
+            - "3000:3000"
+        networks:
+            - production-network
+        depends_on:
+            - "mysql_naasp"
+
+>>>>>>> 8f82a291a475c0bafaba188ccf90f6fda3eaffae
 
 networks:
     production-network:
