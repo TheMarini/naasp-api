@@ -1,0 +1,36 @@
+version: '3'
+services:
+    nginx:
+        build:
+            dockerfile: ./docker/nginx.dockerfile
+            context: .
+        image: naasp/node
+        container_name: nginx
+        ports:
+            - "80:80"
+        networks:
+            - production-network
+        depends_on:
+            - "node"
+
+    mysql:
+        image: mysql
+        networks:
+            - production-network
+
+    node:
+        build:
+            dockerfile: ./docker/node.dockerfile
+            context: .
+        image: naasp/node
+        container_name: node
+        ports:
+            - "3000"
+        networks:
+            - production-network
+        depends_on:
+            - "mysql"
+
+networks:
+    production-network:
+        driver: bridge
