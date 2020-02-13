@@ -1,19 +1,29 @@
 {
   "name": "naasp-api",
   "version": "1.0.0",
-  "description": "Projeto de Controle de Atendimento do NAASP",
+  "description": "Naasp API",
   "main": "index.js",
-  "repository": "https://github.com/TheMarini/naasp-api.git",
-  "author": "guigawiller <guilhermewiller@hotmail.com>",
-  "license": "MIT",
-  "private": false,
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TheMarini/naasp-api.git"
+  },
+  "author": "@guigawiller",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/TheMarini/naasp-api/issues"
+  },
+  "homepage": "https://github.com/TheMarini/naasp-api#readme",
   "dependencies": {
     "express": "^4.17.1",
-    "mysql": "^2.17.1",
-    "sequelize": "^5.18.4",
-    "sequelize-cli": "^5.5.1"
+    "nodemon": "^2.0.2",
+    "pg": "^7.18.1",
+    "pg-hstore": "^2.3.3",
+    "sequelize": "^5.21.4"
   },
-  "scripts": {
-    "start": "node index.js"
+  "devDependencies": {
+    "sequelize-cli": "^5.5.1"
   }
 }

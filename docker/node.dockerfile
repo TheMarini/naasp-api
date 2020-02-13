@@ -1,8 +1,8 @@
 FROM node:latest
-MAINTAINER Guilherme Willer
+MAINTAINER @guigawiller
 ENV NODE_ENV=development
 COPY . /var/www
 WORKDIR /var/www
-RUN yarn install
-ENTRYPOINT ["yarn", "start"]
+RUN npm install
+ENTRYPOINT ["npx", "nodemon"]
 EXPOSE 3000

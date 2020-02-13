@@ -1,60 +1,31 @@
 version: '3'
 services:
-<<<<<<< HEAD
-    nginx:
-        build:
-            dockerfile: ./docker/nginx.dockerfile
-            context: .
-        image: naasp/node
-        container_name: nginx
-        ports:
-            - "80:80"
-        networks:
-            - production-network
-        depends_on:
-            - "node"
+    db:
+      image: postgres
+      container_name: postgresdb
+      environment:
+        POSTGRES_USER: postgres
+        POSTGRES_PASSWORD: postgres
+        POSTGRES_DB: database_development
+      volumes:
+        - ./pgdata:/var/lib/postgresql/data
+      ports:
+        - "5432"
+      networks:
+        - production-network
 
-    mysql:
-        image: mysql
-        networks:
-            - production-network
-
-    node:
-        build:
-            dockerfile: ./docker/node.dockerfile
-            context: .
-        image: naasp/node
-        container_name: node
-        ports:
-            - "3000"
-        networks:
-            - production-network
-        depends_on:
-            - "mysql"
-=======
-    mysql_naasp:
-        image: mysql
-        command: --default-authentication-plugin=mysql_native_password
-        restart: always
-        environment:
-          MYSQL_ALLOW_EMPTY_PASSWORD: "true"
-        networks:
-            - production-network
-
-    node1_naasp:
-        build:
-            dockerfile: ./docker/node.dockerfile
-            context: .
-        image: node
-        container_name: node_naasp
-        ports:
-            - "3000:3000"
-        networks:
-            - production-network
-        depends_on:
-            - "mysql_naasp"
-
->>>>>>> 8f82a291a475c0bafaba188ccf90f6fda3eaffae
+    node1:
+      build:
+          dockerfile: ./docker/node.dockerfile
+          context: .
+      image: node
+      container_name: node
+      ports:
+          - "3000"
+      networks:
+          - production-network
+      depends_on:
+          - "db"
 
 networks:
     production-network:

@@ -1,12 +1,23 @@
-const express = require('express')
+var express = require('express');
+var app = express();
 
-const app = express();
-const port = 3000;
+app.get('/', function (req, res) {
+  res.send('Hello World!');
+});
 
-app.use('', (req, res)=>{
-    console.log("Servidor operando na porta ", port)
-})
+app.listen(3000, function () {
+  console.log('Example app listening on port 3000!');
+});
 
-app.listen(port, function(){
-  console.log("Node app is running on port", port);
-})
+const Sequelize = require('sequelize');
+
+const sequelize = new Sequelize('postgres://postgres:postgres@db:5432/database_development');
+
+sequelize
+  .authenticate()
+  .then(() => {
+    console.log('Connection has been established successfully.');
+  })
+  .catch(err => {
+    console.error('Unable to connect to the database:', err);
+  });
