@@ -3,7 +3,7 @@
     "username": "postgres",
     "password": "postgres",
     "database": "database_development",
-    "host": "127.0.0.1",
+    "host": "172.18.0.2",
     "dialect": "postgres",
     "port": "5432"
   },
@@ -11,7 +11,7 @@
     "username": "postgres",
     "password": "postgres",
     "database": "database_test",
-    "host": "127.0.0.1",
+    "host": "172.18.0.2",
     "dialect": "postgres",
     "port": "5432"
   },
@@ -19,7 +19,7 @@
     "username": "postgres",
     "password": "postgres",
     "database": "database_production",
-    "host": "127.0.0.1",
+    "host": "172.18.0.2",
     "dialect": "postgres",
     "port": "5432"
   }

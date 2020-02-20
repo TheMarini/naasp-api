@@ -11,7 +11,10 @@ app.listen(3000, function () {
 
 const Sequelize = require('sequelize');
 
-const sequelize = new Sequelize('postgres://postgres:postgres@db:5432/database_development');
+const sequelize = new Sequelize('postgres://postgres:postgres@172.18.0.2:5432/database_development');
+sequelize.sync({ force: true }).then(() => {
+  console.log("All models were synchronized successfully.");
+})
 
 sequelize
   .authenticate()
