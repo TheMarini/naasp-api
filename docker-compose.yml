@@ -19,6 +19,8 @@ services:
           dockerfile: ./docker/node.dockerfile
           context: .
       image: node
+      volumes:
+        - ./:/var/www
       container_name: node
       ports:
           - "3000"

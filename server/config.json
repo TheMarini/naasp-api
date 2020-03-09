@@ -3,24 +3,33 @@
     "username": "postgres",
     "password": "postgres",
     "database": "database_development",
-    "host": "172.18.0.2",
+    "host": "db",
     "dialect": "postgres",
-    "port": "5432"
+    "port": "5432",
+    "define": {
+      "freezeTableName": true
+      }
   },
   "test": {
     "username": "postgres",
     "password": "postgres",
     "database": "database_test",
-    "host": "172.18.0.2",
+    "host": "db",
     "dialect": "postgres",
-    "port": "5432"
+    "port": "5432",
+    "define": {
+      "freezeTableName": true
+      }
   },
   "production": {
     "username": "postgres",
     "password": "postgres",
     "database": "database_production",
-    "host": "172.18.0.2",
+    "host": "db",
     "dialect": "postgres",
-    "port": "5432"
+    "port": "5432",
+    "define": {
+      "freezeTableName": true
+      }
   }
 }
