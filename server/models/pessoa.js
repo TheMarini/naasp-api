@@ -18,6 +18,7 @@ module.exports = (sequelize, DataTypes) => {
   }, {
     freezeTableName: true
   });
+
   Pessoa.associate = function (models) {
     Pessoa.hasOne(models.Acolhido);
     Pessoa.hasOne(models.Usuario);
@@ -27,7 +28,7 @@ module.exports = (sequelize, DataTypes) => {
 
   Pessoa.adiciona = async function (pessoaParam) {
     try {
-      return await Pessoa.create({
+      let pessoaInstance = await Pessoa.create({
         estado_civil: pessoaParam.estado_civil,
         cpf: pessoaParam.cpf,
         sexo: pessoaParam.sexo,
@@ -38,10 +39,12 @@ module.exports = (sequelize, DataTypes) => {
         nome: pessoaParam.nome,
         data_nascimento: pessoaParam.data_nascimento
       })
+
+      return pessoaInstance.dataValues
     } catch (error) {
+    console.log("\n catch \n")
       throw util.checkError(error, modelName)
     }
   }
-
   return Pessoa;
 };

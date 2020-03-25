@@ -4,7 +4,7 @@ const moment = require('moment')
 
 // const itemController = require('./ItemController')
 // const entidadeController = require('./entidadeController')
-const pessoaController = require('./pessoaController')
+const acolhidoController = require('./acolhidoController')
 
 
 var successStatus = 200
@@ -20,7 +20,7 @@ router.get('/', function (req, res) {
 // ROTAS DO ITEM
 // router.get('/item', itemController.get)
 
-router.post('/pessoa', pessoaController.post)
+router.post('/acolhido', acolhidoController.post)
 
 // router.put('/item', itemController.put)
 
