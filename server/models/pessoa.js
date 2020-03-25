@@ -1,6 +1,9 @@
 'use strict';
+const util = require('../util')
+
 module.exports = (sequelize, DataTypes) => {
   const Pessoa = sequelize.define('Pessoa', {
+    pessoaId: DataTypes.INTEGER,
     estado_civil: DataTypes.STRING,
     cpf: DataTypes.INTEGER,
     sexo: DataTypes.STRING,
@@ -10,15 +13,35 @@ module.exports = (sequelize, DataTypes) => {
     escolaridade: DataTypes.STRING,
     nome: DataTypes.STRING,
     data_nascimento: DataTypes.DATE,
-    pessoaId: DataTypes.INTEGER,
     updatedAt: DataTypes.DATE,
     createdAt: DataTypes.DATE
-  }, {freezeTableName: true});
-  Pessoa.associate = function(models) {
-    Pessoa.hasOne(models.acolhido);
-    Pessoa.hasOne(models.usuario);
-    Pessoa.hasOne(models.voluntario);
+  }, {
+    freezeTableName: true
+  });
+  Pessoa.associate = function (models) {
+    Pessoa.hasOne(models.Acolhido);
+    Pessoa.hasOne(models.Usuario);
+    Pessoa.hasOne(models.Voluntario);
 
   };
+
+  Pessoa.adiciona = async function (pessoaParam) {
+    try {
+      return await Pessoa.create({
+        estado_civil: pessoaParam.estado_civil,
+        cpf: pessoaParam.cpf,
+        sexo: pessoaParam.sexo,
+        nacionalidade: pessoaParam.nacionalidade,
+        naturalidade: pessoaParam.naturalidade,
+        situacao_profissional: pessoaParam.situacao_profissional,
+        escolaridade: pessoaParam.escolaridade,
+        nome: pessoaParam.nome,
+        data_nascimento: pessoaParam.data_nascimento
+      })
+    } catch (error) {
+      throw util.checkError(error, modelName)
+    }
+  }
+
   return Pessoa;
 };

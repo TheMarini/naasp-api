@@ -8,7 +8,7 @@ module.exports = (sequelize, DataTypes) => {
   }, {freezeTableName: true});
   Voluntario.associate = function(models) {
     // associations can be defined here
-    Voluntario.belongsTo(models.pessoa, {
+    Voluntario.belongsTo(models.Pessoa, {
       foreignKey: 'pessoaId'
     });
   };

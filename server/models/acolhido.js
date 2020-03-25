@@ -1,4 +1,6 @@
 'use strict';
+const models = 
+
 module.exports = (sequelize, DataTypes) => {
   const Acolhido = sequelize.define('Acolhido', {
     atividade_fisica: DataTypes.STRING,
@@ -13,11 +15,18 @@ module.exports = (sequelize, DataTypes) => {
     updatedAt: DataTypes.DATE,
     createdAt: DataTypes.DATE
   }, {freezeTableName: true});
+
   Acolhido.associate = function(models) {
-    // associations can be defined here
-    Acolhido.belongsTo(models.pessoa, {
+    Acolhido.belongsTo(models.Pessoa, {
       foreignKey: 'pessoaId'
     });
   };
+
+  // Acolhido.create = function(acolhidoParam) {
+
+  // }
+
+
+
   return Acolhido;
 };
