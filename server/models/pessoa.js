@@ -13,6 +13,7 @@ module.exports = (sequelize, DataTypes) => {
     escolaridade: DataTypes.STRING,
     nome: DataTypes.STRING,
     data_nascimento: DataTypes.DATE,
+    enderecoId: DataTypes.INTEGER,
     updatedAt: DataTypes.DATE,
     createdAt: DataTypes.DATE
   }, {
@@ -23,7 +24,7 @@ module.exports = (sequelize, DataTypes) => {
     Pessoa.hasOne(models.Acolhido);
     Pessoa.hasOne(models.Usuario);
     Pessoa.hasOne(models.Voluntario);
-
+    Pessoa.hasOne(models.Endereco, {foreignKey: 'enderecoId'});
   };
 
   Pessoa.adiciona = async function (pessoaParam) {

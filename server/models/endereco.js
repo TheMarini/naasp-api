@@ -10,7 +10,7 @@ module.exports = (sequelize, DataTypes) => {
     cep: DataTypes.INTEGER
   }, {});
   Endereco.associate = function(models) {
-    // associations can be defined here
+      Endereco.belongsTo(models.Pessoa);
   };
   return Endereco;
 };
