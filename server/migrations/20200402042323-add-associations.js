@@ -169,20 +169,6 @@ module.exports = {
       )
     }).then(() => {
       return queryInterface.addColumn(
-        'MedicamentoContinuo', // name of Source model
-        'familiarId', // name of the key we're adding 
-        {
-          type: Sequelize.INTEGER,
-          references: {
-            model: 'Familiar', // name of Target model
-            key: 'id', // key in Target model that we're referencing
-          },
-          onUpdate: 'CASCADE',
-          onDelete: 'SET NULL',
-        }
-      )
-    }).then(() => {
-      return queryInterface.addColumn(
         'DoencaFamilia', // name of Source model
         'familiarId', // name of the key we're adding 
         {
@@ -224,6 +210,22 @@ module.exports = {
         }
       )
     });
+
+    // then(() => {
+    //   return queryInterface.addColumn(
+    //     'MedicamentoContinuo', // name of Source model
+    //     'familiarId', // name of the key we're adding 
+    //     {
+    //       type: Sequelize.INTEGER,
+    //       references: {
+    //         model: 'Familiar', // name of Target model
+    //         key: 'id', // key in Target model that we're referencing
+    //       },
+    //       onUpdate: 'CASCADE',
+    //       onDelete: 'SET NULL',
+    //     }
+    //   )
+    // }).
   },
   down: (queryInterface, Sequelize) => {
     return queryInterface.removeColumn(
@@ -285,11 +287,6 @@ module.exports = {
     }).then(() => {
       return queryInterface.removeColumn(
         'MedicamentoContinuo', // name of Source model
-        'familiarId' // key we want to remove
-      )
-    }).then(() => {
-      return queryInterface.removeColumn(
-        'MedicamentoContinuo', // name of Source model
         'acolhidoId' // key we want to remove
       )
     }).then(() => {
@@ -308,5 +305,12 @@ module.exports = {
         'religiaoId' // key we want to remove
       )
     });
+
+    // .then(() => {
+    //   return queryInterface.removeColumn(
+    //     'MedicamentoContinuo', // name of Source model
+    //     'familiarId' // key we want to remove
+    //   )
+    // })
   }
 };
