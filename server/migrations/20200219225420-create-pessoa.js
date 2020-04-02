@@ -14,6 +14,12 @@ module.exports = {
       cpf: {
         type: Sequelize.INTEGER
       },
+      rg: {
+        type: Sequelize.INTEGER
+      },
+      email: {
+        type: Sequelize.STRING
+      },
       sexo: {
         type: Sequelize.STRING
       },

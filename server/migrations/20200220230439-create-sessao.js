@@ -11,12 +11,6 @@ module.exports = {
       dataSessao: {
         type: Sequelize.DATE
       },
-      acolhidoId: {
-        type: Sequelize.INTEGER
-      },
-      voluntarioId: {
-        type: Sequelize.INTEGER
-      },
       presenca: {
         type: Sequelize.STRING
       },
