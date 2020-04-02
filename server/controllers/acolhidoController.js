@@ -5,11 +5,17 @@ var successStatus = 200
 exports.post = async function (req, res) {
 	let response = null
 	try {
-		console.log(models.Acolhido)
-		response = await models.Acolhido.adiciona(models.Pessoa, req.body.pessoa, req.body.acolhido)
+		response = await models.Acolhido.adiciona(models, {
+			endereco: req.body.endereco,
+			cidade: req.body.cidade,
+			bairro: req.body.bairro,
+			pessoa: req.body.pessoa,
+			religiao: req.body.religiao,
+			acolhidoParam: req.body.acolhido
+		})
 		res.status(successStatus).json(response)
 	} catch (error) {
-		console.log("\n",error,"\n")
+		console.log("\n", error, "\n")
 		res.status(error.code).json(error.message)
 	}
 
