@@ -4,24 +4,26 @@ const modelName = "Cidade"
 module.exports = (sequelize, DataTypes) => {
   const Cidade = sequelize.define('Cidade', {
     id: {
-        allowNull: false,
-        autoIncrement: true,
-        primaryKey: true,
-        type: DataTypes.INTEGER
-      },
-      nome: {
-        type: DataTypes.STRING
-      },
-      createdAt: {
-        allowNull: false,
-        type: DataTypes.DATE
-      },
-      updatedAt: {
-        allowNull: false,
-        type: DataTypes.DATE
-      }
-  }, {freezeTableName: true});
-  Cidade.associate = function(models) {
+      allowNull: false,
+      autoIncrement: true,
+      primaryKey: true,
+      type: DataTypes.INTEGER
+    },
+    nome: {
+      type: DataTypes.STRING
+    },
+    createdAt: {
+      allowNull: false,
+      type: DataTypes.DATE
+    },
+    updatedAt: {
+      allowNull: false,
+      type: DataTypes.DATE
+    }
+  }, {
+    freezeTableName: true
+  });
+  Cidade.associate = function (models) {
     // associations can be defined here
     Cidade.hasMany(models.Endereco);
   };
@@ -91,7 +93,7 @@ module.exports = (sequelize, DataTypes) => {
         id: idParam
       }
     }
-    
+
     if (transaction)
       queryOptions.transaction = transaction
 
@@ -104,13 +106,16 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
 
-  Cidade.pesquisaOuAdiciona = async function(nome) {
+  Cidade.pesquisaOuAdiciona = async function (nome) {
     let queryOptions = {
       where: {
         nome: nome
+      },
+      defaults: {
+        nome: nome
       }
     }
-    
+
     try {
       let cidadeInstance = await Cidade.findOrCreate(queryOptions)
       return cidadeInstance
@@ -119,6 +124,6 @@ module.exports = (sequelize, DataTypes) => {
       throw util.checkError(error, modelName)
     }
   }
-  
+
   return Cidade;
 };

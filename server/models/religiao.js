@@ -109,6 +109,9 @@ module.exports = (sequelize, DataTypes) => {
     let queryOptions = {
       where: {
         nome: nome
+      },
+      defaults: {
+        nome: nome
       }
     }
     

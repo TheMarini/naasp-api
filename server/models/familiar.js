@@ -1,4 +1,7 @@
 'use strict';
+const util = require("../util")
+
+const modelName = "Familiar"
 module.exports = (sequelize, DataTypes) => {
   const Familiar = sequelize.define('Familiar', {
     id: {
@@ -16,10 +19,165 @@ module.exports = (sequelize, DataTypes) => {
     telefone: DataTypes.INTEGER,
     renda: DataTypes.INTEGER,
     responsavel: DataTypes.BOOLEAN,
-    rg: DataTypes.INTEGER
+    rg: DataTypes.INTEGER,
+    acolhidoId: DataTypes.INTEGER,
+    createdAt: {
+      allowNull: false,
+      type: DataTypes.DATE
+    },
+    updatedAt: {
+      allowNull: false,
+      type: DataTypes.DATE
+    }
   }, {});
   Familiar.associate = function(models) {
-    // associations can be defined here
+      Familiar.belongsTo(models.Acolhido)
   };
+
+  Familiar.adiciona = async function (acolhidoId, familiar, transaction) {
+    let queryOptions = {}
+
+    if (transaction)
+      queryOptions.transaction = transaction
+
+    try {
+      let familiarInstance = await Familiar.create({
+        nome: familiar.nome,
+        parentesco: familiar.parentesco,
+        data_nascimento: familiar.data_nascimento,
+        escolaridade: familiar.escolaridade,
+        ocupacao: familiar.ocupacao,
+        cohabita: familiar.cohabita,
+        telefone: familiar.telefone,
+        renda: familiar.renda,
+        responsavel: familiar.responsavel,
+        rg: familiar.rg,
+        acolhidoId: acolhidoId
+      }, queryOptions)
+      return familiarInstance
+    } catch (error) {
+      console.log("\n catch \n")
+      throw util.checkError(error, modelName)
+    }
+  }
+
+  Familiar.pesquisa = async function (id) {
+    try {
+      let familiarInstance = await Familiar.findByPk(id)
+      return familiarInstance
+    } catch (error) {
+      console.log("\n catch \n")
+      throw util.checkError(error, modelName)
+    }
+  }
+
+  Familiar.lista = async function () {
+    try {
+      let familiarInstances = await Familiar.findAll()
+      return familiarInstances
+    } catch (error) {
+      console.log("\n catch \n")
+      throw util.checkError(error, modelName)
+    }
+  }
+
+  Familiar.edita = async function (idParam, familiar, transaction) {
+    let queryOptions = {
+      where: {
+        id: idParam
+      }
+    }
+
+    if (transaction)
+      queryOptions.transaction = transaction
+
+    try {
+      let familiarInstance = await Familiar.update({
+        nome: familiar.nome,
+        parentesco: familiar.parentesco,
+        data_nascimento: familiar.data_nascimento,
+        escolaridade: familiar.escolaridade,
+        ocupacao: familiar.ocupacao,
+        cohabita: familiar.cohabita,
+        telefone: familiar.telefone,
+        renda: familiar.renda,
+        responsavel: familiar.responsavel,
+        rg: familiar.rg,
+        acolhidoId: acolhidoId
+      }, queryOptions)
+      return familiarInstance
+    } catch (error) {
+      console.log("\n catch \n")
+      throw util.checkError(error, modelName)
+    }
+  }
+
+  Familiar.deleta = async function (idParam, transaction) {
+    let queryOptions = {
+      where: {
+        id: idParam
+      }
+    }
+    
+    if (transaction)
+      queryOptions.transaction = transaction
+
+    try {
+      let familiarInstance = await Familiar.destroy(queryOptions)
+      return familiarInstance
+    } catch (error) {
+      console.log("\n catch \n")
+      throw util.checkError(error, modelName)
+    }
+  }
+
+  Familiar.pesquisaOuAdiciona = async function(familiar) {
+    let queryOptions = {
+      where: {
+        rg: familiar.rg
+      },
+      defaults: {
+        nome: familiar.nome,
+        parentesco: familiar.parentesco,
+        data_nascimento: familiar.data_nascimento,
+        escolaridade: familiar.escolaridade,
+        ocupacao: familiar.ocupacao,
+        cohabita: familiar.cohabita,
+        telefone: familiar.telefone,
+        renda: familiar.renda,
+        responsavel: familiar.responsavel,
+        rg: familiar.rg,
+        acolhidoId: acolhidoId
+      }
+    }
+    
+    try {
+      let familiarInstance = await Familiar.findOrCreate(queryOptions)
+      return familiarInstance
+    } catch (error) {
+      console.log("\n catch \n")
+      throw util.checkError(error, modelName)
+    }
+  }
+
+  Familiar.adicionaVarios = async function(familiares = [], acolhidoId, transaction) {
+    let queryOptions = {}
+
+    if (transaction)
+      queryOptions.transaction = transaction
+
+    familiares.forEach(e => {
+      e.acolhidoId= acolhidoId
+    });
+
+    try {
+      let familiarInstance = await Familiar.bulkCreate(familiares, queryOptions)
+      return familiarInstance
+    } catch (error) {
+      console.log("\n catch \n")
+      throw util.checkError(error, modelName)
+    }
+  }
+
   return Familiar;
 };

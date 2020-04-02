@@ -37,6 +37,7 @@ module.exports = (sequelize, DataTypes) => {
     Acolhido.belongsTo(models.Religiao, {
       foreignKey: 'religiaoId'
     });
+    Acolhido.hasMany(models.Familiar)
   };
 
   Acolhido.adiciona = async function (models, param) {
@@ -46,13 +47,17 @@ module.exports = (sequelize, DataTypes) => {
       bairro,
       pessoa,
       religiao,
-      acolhidoParam
+      acolhidoParam,
+      familiares = [],
+      medicamentos = [],
+      doencaFamilia = [],
     } = param
 
     let queryOptions = {}
     let transaction = null
 
     try {
+      //religiaoInstance - array
       let religiaoInstance = await models.Religiao.pesquisaOuAdiciona(religiao)
       let pessoaInstance = await models.Pessoa.adiciona(models, transaction, {
         pessoa,
@@ -60,7 +65,7 @@ module.exports = (sequelize, DataTypes) => {
         cidade,
         bairro
       })
-
+      // console.log("RELIGIAO datavalues", religiaoInstance[0].)
       queryOptions.transaction = transaction
 
       if (!religiaoInstance || !pessoaInstance) {
@@ -78,12 +83,15 @@ module.exports = (sequelize, DataTypes) => {
         demanda: acolhidoParam.demanda,
         encaminhamento: acolhidoParam.encaminhamento,
         observacao: acolhidoParam.observacao,
-        pessoaId: pessoaInstance.id,
-        religiaoId: religiaoInstance.id
+        pessoaId: pessoaInstance.dataValues.id,
+        religiaoId: religiaoInstance[0].dataValues.id
       }, {
         queryOptions
       })
-
+      let acolhidoId = acolhidoInstance.dataValues.id
+      let medicamentoContinuo = await models.MedicamentoContinuo.adicionaVarios(medicamentos, acolhidoId)
+      let familiaresInstance = await models.Familiar.adicionaVarios(familiares, acolhidoId)
+      // await models.DoencaFamilia.adicionaVarios(doencaFamilia, acolhidoId)
       // await transaction.commit()
 
       return acolhidoInstance

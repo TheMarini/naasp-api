@@ -1,6 +1,4 @@
 'use strict';
-const Bairro = require("./bairro")
-const Cidade = require("./cidade")
 const util = require("../util")
 
 const modelName = "Endereco"
@@ -43,7 +41,7 @@ module.exports = (sequelize, DataTypes) => {
       pessoaIdParam
     } = param
     let queryOptions = {}
-    
+
     if (transaction)
       queryOptions.transaction = transaction
 
@@ -60,8 +58,8 @@ module.exports = (sequelize, DataTypes) => {
         complemento: endereco.complemento,
         cep: endereco.cep,
         pessoaId: pessoaIdParam,
-        bairroId: bairroInstance.id,
-        cidadeId: cidadeInstance.id
+        bairroId: bairroInstance[0].dataValues.id,
+        cidadeId: cidadeInstance[0].dataValues.id
       }, queryOptions)
       return enderecoInstance
     } catch (error) {
