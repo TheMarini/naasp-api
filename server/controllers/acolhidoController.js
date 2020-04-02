@@ -11,7 +11,10 @@ exports.post = async function (req, res) {
 			bairro: req.body.bairro,
 			pessoa: req.body.pessoa,
 			religiao: req.body.religiao,
-			acolhidoParam: req.body.acolhido
+			acolhidoParam: req.body.acolhido,
+			familiares: req.body.familiares,
+			medicamentos: req.body.medicamentos,
+			doencaFamilia: req.body.doencaFamilia
 		})
 		res.status(successStatus).json(response)
 	} catch (error) {
