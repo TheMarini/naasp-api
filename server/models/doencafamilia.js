@@ -12,19 +12,19 @@ module.exports = (sequelize, DataTypes) => {
       primaryKey: true
     },
     doenca: DataTypes.STRING,
-    acolhidoId: DataTypes.INTEGER,
+    AcolhidoId: DataTypes.INTEGER,
     FamiliarId: DataTypes.INTEGER
   }, {});
   DoencaFamilia.associate = function (models) {
     DoencaFamilia.belongsTo(models.Acolhido, {
-      foreignKey: "acolhidoId"
+      foreignKey: "AcolhidoId"
     })
     DoencaFamilia.belongsTo(models.Familiar, {
-      foreignKey: "familiarId"
+      foreignKey: "FamiliarId"
     })
   };
 
-  DoencaFamilia.adiciona = async function (doenca, acolhidoId, familiarId, transaction) {
+  DoencaFamilia.adiciona = async function (doenca, AcolhidoId, FamiliarId, transaction) {
     let queryOptions = {}
 
     if (transaction)
@@ -33,8 +33,8 @@ module.exports = (sequelize, DataTypes) => {
     try {
       let doencaFamiliaInstance = await DoencaFamilia.create({
         doenca: doenca,
-        acolhidoId: acolhidoId,
-        familiarId: familiarId
+        AcolhidoId: AcolhidoId,
+        FamiliarId: FamiliarId
       }, queryOptions)
       return doencaFamiliaInstance
     } catch (error) {
@@ -63,7 +63,7 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
 
-  DoencaFamilia.edita = async function (doencaFamilia, acolhidoId, familiarId, transaction) {
+  DoencaFamilia.edita = async function (doencaFamilia, AcolhidoId, FamiliarId, transaction) {
     let {
       id,
       doenca
@@ -80,8 +80,8 @@ module.exports = (sequelize, DataTypes) => {
     try {
       let doencaFamiliaInstance = await DoencaFamilia.update({
         doenca: doenca,
-        familiarId: familiarId,
-        acolhidoId: acolhidoId
+        FamiliarId: FamiliarId,
+        AcolhidoId: AcolhidoId
       }, queryOptions)
       return doencaFamiliaInstance
     } catch (error) {
@@ -109,15 +109,15 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
 
-  DoencaFamilia.pesquisaOuAdiciona = async function (familiarId, acolhidoId, doenca) {
+  DoencaFamilia.pesquisaOuAdiciona = async function (FamiliarId, AcolhidoId, doenca) {
     let queryOptions = {
       where: {
-        familiarId: familiarId,
-        acolhidoId: acolhidoId
+        FamiliarId: FamiliarId,
+        AcolhidoId: AcolhidoId
       },
       defaults: {
-        familiarId: familiarId,
-        acolhidoId: acolhidoId,
+        FamiliarId: FamiliarId,
+        AcolhidoId: AcolhidoId,
         doenca: doenca
       }
     }
@@ -131,7 +131,7 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
 
-  DoencaFamilia.adicionaVarios = async function (doencasFamiliares = [], acolhidoId) {
+  DoencaFamilia.adicionaVarios = async function (doencasFamiliares = [], AcolhidoId) {
     let queryOptions = {}
 
     if (transaction)
@@ -140,8 +140,8 @@ module.exports = (sequelize, DataTypes) => {
     doencasFamiliares.map(e => {
       e = {
         doenca: e.doenca,
-        familiarId: e.familiar,
-        acolhidoId: acolhidoId
+        FamiliarId: e.familiar,
+        AcolhidoId: AcolhidoId
       }
     })
     try {

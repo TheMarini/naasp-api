@@ -7,7 +7,7 @@ module.exports = (sequelize, DataTypes) => {
       autoIncrement: true,
       primaryKey: true
     },
-    pessoaId: DataTypes.INTEGER,
+    PessoaId: DataTypes.INTEGER,
     numero: DataTypes.INTEGER,
     ddd: DataTypes.INTEGER
   }, {});

@@ -8,7 +8,7 @@ module.exports = (sequelize, DataTypes) => {
       primaryKey: true
     },
     dataSessao: DataTypes.DATE,
-    acolhidoId: DataTypes.INTEGER,
+    AcolhidoId: DataTypes.INTEGER,
     voluntarioId: DataTypes.INTEGER,
     presenca: DataTypes.STRING,
     observacao: DataTypes.STRING

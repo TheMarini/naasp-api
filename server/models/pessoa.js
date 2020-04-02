@@ -63,7 +63,7 @@ module.exports = (sequelize, DataTypes) => {
         endereco: endereco,
         cidade: cidade,
         bairro: bairro,
-        pessoaIdParam: pessoaInstance.id
+        PessoaIdParam: pessoaInstance.id
       })
 
       return pessoaInstance
@@ -93,7 +93,14 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
 
-  Pessoa.edita = async function (pessoa, transaction) {
+  Pessoa.edita = async function (models, pessoa, transaction) {
+    let {
+      pessoa,
+      endereco,
+      cidade,
+      bairro
+    } = param
+    
     let queryOptions = {
       where: {
         id: pessoa.id
@@ -104,7 +111,7 @@ module.exports = (sequelize, DataTypes) => {
       queryOptions.transaction = transaction
 
     try {
-      let pessoaInstance = await Pessoa.update({
+      let PessoaInstance = Pessoa.update({
         estado_civil: pessoa.estado_civil,
         cpf: pessoa.cpf,
         sexo: pessoa.sexo,
@@ -115,6 +122,15 @@ module.exports = (sequelize, DataTypes) => {
         nome: pessoa.nome,
         data_nascimento: pessoa.data_nascimento
       }, queryOptions)
+
+      let enderecoInstance = models.Endereco.edita(models, transaction, {
+        endereco: endereco,
+        cidade: cidade,
+        bairro: bairro,
+        PessoaIdParam: pessoaInstance.id
+      })
+      console.log(PessoaInstance)
+
       return PessoaInstance
     } catch (error) {
       console.log("\n catch \n")
@@ -141,8 +157,5 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
 
-  Pessoa.log = () => {
-    console.log("PESSOA -- LOG")
-  }
   return Pessoa;
 };

@@ -15,20 +15,20 @@ module.exports = (sequelize, DataTypes) => {
     numero: DataTypes.INTEGER,
     complemento: DataTypes.STRING,
     cep: DataTypes.INTEGER,
-    pessoaId: DataTypes.INTEGER,
-    bairroId: DataTypes.INTEGER,
-    cidadeId: DataTypes.INTEGER
+    PessoaId: DataTypes.INTEGER,
+    BairroId: DataTypes.INTEGER,
+    CidadeId: DataTypes.INTEGER
   }, {});
 
   Endereco.associate = function (models) {
     Endereco.belongsTo(models.Cidade, {
-      foreignKey: 'cidadeId'
+      foreignKey: 'CidadeId'
     });
     Endereco.belongsTo(models.Bairro, {
-      foreignKey: 'bairroId'
+      foreignKey: 'BairroId'
     });
     Endereco.belongsTo(models.Pessoa, {
-      foreignKey: 'pessoaId'
+      foreignKey: 'PessoaId'
     });
 
   };
@@ -38,7 +38,7 @@ module.exports = (sequelize, DataTypes) => {
       endereco,
       cidade,
       bairro,
-      pessoaIdParam
+      PessoaIdParam
     } = param
     let queryOptions = {}
 
@@ -57,9 +57,9 @@ module.exports = (sequelize, DataTypes) => {
         numero: endereco.numero,
         complemento: endereco.complemento,
         cep: endereco.cep,
-        pessoaId: pessoaIdParam,
-        bairroId: bairroInstance[0].dataValues.id,
-        cidadeId: cidadeInstance[0].dataValues.id
+        PessoaId: PessoaIdParam,
+        BairroId: bairroInstance[0].dataValues.id,
+        CidadeId: cidadeInstance[0].dataValues.id
       }, queryOptions)
       return enderecoInstance
     } catch (error) {
@@ -93,7 +93,7 @@ module.exports = (sequelize, DataTypes) => {
       endereco,
       cidade,
       bairro,
-      pessoaIdParam
+      PessoaIdParam
     } = param
 
     let queryOptions = {
@@ -117,9 +117,9 @@ module.exports = (sequelize, DataTypes) => {
         numero: endereco.numero,
         complemento: endereco.complemento,
         cep: endereco.cep,
-        pessoaId: pessoaIdParam,
-        bairroId: bairroInstance.id,
-        cidadeId: cidadeInstance.id
+        PessoaId: PessoaIdParam,
+        BairroId: bairroInstance.id,
+        CidadeId: cidadeInstance.id
       }, queryOptions)
       return enderecoInstance
     } catch (error) {
