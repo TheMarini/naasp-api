@@ -18,13 +18,15 @@ router.get('/', function (req, res) {
 })
 
 // ROTAS DO ITEM
-// router.get('/item', itemController.get)
-
 router.post('/acolhido', acolhidoController.post)
 
-// router.put('/item', itemController.put)
+router.get('/acolhido/completo', acolhidoController.getFull)
 
-// router.delete('/item', itemController.delete)
+router.get('/acolhido', acolhidoController.get)
+
+router.put('/acolhido', acolhido.put)
+
+router.delete('/acolhido', acolhidoController.delete)
 
 // ROTAS DO ENTIDADE
 // router.get('/entidade/sentido', entidadeController.getBySentido)
