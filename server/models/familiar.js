@@ -20,7 +20,7 @@ module.exports = (sequelize, DataTypes) => {
     renda: DataTypes.INTEGER,
     responsavel: DataTypes.BOOLEAN,
     rg: DataTypes.INTEGER,
-    acolhidoId: DataTypes.INTEGER,
+    AcolhidoId: DataTypes.INTEGER,
     createdAt: {
       allowNull: false,
       type: DataTypes.DATE
@@ -32,9 +32,10 @@ module.exports = (sequelize, DataTypes) => {
   }, {});
   Familiar.associate = function(models) {
       Familiar.belongsTo(models.Acolhido)
+      Familiar.hasMany(models.DoencaFamilia)
   };
 
-  Familiar.adiciona = async function (acolhidoId, familiar, transaction) {
+  Familiar.adiciona = async function (AcolhidoId, familiar, transaction) {
     let queryOptions = {}
 
     if (transaction)
@@ -52,7 +53,7 @@ module.exports = (sequelize, DataTypes) => {
         renda: familiar.renda,
         responsavel: familiar.responsavel,
         rg: familiar.rg,
-        acolhidoId: acolhidoId
+        AcolhidoId: AcolhidoId
       }, queryOptions)
       return familiarInstance
     } catch (error) {
@@ -103,7 +104,7 @@ module.exports = (sequelize, DataTypes) => {
         renda: familiar.renda,
         responsavel: familiar.responsavel,
         rg: familiar.rg,
-        acolhidoId: acolhidoId
+        AcolhidoId: AcolhidoId
       }, queryOptions)
       return familiarInstance
     } catch (error) {
@@ -147,7 +148,7 @@ module.exports = (sequelize, DataTypes) => {
         renda: familiar.renda,
         responsavel: familiar.responsavel,
         rg: familiar.rg,
-        acolhidoId: acolhidoId
+        AcolhidoId: AcolhidoId
       }
     }
     
@@ -160,14 +161,14 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
 
-  Familiar.adicionaVarios = async function(familiares = [], acolhidoId, transaction) {
+  Familiar.adicionaVarios = async function(familiares = [], AcolhidoId, transaction) {
     let queryOptions = {}
 
     if (transaction)
       queryOptions.transaction = transaction
 
     familiares.forEach(e => {
-      e.acolhidoId= acolhidoId
+      e.AcolhidoId= AcolhidoId
     });
 
     try {

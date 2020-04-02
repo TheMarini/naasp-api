@@ -9,7 +9,7 @@ module.exports = (sequelize, DataTypes) => {
     },
     status: DataTypes.STRING,
     usuarioId: DataTypes.INTEGER,
-    acolhidoId: DataTypes.INTEGER
+    AcolhidoId: DataTypes.INTEGER
   }, {});
   Contato.associate = function(models) {
     // associations can be defined here

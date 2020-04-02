@@ -11,14 +11,14 @@ module.exports = (sequelize, DataTypes) => {
       primaryKey: true
     },
     medicamento: DataTypes.STRING,
-    acolhidoId: DataTypes.INTEGER,
-    // familiarId: DataTypes.INTEGER
+    AcolhidoId: DataTypes.INTEGER,
+    // FamiliarId: DataTypes.INTEGER
   }, {});
   MedicamentoContinuo.associate = function(models) {
-    MedicamentoContinuo.belongsTo(models.Acolhido, {foreignKey: "acolhidoId"})
+    MedicamentoContinuo.belongsTo(models.Acolhido, {foreignKey: "AcolhidoId"})
   };
 
-  MedicamentoContinuo.adiciona = async function (medicamento, acolhidoId, transaction) {
+  MedicamentoContinuo.adiciona = async function (medicamento, AcolhidoId, transaction) {
     let queryOptions = {}
 
     if (transaction)
@@ -27,7 +27,7 @@ module.exports = (sequelize, DataTypes) => {
     try {
       let medicamentoContinuoInstance = await MedicamentoContinuo.create({
         medicamento: medicamento,
-        acolhidoId: acolhidoId
+        AcolhidoId: AcolhidoId
       }, queryOptions)
       return medicamentoContinuoInstance
     } catch (error) {
@@ -56,7 +56,7 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
 
-  MedicamentoContinuo.edita = async function (id, medicamento, acolhidoId, transaction) {
+  MedicamentoContinuo.edita = async function (id, medicamento, AcolhidoId, transaction) {
     let queryOptions = {
       where: {
         id: id
@@ -69,7 +69,7 @@ module.exports = (sequelize, DataTypes) => {
     try {
       let medicamentoContinuoInstance = await MedicamentoContinuo.update({
         medicamento: medicamento,
-        acolhidoId: acolhidoId
+        AcolhidoId: AcolhidoId
       }, queryOptions)
       return medicamentoContinuoInstance
     } catch (error) {
@@ -97,15 +97,15 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
 
-  MedicamentoContinuo.pesquisaOuAdiciona = async function (medicamento, acolhidoId) {
+  MedicamentoContinuo.pesquisaOuAdiciona = async function (medicamento, AcolhidoId) {
     let queryOptions = {
       where: {
-        acolhidoId: acolhidoId,
+        AcolhidoId: AcolhidoId,
         medicamento: medicamento
       },
       defaults: {
         medicamento: medicamento,
-        acolhidoId: acolhidoId
+        AcolhidoId: AcolhidoId
       }
     }
 
@@ -118,13 +118,13 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
 
-  MedicamentoContinuo.adicionaVarios = async function (medicamentos = [], acolhidoId, transaction) {
+  MedicamentoContinuo.adicionaVarios = async function (medicamentos = [], AcolhidoId, transaction) {
     let queryOptions = {}
     if (transaction)
       queryOptions.transaction = transaction
 
     medicamentos.forEach(element => {
-      element.acolhidoId = acolhidoId
+      element.AcolhidoId = AcolhidoId
     });
     console.log(medicamentos)
     try {

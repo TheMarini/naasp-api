@@ -8,7 +8,7 @@ module.exports = (sequelize, DataTypes) => {
       primaryKey: true
     },
     descricao: DataTypes.STRING,
-    acolhidoId: DataTypes.INTEGER
+    AcolhidoId: DataTypes.INTEGER
   }, {});
   AbusoAlcoolFamilia.associate = function(models) {
     // associations can be defined here
