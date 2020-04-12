@@ -111,7 +111,7 @@ module.exports = (sequelize, DataTypes) => {
       queryOptions.transaction = transaction
 
     try {
-      let PessoaInstance = Pessoa.update({
+      let pessoaInstance = await Pessoa.update({
         estado_civil: pessoa.estado_civil,
         cpf: pessoa.cpf,
         sexo: pessoa.sexo,
@@ -123,15 +123,13 @@ module.exports = (sequelize, DataTypes) => {
         data_nascimento: pessoa.data_nascimento
       }, queryOptions)
 
-      let enderecoInstance = models.Endereco.edita(models, transaction, {
+      await models.Endereco.edita(models, transaction, {
         endereco: endereco,
         cidade: cidade,
         bairro: bairro,
-        PessoaIdParam: pessoaInstance.id
       })
-      console.log(PessoaInstance)
 
-      return PessoaInstance
+      return pessoaInstance
     } catch (error) {
       console.log("\n catch \n")
       throw util.checkError(error, modelName)

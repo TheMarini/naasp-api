@@ -82,10 +82,10 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
 
-  Familiar.edita = async function (idParam, familiar, transaction) {
+  Familiar.edita = async function (familiar, transaction) {
     let queryOptions = {
       where: {
-        id: idParam
+        id: familiar.id
       }
     }
 
@@ -103,8 +103,7 @@ module.exports = (sequelize, DataTypes) => {
         telefone: familiar.telefone,
         renda: familiar.renda,
         responsavel: familiar.responsavel,
-        rg: familiar.rg,
-        AcolhidoId: AcolhidoId
+        rg: familiar.rg
       }, queryOptions)
       return familiarInstance
     } catch (error) {

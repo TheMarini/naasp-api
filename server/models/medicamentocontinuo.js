@@ -56,10 +56,10 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
 
-  MedicamentoContinuo.edita = async function (id, medicamento, AcolhidoId, transaction) {
+  MedicamentoContinuo.edita = async function (medicamento, transaction) {
     let queryOptions = {
       where: {
-        id: id
+        id: medicamento.id
       }
     }
 
@@ -68,8 +68,7 @@ module.exports = (sequelize, DataTypes) => {
 
     try {
       let medicamentoContinuoInstance = await MedicamentoContinuo.update({
-        medicamento: medicamento,
-        AcolhidoId: AcolhidoId
+        medicamento: medicamento.medicamento
       }, queryOptions)
       return medicamentoContinuoInstance
     } catch (error) {

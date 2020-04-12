@@ -1,6 +1,5 @@
 'use strict';
 const util = require("../util")
-const models = require('./index')
 
 const modelName = "Acolhido"
 module.exports = (sequelize, DataTypes) => {
@@ -43,13 +42,14 @@ module.exports = (sequelize, DataTypes) => {
   };
 
   Acolhido.adiciona = async function (models, param) {
+  
     let {
       endereco,
       cidade,
       bairro,
       pessoa,
       religiao,
-      acolhidoParam,
+      acolhido,
       familiares = [],
       medicamentos = [],
       doencaFamilia = [],
@@ -57,52 +57,53 @@ module.exports = (sequelize, DataTypes) => {
 
     let queryOptions = {}
     let transaction = null
+    // let transaction = await sequelize.transaction({type: sequelize.Transaction}) 
 
     try {
-      //religiaoInstance - array
-      let religiaoInstance = await models.Religiao.pesquisaOuAdiciona(religiao)
+      let religiaoInstance = await models.Religiao.pesquisaOuAdiciona(religiao, transaction)
       let pessoaInstance = await models.Pessoa.adiciona(models, transaction, {
         pessoa,
         endereco,
         cidade,
         bairro
       })
-      // console.log("RELIGIAO datavalues", religiaoInstance[0].)
-      queryOptions.transaction = transaction
 
-      if (!religiaoInstance || !pessoaInstance) {
-        // transaction.rollback();
+      if (!religiaoInstance)
         return util.defineError(412, "Erro em religião")
-      }
+      
+      if (!pessoaInstance)
+        return util.defineError(412, "Erro em Pessoa")
+      
+      if(transaction)
+        queryOptions.transaction = transaction
 
       let acolhidoInstance = await Acolhido.create({
-        atividade_fisica: acolhidoParam.atividade_fisica,
-        bebida_quantidade: acolhidoParam.bebida_quantidade,
-        bebida_periodicidade: acolhidoParam.bebida_periodicidade,
-        paroquia: acolhidoParam.paroquia,
-        atividades_religiosas: acolhidoParam.atividades_religiosas,
-        localNascimento: acolhidoParam.localNascimento,
-        demanda: acolhidoParam.demanda,
-        encaminhamento: acolhidoParam.encaminhamento,
-        observacao: acolhidoParam.observacao,
-        PessoaId: pessoaInstance.dataValues.id,
-        ReligiaoId: religiaoInstance[0].dataValues.id
+        atividade_fisica:       acolhido.atividade_fisica,
+        bebida_quantidade:      acolhido.bebida_quantidade,
+        bebida_periodicidade:   acolhido.bebida_periodicidade,
+        paroquia:               acolhido.paroquia,
+        atividades_religiosas:  acolhido.atividades_religiosas,
+        localNascimento:        acolhido.localNascimento,
+        demanda:                acolhido.demanda,
+        encaminhamento:         acolhido.encaminhamento,
+        observacao:             acolhido.observacao,
+        PessoaId:               pessoaInstance.dataValues.id,
+        ReligiaoId:             religiaoInstance[0].dataValues.id
       }, {
         queryOptions
       })
+      
       let AcolhidoId = acolhidoInstance.dataValues.id
-      let medicamentoContinuo = await models.MedicamentoContinuo.adicionaVarios(medicamentos, AcolhidoId)
-      let familiaresInstance = await models.Familiar.adicionaVarios(familiares, AcolhidoId)
-      // await models.DoencaFamilia.adicionaVarios(doencaFamilia, AcolhidoId)
+      let medicamentoContinuo = await models.MedicamentoContinuo.adicionaVarios(medicamentos, AcolhidoId, transaction)
+      let familiaresInstance = await models.Familiar.adicionaVarios(familiares, AcolhidoId, transaction)
+      
       // await transaction.commit()
-
       return acolhidoInstance
     } catch (error) {
       // await transaction.rollback();
       console.log("\n", error, "\n")
       throw util.checkError(error, modelName)
     }
-
   }
 
   Acolhido.edita = async function (models, param) {
@@ -112,7 +113,7 @@ module.exports = (sequelize, DataTypes) => {
       bairro,
       pessoa,
       religiao,
-      acolhidoParam,
+      acolhido,
       familiares = [],
       medicamentos = [],
       doencaFamilia = [],
@@ -130,8 +131,11 @@ module.exports = (sequelize, DataTypes) => {
         cidade,
         bairro
       })
-      // console.log("RELIGIAO datavalues", religiaoInstance[0].)
-      queryOptions.transaction = transaction
+
+      if(transaction)
+        queryOptions.transaction = transaction
+      
+      queryOptions.where = {id: acolhido.id}
 
       if (!religiaoInstance || !pessoaInstance) {
         // transaction.rollback();
@@ -139,23 +143,25 @@ module.exports = (sequelize, DataTypes) => {
       }
 
       let acolhidoInstance = await Acolhido.update({
-        atividade_fisica: acolhidoParam.atividade_fisica,
-        bebida_quantidade: acolhidoParam.bebida_quantidade,
-        bebida_periodicidade: acolhidoParam.bebida_periodicidade,
-        paroquia: acolhidoParam.paroquia,
-        atividades_religiosas: acolhidoParam.atividades_religiosas,
-        localNascimento: acolhidoParam.localNascimento,
-        demanda: acolhidoParam.demanda,
-        encaminhamento: acolhidoParam.encaminhamento,
-        observacao: acolhidoParam.observacao,
-        PessoaId: pessoaInstance.dataValues.id,
-        ReligiaoId: religiaoInstance[0].dataValues.id
-      }, {
-        queryOptions
-      })
-      let AcolhidoId = acolhidoInstance.dataValues.id
-      let medicamentoContinuo = await models.MedicamentoContinuo.adicionaVarios(medicamentos, AcolhidoId)
-      let familiaresInstance = await models.Familiar.adicionaVarios(familiares, AcolhidoId)
+        atividade_fisica:       acolhido.atividade_fisica,
+        bebida_quantidade:      acolhido.bebida_quantidade,
+        bebida_periodicidade:   acolhido.bebida_periodicidade,
+        paroquia:               acolhido.paroquia,
+        atividades_religiosas:  acolhido.atividades_religiosas,
+        localNascimento:        acolhido.localNascimento,
+        demanda:                acolhido.demanda,
+        encaminhamento:         acolhido.encaminhamento,
+        observacao:             acolhido.observacao,
+        ReligiaoId:             religiaoInstance[0].dataValues.id
+      }, queryOptions)
+      
+      medicamentos.forEach(async medicamento => {
+        await models.MedicamentoContinuo.edita(medicamento)
+      });
+
+      familiares.forEach(async familiar => {
+        await models.Familiar.edita(familiar)
+      });
       // await models.DoencaFamilia.adicionaVarios(doencaFamilia, AcolhidoId)
       // await transaction.commit()
 
@@ -232,7 +238,7 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
 
-  Acolhido.lista = async function (id) {
+  Acolhido.lista = async function () {
     try {
       let acolhidoInstance = await Acolhido.findAll()
       return acolhidoInstance
@@ -260,7 +266,6 @@ module.exports = (sequelize, DataTypes) => {
       throw util.checkError(error, modelName)
     }
   }
-
 
   return Acolhido;
 };

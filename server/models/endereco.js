@@ -88,14 +88,14 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
 
-  Endereco.edita = async function (models, param, transaction) {
+  Endereco.edita = async function (models, transaction, param) {
+    
     let {
       endereco,
       cidade,
       bairro,
-      PessoaIdParam
     } = param
-
+console.log(cidade)
     let queryOptions = {
       where: {
         id: endereco.id
@@ -108,7 +108,7 @@ module.exports = (sequelize, DataTypes) => {
     try {
       let bairroInstance = await models.Bairro.pesquisaOuAdiciona(bairro)
       let cidadeInstance = await models.Cidade.pesquisaOuAdiciona(cidade)
-
+      
       if (!cidadeInstance || !bairroInstance)
         return util.defineError(412, "Erro em cidade ou bairro")
 
@@ -117,11 +117,12 @@ module.exports = (sequelize, DataTypes) => {
         numero: endereco.numero,
         complemento: endereco.complemento,
         cep: endereco.cep,
-        PessoaId: PessoaIdParam,
-        BairroId: bairroInstance.id,
-        CidadeId: cidadeInstance.id
+        BairroId: bairroInstance[0].dataValues.id,
+        CidadeId: cidadeInstance[0].dataValues.id
       }, queryOptions)
+
       return enderecoInstance
+      
     } catch (error) {
       console.log("\n catch \n")
       throw util.checkError(error, modelName)

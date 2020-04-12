@@ -105,7 +105,7 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
 
-  Religiao.pesquisaOuAdiciona = async function(nome) {
+  Religiao.pesquisaOuAdiciona = async function(nome, transaction) {
     let queryOptions = {
       where: {
         nome: nome
@@ -114,7 +114,10 @@ module.exports = (sequelize, DataTypes) => {
         nome: nome
       }
     }
-    
+   
+    if (transaction)
+      queryOptions.transaction = transaction
+
     try {
       let religiaoInstance = await Religiao.findOrCreate(queryOptions)
       return religiaoInstance
