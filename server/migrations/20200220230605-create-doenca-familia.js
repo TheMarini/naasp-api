@@ -11,12 +11,6 @@ module.exports = {
       doenca: {
         type: Sequelize.STRING
       },
-      parente: {
-        type: Sequelize.STRING
-      },
-      acolhidoId: {
-        type: Sequelize.INTEGER
-      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE

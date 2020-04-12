@@ -11,9 +11,6 @@ module.exports = {
       descricao: {
         type: Sequelize.STRING
       },
-      acolhidoId: {
-        type: Sequelize.INTEGER
-      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE

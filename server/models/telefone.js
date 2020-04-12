@@ -1,7 +1,13 @@
 'use strict';
 module.exports = (sequelize, DataTypes) => {
   const Telefone = sequelize.define('Telefone', {
-    pessoaId: DataTypes.INTEGER,
+    id: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      autoIncrement: true,
+      primaryKey: true
+    },
+    PessoaId: DataTypes.INTEGER,
     numero: DataTypes.INTEGER,
     ddd: DataTypes.INTEGER
   }, {});

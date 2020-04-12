@@ -2,4 +2,4 @@
 pgdata
 /node_modules
 package-lock.json
-**.txt
+**.log
