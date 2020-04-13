@@ -3,7 +3,7 @@ const router = express.Router();
 const moment = require('moment')
 
 // const itemController = require('./ItemController')
-// const entidadeController = require('./entidadeController')
+const voluntarioController = require('./voluntarioController')
 const acolhidoController = require('./acolhidoController')
 
 
@@ -17,7 +17,7 @@ router.get('/', function (req, res) {
     })
 })
 
-// ROTAS DO ITEM
+// ROTAS DO ACOLHIDO
 router.post('/acolhido', acolhidoController.post)
 
 router.get('/acolhido/completo', acolhidoController.getFull)
@@ -28,17 +28,16 @@ router.put('/acolhido', acolhidoController.put)
 
 router.delete('/acolhido', acolhidoController.delete)
 
-// ROTAS DO ENTIDADE
-// router.get('/entidade/sentido', entidadeController.getBySentido)
+// ROTAS DO VOLUNTÁRIO  
+router.post('/voluntario', voluntarioController.post)
 
-// router.get('/entidade', entidadeController.get)
+router.get('/voluntario/completo', voluntarioController.getFull)
 
-// router.post('/entidade', entidadeController.post)
+router.get('/voluntario', voluntarioController.get)
 
-// router.put('/entidade', entidadeController.put)
+router.put('/voluntario', voluntarioController.put)
 
-// router.delete('/entidade', entidadeController.delete)
-
+router.delete('/voluntario', voluntarioController.delete)
 
 // ROTAS DO DOACAO
 // router.get('/doacao/dia', doacaoController.readByDay)
