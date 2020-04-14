@@ -57,6 +57,15 @@ router.put('/endereco', pessoaController.putEndereco)
 
 router.delete('/endereco', pessoaController.deleteEndereco)
 
+// ROTAS DE RELIGIÃO
+router.post('/religiao', acolhidoController.postReligiao)
+
+router.get('/religiao', acolhidoController.getReligiao)
+
+router.put('/religiao', acolhidoController.putReligiao)
+
+router.delete('/religiao', acolhidoController.deleteReligiao)
+
 
 
 module.exports = router;
