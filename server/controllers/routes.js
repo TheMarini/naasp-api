@@ -66,6 +66,22 @@ router.put('/religiao', acolhidoController.putReligiao)
 
 router.delete('/religiao', acolhidoController.deleteReligiao)
 
+// ROTAS DE CIDADE
+router.post('/cidade', pessoaController.postCidade)
 
+router.get('/cidade', pessoaController.getCidade)
+
+router.put('/cidade', pessoaController.putCidade)
+
+router.delete('/cidade', pessoaController.deleteCidade)
+
+// ROTAS DE BAIRRO
+router.post('/bairro', pessoaController.postBairro)
+
+router.get('/bairro', pessoaController.getBairro)
+
+router.put('/bairro', pessoaController.putBairro)
+
+router.delete('/bairro', pessoaController.deleteBairro)
 
 module.exports = router;
