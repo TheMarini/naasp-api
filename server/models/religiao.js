@@ -55,7 +55,7 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
 
-  Religiao.lista = async function (id) {
+  Religiao.lista = async function () {
     try {
       let religiaoInstances = await Religiao.findAll()
       return religiaoInstances
