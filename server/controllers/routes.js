@@ -2,9 +2,9 @@ const express = require('express');
 const router = express.Router();
 const moment = require('moment')
 
-// const itemController = require('./ItemController')
 const voluntarioController = require('./voluntarioController')
 const acolhidoController = require('./acolhidoController')
+const pessoaController = require('./pessoaController')
 
 
 var successStatus = 200
@@ -39,16 +39,14 @@ router.put('/voluntario', voluntarioController.put)
 
 router.delete('/voluntario', voluntarioController.delete)
 
-// ROTAS DO DOACAO
-// router.get('/doacao/dia', doacaoController.readByDay)
+// ROTAS DE PESSOA
+router.post('/pessoa', pessoaController.post)
 
-// router.get('/doacao', doacaoController.get)
+router.get('/pessoa', pessoaController.get)
 
-// router.post('/doacao', doacaoController.post)
+router.put('/pessoa', pessoaController.put)
 
-// router.put('/doacao', doacaoController.put)
-
-// router.delete('/doacao', doacaoController.delete)
+router.delete('/pessoa', pessoaController.delete)
 
 
 
