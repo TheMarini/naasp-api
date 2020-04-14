@@ -95,7 +95,7 @@ module.exports = (sequelize, DataTypes) => {
       cidade,
       bairro,
     } = param
-console.log(cidade)
+
     let queryOptions = {
       where: {
         id: endereco.id

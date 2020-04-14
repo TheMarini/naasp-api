@@ -49,6 +49,7 @@ module.exports = (sequelize, DataTypes) => {
     try {
       let pessoaInstance = await Pessoa.create({
         estado_civil: pessoa.estado_civil,
+        rg: pessoa.rg,
         cpf: pessoa.cpf,
         sexo: pessoa.sexo,
         nacionalidade: pessoa.nacionalidade,
@@ -100,7 +101,7 @@ module.exports = (sequelize, DataTypes) => {
       cidade,
       bairro
     } = param
-    
+
     let queryOptions = {
       where: {
         id: pessoa.id
