@@ -48,6 +48,15 @@ router.put('/pessoa', pessoaController.put)
 
 router.delete('/pessoa', pessoaController.delete)
 
+// ROTAS DE ENDERECO
+router.post('/endereco', pessoaController.postEndereco)
+
+router.get('/endereco', pessoaController.getEndereco)
+
+router.put('/endereco', pessoaController.putEndereco)
+
+router.delete('/endereco', pessoaController.deleteEndereco)
+
 
 
 module.exports = router;
