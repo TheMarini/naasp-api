@@ -42,7 +42,7 @@ module.exports = (sequelize, DataTypes) => {
   };
 
   Acolhido.adiciona = async function (models, param) {
-  
+
     let {
       endereco,
       cidade,
@@ -70,33 +70,33 @@ module.exports = (sequelize, DataTypes) => {
 
       if (!religiaoInstance)
         return util.defineError(412, "Erro em religião")
-      
+
       if (!pessoaInstance)
         return util.defineError(412, "Erro em Pessoa")
-      
-      if(transaction)
+
+      if (transaction)
         queryOptions.transaction = transaction
 
       let acolhidoInstance = await Acolhido.create({
-        atividade_fisica:       acolhido.atividade_fisica,
-        bebida_quantidade:      acolhido.bebida_quantidade,
-        bebida_periodicidade:   acolhido.bebida_periodicidade,
-        paroquia:               acolhido.paroquia,
-        atividades_religiosas:  acolhido.atividades_religiosas,
-        localNascimento:        acolhido.localNascimento,
-        demanda:                acolhido.demanda,
-        encaminhamento:         acolhido.encaminhamento,
-        observacao:             acolhido.observacao,
-        PessoaId:               pessoaInstance.dataValues.id,
-        ReligiaoId:             religiaoInstance[0].dataValues.id
+        atividade_fisica: acolhido.atividade_fisica,
+        bebida_quantidade: acolhido.bebida_quantidade,
+        bebida_periodicidade: acolhido.bebida_periodicidade,
+        paroquia: acolhido.paroquia,
+        atividades_religiosas: acolhido.atividades_religiosas,
+        localNascimento: acolhido.localNascimento,
+        demanda: acolhido.demanda,
+        encaminhamento: acolhido.encaminhamento,
+        observacao: acolhido.observacao,
+        PessoaId: pessoaInstance.dataValues.id,
+        ReligiaoId: religiaoInstance[0].dataValues.id
       }, {
         queryOptions
       })
-      
+
       let AcolhidoId = acolhidoInstance.dataValues.id
       let medicamentoContinuo = await models.MedicamentoContinuo.adicionaVarios(medicamentos, AcolhidoId, transaction)
       let familiaresInstance = await models.Familiar.adicionaVarios(familiares, AcolhidoId, transaction)
-      
+
       // await transaction.commit()
       return acolhidoInstance
     } catch (error) {
@@ -132,10 +132,12 @@ module.exports = (sequelize, DataTypes) => {
         bairro
       })
 
-      if(transaction)
+      if (transaction)
         queryOptions.transaction = transaction
-      
-      queryOptions.where = {id: acolhido.id}
+
+      queryOptions.where = {
+        id: acolhido.id
+      }
 
       if (!religiaoInstance || !pessoaInstance) {
         // transaction.rollback();
@@ -143,18 +145,18 @@ module.exports = (sequelize, DataTypes) => {
       }
 
       let acolhidoInstance = await Acolhido.update({
-        atividade_fisica:       acolhido.atividade_fisica,
-        bebida_quantidade:      acolhido.bebida_quantidade,
-        bebida_periodicidade:   acolhido.bebida_periodicidade,
-        paroquia:               acolhido.paroquia,
-        atividades_religiosas:  acolhido.atividades_religiosas,
-        localNascimento:        acolhido.localNascimento,
-        demanda:                acolhido.demanda,
-        encaminhamento:         acolhido.encaminhamento,
-        observacao:             acolhido.observacao,
-        ReligiaoId:             religiaoInstance[0].dataValues.id
+        atividade_fisica: acolhido.atividade_fisica,
+        bebida_quantidade: acolhido.bebida_quantidade,
+        bebida_periodicidade: acolhido.bebida_periodicidade,
+        paroquia: acolhido.paroquia,
+        atividades_religiosas: acolhido.atividades_religiosas,
+        localNascimento: acolhido.localNascimento,
+        demanda: acolhido.demanda,
+        encaminhamento: acolhido.encaminhamento,
+        observacao: acolhido.observacao,
+        ReligiaoId: religiaoInstance[0].dataValues.id
       }, queryOptions)
-      
+
       medicamentos.forEach(async medicamento => {
         await models.MedicamentoContinuo.edita(medicamento)
       });
@@ -238,9 +240,14 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
 
-  Acolhido.lista = async function () {
+  Acolhido.lista = async function (models) {
     try {
-      let acolhidoInstance = await Acolhido.findAll()
+      let acolhidoInstance = await Acolhido.findAll({
+        include: [{
+          model: models.Pessoa,
+          as: 'Pessoa'
+        }]
+      })
       return acolhidoInstance
     } catch (error) {
       console.log("\n catch \n")
@@ -254,7 +261,7 @@ module.exports = (sequelize, DataTypes) => {
         id: idParam
       }
     }
-    
+
     if (transaction)
       queryOptions.transaction = transaction
 

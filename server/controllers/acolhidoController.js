@@ -43,7 +43,7 @@ exports.get = async function (req, res) {
 		if (req.query.id)
 			response = await models.Acolhido.pesquisa(req.query.id)
 		else
-			response = await models.Acolhido.lista()
+			response = await models.Acolhido.lista(models)
 
 		res.status(successStatus).json(response)
 	} catch (error) {
