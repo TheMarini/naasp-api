@@ -8,4 +8,4 @@ build:
   config:
     NODE_ENV: development
 run:
-  node: npx nodemon
+  node: node index.js
