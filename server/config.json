@@ -22,12 +22,7 @@
       }
   },
   "production": {
-    "username": "postgres",
-    "password": "postgres",
-    "database": "database_production",
-    "host": "db",
-    "dialect": "postgres",
-    "port": "5432",
+    "use_env_variable": "DATABASE_URL",
     "define": {
       "freezeTableName": true
       }

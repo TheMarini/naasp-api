@@ -1,0 +1,11 @@
+setup:
+  addons:
+    - plan: heroku-postgresql
+      as: db
+build:
+  docker:
+    node: server/docker/node.dockerfile
+  config:
+    NODE_ENV: production
+run:
+  node: node index.js
