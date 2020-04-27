@@ -11,10 +11,24 @@ app.listen(3000, function () {
 
 const Sequelize = require('sequelize');
 
-const sequelize = new Sequelize('postgres://postgres:postgres@postgresdb:5432/database_development');
-sequelize.sync({ force: true }).then(() => {
-  console.log("All models were synchronized successfully.");
-})
+if (process.env.DATABASE_URL) {
+  console.log(process.env.DATABASE_URL);
+  // the application is executed on Heroku ... use the postgres database
+  sequelize = new Sequelize(process.env.DATABASE_URL, {
+    dialect:  'postgres',
+    protocol: 'postgres'
+  })
+  sequelize.sync({ force: true }).then(() => {
+    console.log("All models were synchronized successfully.");
+  })
+}else {
+  sequelize = new Sequelize('postgres://postgres:postgres@postgresdb:5432/database_development');
+  sequelize.sync({ force: true }).then(() => {
+    console.log("All models were synchronized successfully.");
+  })
+}
+
+
 
 sequelize
   .authenticate()
