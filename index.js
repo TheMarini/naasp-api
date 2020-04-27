@@ -12,7 +12,7 @@ app.listen(3000, function () {
 const Sequelize = require('sequelize');
 
 if (process.env.DATABASE_URL) {
-  console.log(process.env.DATABASE_URL);
+  console.log("heroku");
   // the application is executed on Heroku ... use the postgres database
   sequelize = new Sequelize(process.env.DATABASE_URL, {
     dialect:  'postgres',
