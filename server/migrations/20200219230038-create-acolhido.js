@@ -17,6 +17,9 @@ module.exports = {
       bebida_periodicidade: {
         type: Sequelize.STRING
       },
+      numero_cigarros_por_dia: {
+        type: Sequelize.INTEGER
+      },
       paroquia: {
         type: Sequelize.STRING
       },
@@ -24,6 +27,9 @@ module.exports = {
         type: Sequelize.STRING
       },
       demanda: {
+        type: Sequelize.STRING
+      },
+      localNascimento: {
         type: Sequelize.STRING
       },
       encaminhamento: {

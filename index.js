@@ -1,15 +1,16 @@
-var express = require('express');
-var app = express();
-
-app.get('/', function (req, res) {
-  res.send('Hello World!');
-});
-
-app.listen(3000, function () {
-  console.log('Example app listening on port 3000!');
-});
-
 const Sequelize = require('sequelize');
+const cors = require('cors')
+const express = require('express');
+const router = require('./server/controllers/routes')
+
+var app = express()
+app.use(cors())
+app.use(express.json())
+app.use(express.urlencoded({
+  extended: false
+}))
+
+app.use('/api', router)
 
 if (process.env.DATABASE_URL) {
   console.log("heroku");
@@ -31,13 +32,23 @@ if (process.env.DATABASE_URL) {
   })
 }
 
+sequelize.sync({
+  force: true,
+  logging: console.log
+}).then(() => {
 
+  sequelize
+    .authenticate()
+    .then(() => {
 
-sequelize
-  .authenticate()
-  .then(() => {
-    console.log('Connection has been established successfully.');
-  })
-  .catch(err => {
-    console.error('Unable to connect to the database:', err);
-  });
+      app.listen(3000, function () {
+        console.log('Connection has been established successfully.');
+        console.log("All models were synchronized successfully.");
+        console.log('App listening on port 3000!');
+      });
+
+    })
+    .catch(err => {
+      console.error('Unable to connect to the database:', err);
+    });
+})
