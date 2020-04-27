@@ -6,6 +6,6 @@ build:
   docker:
     node: server/docker/node.dockerfile
   config:
-    NODE_ENV: development
+    NODE_ENV: production
 run:
   node: node index.js
