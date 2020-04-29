@@ -23,6 +23,10 @@ module.exports = (sequelize, DataTypes) => {
     observacao: DataTypes.STRING,
     PessoaId: DataTypes.INTEGER,
     ReligiaoId: DataTypes.INTEGER,
+    StatusId: {
+      type: DataTypes.INTEGER,
+      defaultValue: 1
+    },
     updatedAt: DataTypes.DATE,
     createdAt: DataTypes.DATE
   }, {
@@ -77,7 +81,7 @@ module.exports = (sequelize, DataTypes) => {
       if (transaction)
         queryOptions.transaction = transaction
 
-      let acolhidoInstance = await Acolhido.create({
+      let data = {
         atividade_fisica: acolhido.atividade_fisica,
         bebida_quantidade: acolhido.bebida_quantidade,
         bebida_periodicidade: acolhido.bebida_periodicidade,
@@ -89,7 +93,12 @@ module.exports = (sequelize, DataTypes) => {
         observacao: acolhido.observacao,
         PessoaId: pessoaInstance.dataValues.id,
         ReligiaoId: religiaoInstance[0].dataValues.id
-      }, {
+      }
+
+      // if(acolhido.SEILAQUALCAMPO)
+      //   data.StatusId = 2
+
+      let acolhidoInstance = await Acolhido.create(data, {
         queryOptions
       })
 
