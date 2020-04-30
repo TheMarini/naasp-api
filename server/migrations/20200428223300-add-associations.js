@@ -60,6 +60,7 @@ module.exports = {
         'Acolhido', // name of Source model
         'PessoaId', // name of the key we're adding
         {
+          allowNull: true,
           type: Sequelize.INTEGER,
           references: {
             model: 'Pessoa', // name of Target model
@@ -214,6 +215,7 @@ module.exports = {
         'Acolhido', // name of Source model
         'ReligiaoId', // name of the key we're adding 
         {
+          allowNull: true,
           type: Sequelize.INTEGER,
           references: {
             model: 'Religiao', // name of Target model
@@ -228,6 +230,7 @@ module.exports = {
         'Acolhido', // name of Source model
         'StatusId', // name of the key we're adding 
         {
+          allowNull: true,
           type: Sequelize.INTEGER,
           references: {
             model: 'Status', // name of Target model
