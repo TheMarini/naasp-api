@@ -52,7 +52,6 @@ module.exports = (sequelize, DataTypes) => {
       queryOptions.transaction = transaction
 
     try {
-    if(pessoa)
       let pessoaInstance = await Pessoa.create({
         estado_civil: pessoa.estado_civil,
         rg: pessoa.rg,
@@ -70,9 +69,9 @@ module.exports = (sequelize, DataTypes) => {
         telefoneComercial: pessoa.telefoneComercial,
         email: pessoa.email
       }, queryOptions)
-      
+      let enderecoInstance
       if(endereco)
-        let enderecoInstance = await models.Endereco.adiciona(models, transaction, {
+          enderecoInstance = await models.Endereco.adiciona(models, transaction, {
           endereco: endereco,
           cidade: cidade,
           bairro: bairro,

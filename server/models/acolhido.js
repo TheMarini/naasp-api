@@ -113,11 +113,13 @@ module.exports = (sequelize, DataTypes) => {
       let acolhidoInstance = await Acolhido.create( data, { queryOptions } )
       
       let AcolhidoId = acolhidoInstance.dataValues.id
+      let medicamentoContinuoInstance
+      let familiaresInstance
       if(medicamentos)
-        let medicamentoContinuoInstance = await models.MedicamentoContinuo.adicionaVarios(medicamentos, AcolhidoId, transaction)
-
+        medicamentoContinuoInstance = await models.MedicamentoContinuo.adicionaVarios(medicamentos, AcolhidoId, transaction)
+        
       if(familiares)
-        let familiaresInstance = await models.Familiar.adicionaVarios(familiares, AcolhidoId, transaction)
+        familiaresInstance = await models.Familiar.adicionaVarios(familiares, AcolhidoId, transaction)
 
       // await transaction.commit()
       return {
