@@ -10,16 +10,21 @@ module.exports = (sequelize, DataTypes) => {
       autoIncrement: true,
       primaryKey: true
     },
-    cpf: DataTypes.INTEGER,
-    rg: DataTypes.INTEGER,
+    cpf: DataTypes.STRING,
+    rg: DataTypes.STRING,
     data_nascimento: DataTypes.DATE,
-    escolaridade: DataTypes.STRING,
+    grauEscolaridade: DataTypes.STRING,
+    estadoEscolaridade: DataTypes.STRING,
+    email: DataTypes.STRING,
     estado_civil: DataTypes.STRING,
     nacionalidade: DataTypes.STRING,
     naturalidade: DataTypes.STRING,
     nome: DataTypes.STRING,
     situacao_profissional: DataTypes.STRING,
     sexo: DataTypes.STRING,
+    telefoneCelular: DataTypes.STRING,
+    telefoneResidencia: DataTypes.STRING,
+    telefoneComercial: DataTypes.STRING,
     updatedAt: DataTypes.DATE,
     createdAt: DataTypes.DATE
   }, {
@@ -57,17 +62,21 @@ module.exports = (sequelize, DataTypes) => {
         situacao_profissional: pessoa.situacao_profissional,
         escolaridade: pessoa.escolaridade,
         nome: pessoa.nome,
-        data_nascimento: pessoa.data_nascimento
+        data_nascimento: pessoa.data_nascimento,
+        telefoneCelular: pessoa.telefoneCelular,
+        telefoneResidencia: pessoa.telefoneResidencia,
+        telefoneComercial: pessoa.telefoneComercial,
+        email: pessoa.email
       }, queryOptions)
     
-      await models.Endereco.adiciona(models, transaction, {
+      let enderecoInstance = await models.Endereco.adiciona(models, transaction, {
         endereco: endereco,
         cidade: cidade,
         bairro: bairro,
         PessoaIdParam: pessoaInstance.id
       })
-
-      return pessoaInstance
+     
+      return { pessoaInstance, enderecoInstance }
     } catch (error) {
       console.log("\n catch \n")
       throw util.checkError(error, modelName)

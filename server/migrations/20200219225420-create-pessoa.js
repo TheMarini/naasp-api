@@ -12,15 +12,24 @@ module.exports = {
         type: Sequelize.STRING
       },
       cpf: {
-        type: Sequelize.INTEGER
+        type: Sequelize.STRING
       },
       rg: {
-        type: Sequelize.INTEGER
+        type: Sequelize.STRING
       },
       email: {
         type: Sequelize.STRING
       },
       sexo: {
+        type: Sequelize.STRING
+      },
+      telefoneCelular: {
+        type: Sequelize.STRING
+      },
+      telefoneResidencia: {
+        type: Sequelize.STRING
+      },
+      telefoneComercial: {
         type: Sequelize.STRING
       },
       nacionalidade: {
@@ -32,7 +41,10 @@ module.exports = {
       situacao_profissional: {
         type: Sequelize.STRING
       },
-      escolaridade: {
+      grauEscolaridade: {
+        type: Sequelize.STRING
+      },
+      estadoEscolaridade: {
         type: Sequelize.STRING
       },
       nome: {
