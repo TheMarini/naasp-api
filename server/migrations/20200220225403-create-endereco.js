@@ -18,7 +18,7 @@ module.exports = {
         type: Sequelize.STRING
       },
       cep: {
-        type: Sequelize.INTEGER
+        type: Sequelize.STRING
       },
       createdAt: {
         allowNull: false,
