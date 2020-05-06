@@ -10,7 +10,8 @@ exports.post = async function (req, res) {
 			cidade: req.body.cidade,
 			bairro: req.body.bairro,
 			pessoa: req.body.pessoa,
-			especialidade: req.body.especialidade
+			especialidade: req.body.especialidade,
+			faixaEtariaAtendimento: req.body.faixaEtariaAtendimento
 		})
 		res.status(successStatus).json(response)
 	} catch (error) {
