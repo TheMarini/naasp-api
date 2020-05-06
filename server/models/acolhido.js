@@ -208,17 +208,7 @@ module.exports = (sequelize, DataTypes) => {
 
   }
 
-  Acolhido.pesquisa = async function (id) {
-    try {
-      let acolhidoInstance = await Acolhido.findByPk(id)
-      return acolhidoInstance
-    } catch (error) {
-      console.log("\n catch \n")
-      throw util.checkError(error, modelName)
-    }
-  }
-
-  Acolhido.pesquisaAcolhidoCompleto = async function (models, id) {
+  Acolhido.pesquisa = async function (models, id) {
     let {
       Religiao,
       Pessoa,
@@ -273,12 +263,51 @@ module.exports = (sequelize, DataTypes) => {
   }
 
   Acolhido.lista = async function (models) {
+    let {
+      Religiao,
+      Pessoa,
+      Endereco,
+      Cidade,
+      Bairro,
+      Familiar,
+      DoencaFamilia,
+      MedicamentoContinuo
+    } = models
+    
     try {
       let acolhidoInstance = await Acolhido.findAll({
         include: [{
-          model: models.Pessoa,
-          as: 'Pessoa'
-        }]
+            model: Religiao,
+            attributes: ['nome'],
+            as: 'Religiao'
+          },
+          {
+            model: Pessoa,
+            as: 'Pessoa',
+            include: [{
+              model: Endereco,
+              as: 'Endereco',
+              include: [{
+                model: Cidade,
+                attributes: ['nome'],
+                as: 'Cidade'
+              }, {
+                model: Bairro,
+                attributes: ['nome'],
+                as: 'Bairro'
+              }]
+            }]
+          }, {
+            model: Familiar,
+            as: 'Familiars'
+          }, {
+            model: DoencaFamilia,
+            as: 'DoencaFamilia'
+          }, {
+            model: MedicamentoContinuo,
+            as: 'MedicamentoContinuos'
+          }
+        ]
       })
       return acolhidoInstance
     } catch (error) {

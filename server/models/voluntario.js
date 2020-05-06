@@ -141,17 +141,7 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
 
-  Voluntario.pesquisa = async function (id) {
-    try {
-      let voluntarioInstance = await Voluntario.findByPk(id)
-      return voluntarioInstance
-    } catch (error) {
-      console.log("\n catch \n")
-      throw util.checkError(error, modelName)
-    }
-  }
-
-  Voluntario.pesquisaVoluntarioCompleto = async function (models, id) {
+  Voluntario.pesquisa = async function (models, id) {
     let {
       Pessoa,
       Endereco,
@@ -194,9 +184,42 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
 
-  Voluntario.lista = async function () {
+  Voluntario.lista = async function (models) {
+    let {
+      Pessoa,
+      Endereco,
+      Cidade,
+      Bairro,
+      Voluntario,
+      Especialidade
+    } = models
+    
     try {
-      let voluntarioInstance = await Voluntario.findAll()
+      let voluntarioInstance = await Voluntario.findAll({
+        include: [{
+            model: Pessoa,
+            as: 'Pessoa',
+            include: [{
+              model: Endereco,
+              as: 'Endereco',
+              include: [{
+                model: Cidade,
+                attributes: ['nome'],
+                as: 'Cidade'
+              }, {
+                model: Bairro,
+                attributes: ['nome'],
+                as: 'Bairro'
+              }]
+            }]
+          },
+          {
+            model: Especialidade,
+            attributes: ['nome'],
+            as: 'Especialidade'
+          }
+        ]
+      })
       return voluntarioInstance 
     } catch (error) {
       console.log("\n catch \n")
