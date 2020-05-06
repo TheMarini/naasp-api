@@ -18,9 +18,9 @@ module.exports = (sequelize, DataTypes) => {
     paroquia: DataTypes.STRING,
     atividades_religiosas: DataTypes.STRING,
     demanda: DataTypes.STRING,
-    localNascimento: DataTypes.STRING,
     encaminhamento: DataTypes.STRING,
     observacao: DataTypes.STRING,
+    preferenciaAtendimento: DataTypes.STRING,
     PessoaId: {
       allowNull: true,
       type: DataTypes.INTEGER
@@ -71,13 +71,13 @@ module.exports = (sequelize, DataTypes) => {
 
     try {
       let religiaoInstance = null
-      let pessoaInstance = null
+      let pessoaRetorno = null
 
       if(religiao)
         religiaoInstance = await models.Religiao.pesquisaOuAdiciona(religiao, transaction)
       
       if(pessoa)
-        pessoaInstance = await models.Pessoa.adiciona(models, transaction, {
+      pessoaRetorno = await models.Pessoa.adiciona(models, transaction, {
           pessoa,
           endereco,
           cidade,
@@ -99,26 +99,30 @@ module.exports = (sequelize, DataTypes) => {
         bebida_periodicidade: acolhido.bebida_periodicidade,
         paroquia: acolhido.paroquia,
         atividades_religiosas: acolhido.atividades_religiosas,
-        localNascimento: acolhido.localNascimento,
         demanda: acolhido.demanda,
         encaminhamento: acolhido.encaminhamento,
         observacao: acolhido.observacao,
-        PessoaId: (pessoaInstance)? pessoaInstance.dataValues.id: null,
+        PessoaId: (pessoaRetorno)? pessoaRetorno.pessoaInstance.dataValues.id: null,
         ReligiaoId: (religiaoInstance)? religiaoInstance[0].dataValues.id : null
       }
       if(pessoa && pessoa.cpf)
         data.StatusId = 2
 
-      let acolhidoInstance = await Acolhido.create(data, {
-        queryOptions
-      })
+      let acolhidoInstance = await Acolhido.create( data, { queryOptions } )
 
       let AcolhidoId = acolhidoInstance.dataValues.id
-      let medicamentoContinuo = await models.MedicamentoContinuo.adicionaVarios(medicamentos, AcolhidoId, transaction)
+      let medicamentoContinuoInstance = await models.MedicamentoContinuo.adicionaVarios(medicamentos, AcolhidoId, transaction)
       let familiaresInstance = await models.Familiar.adicionaVarios(familiares, AcolhidoId, transaction)
 
       // await transaction.commit()
-      return acolhidoInstance
+      return {
+          pessoa: pessoaRetorno.pessoaInstance.dataValues,
+          endereco: pessoaRetorno.enderecoInstance.dataValues,
+          acolhido: acolhidoInstance.dataValues,
+          familiaresInstance: familiaresInstance.dataValues,
+          medicamentoContinuo: medicamentoContinuoInstance.dataValues
+        }
+
     } catch (error) {
       // await transaction.rollback();
       console.log("\n", error, "\n")
@@ -173,7 +177,6 @@ module.exports = (sequelize, DataTypes) => {
         bebida_periodicidade: acolhido.bebida_periodicidade,
         paroquia: acolhido.paroquia,
         atividades_religiosas: acolhido.atividades_religiosas,
-        localNascimento: acolhido.localNascimento,
         demanda: acolhido.demanda,
         encaminhamento: acolhido.encaminhamento,
         observacao: acolhido.observacao,

@@ -29,10 +29,10 @@ module.exports = {
       demanda: {
         type: Sequelize.STRING
       },
-      localNascimento: {
+      encaminhamento: {
         type: Sequelize.STRING
       },
-      encaminhamento: {
+      preferenciaAtendimento: {
         type: Sequelize.STRING
       },
       observacao: {
