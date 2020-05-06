@@ -38,6 +38,9 @@ module.exports = {
       observacao: {
         type: Sequelize.STRING
       },
+      prioridade: {
+        type: Sequelize.INTEGER
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE

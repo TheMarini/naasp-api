@@ -21,6 +21,7 @@ module.exports = (sequelize, DataTypes) => {
     encaminhamento: DataTypes.STRING,
     observacao: DataTypes.STRING,
     preferenciaAtendimento: DataTypes.STRING,
+    prioridade: DataTypes.INTEGER,
     PessoaId: {
       allowNull: true,
       type: DataTypes.INTEGER
@@ -77,7 +78,7 @@ module.exports = (sequelize, DataTypes) => {
         religiaoInstance = await models.Religiao.pesquisaOuAdiciona(religiao, transaction)
       
       if(pessoa)
-      pessoaRetorno = await models.Pessoa.adiciona(models, transaction, {
+        pessoaRetorno = await models.Pessoa.adiciona(models, transaction, {
           pessoa,
           endereco,
           cidade,
@@ -102,6 +103,7 @@ module.exports = (sequelize, DataTypes) => {
         demanda: acolhido.demanda,
         encaminhamento: acolhido.encaminhamento,
         observacao: acolhido.observacao,
+        prioridade: acolhido.prioridade,
         PessoaId: (pessoaRetorno)? pessoaRetorno.pessoaInstance.dataValues.id: null,
         ReligiaoId: (religiaoInstance)? religiaoInstance[0].dataValues.id : null
       }
@@ -109,18 +111,21 @@ module.exports = (sequelize, DataTypes) => {
         data.StatusId = 2
 
       let acolhidoInstance = await Acolhido.create( data, { queryOptions } )
-
+      
       let AcolhidoId = acolhidoInstance.dataValues.id
-      let medicamentoContinuoInstance = await models.MedicamentoContinuo.adicionaVarios(medicamentos, AcolhidoId, transaction)
-      let familiaresInstance = await models.Familiar.adicionaVarios(familiares, AcolhidoId, transaction)
+      if(medicamentos)
+        let medicamentoContinuoInstance = await models.MedicamentoContinuo.adicionaVarios(medicamentos, AcolhidoId, transaction)
+
+      if(familiares)
+        let familiaresInstance = await models.Familiar.adicionaVarios(familiares, AcolhidoId, transaction)
 
       // await transaction.commit()
       return {
-          pessoa: pessoaRetorno.pessoaInstance.dataValues,
-          endereco: pessoaRetorno.enderecoInstance.dataValues,
+          pessoa: (pessoa)? pessoaRetorno.pessoaInstance.dataValues: null,
+          endereco: (endereco)? pessoaRetorno.enderecoInstance.dataValues: null,
           acolhido: acolhidoInstance.dataValues,
-          familiaresInstance: familiaresInstance.dataValues,
-          medicamentoContinuo: medicamentoContinuoInstance.dataValues
+          familiaresInstance:(familiares)? familiaresInstance.dataValues : null,
+          medicamentoContinuo: (medicamentoContinuo)? medicamentoContinuoInstance.dataValues : null
         }
 
     } catch (error) {
@@ -180,6 +185,7 @@ module.exports = (sequelize, DataTypes) => {
         demanda: acolhido.demanda,
         encaminhamento: acolhido.encaminhamento,
         observacao: acolhido.observacao,
+        prioridade: acolhido.prioridade,
         ReligiaoId: religiaoInstance[0].dataValues.id,
         StatusId: acolhido.StatusId
       }
@@ -273,7 +279,7 @@ module.exports = (sequelize, DataTypes) => {
       DoencaFamilia,
       MedicamentoContinuo
     } = models
-    
+
     try {
       let acolhidoInstance = await Acolhido.findAll({
         include: [{

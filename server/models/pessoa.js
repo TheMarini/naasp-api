@@ -52,6 +52,7 @@ module.exports = (sequelize, DataTypes) => {
       queryOptions.transaction = transaction
 
     try {
+    if(pessoa)
       let pessoaInstance = await Pessoa.create({
         estado_civil: pessoa.estado_civil,
         rg: pessoa.rg,
@@ -60,10 +61,10 @@ module.exports = (sequelize, DataTypes) => {
         nacionalidade: pessoa.nacionalidade,
         naturalidade: pessoa.naturalidade,
         situacao_profissional: pessoa.situacao_profissional,
-        grauEscolaridade: pessoa.grauEscolaridade,
-        estadoEscolaridade: pessoa.estadoEscolaridade, 
         nome: pessoa.nome,
         data_nascimento: pessoa.data_nascimento,
+        grauEscolaridade: pessoa.grauEscolaridade, 
+        estadoEscolaridade: pessoa.estadoEscolaridade,
         telefoneCelular: pessoa.telefoneCelular,
         telefoneResidencia: pessoa.telefoneResidencia,
         telefoneComercial: pessoa.telefoneComercial,
@@ -131,7 +132,13 @@ module.exports = (sequelize, DataTypes) => {
         situacao_profissional: pessoa.situacao_profissional,
         escolaridade: pessoa.escolaridade,
         nome: pessoa.nome,
-        data_nascimento: pessoa.data_nascimento
+        data_nascimento: pessoa.data_nascimento,
+        grauEscolaridade: pessoa.grauEscolaridade, 
+        estadoEscolaridade: pessoa.estadoEscolaridade,
+        telefoneCelular: pessoa.telefoneCelular,
+        telefoneResidencia: pessoa.telefoneResidencia,
+        telefoneComercial: pessoa.telefoneComercial,
+        email: pessoa.email
       }, queryOptions)
 
       await models.Endereco.edita(models, transaction, {
