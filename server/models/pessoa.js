@@ -70,15 +70,19 @@ module.exports = (sequelize, DataTypes) => {
         telefoneComercial: pessoa.telefoneComercial,
         email: pessoa.email
       }, queryOptions)
-    
-      let enderecoInstance = await models.Endereco.adiciona(models, transaction, {
-        endereco: endereco,
-        cidade: cidade,
-        bairro: bairro,
-        PessoaIdParam: pessoaInstance.id
-      })
+      
+      if(endereco)
+        let enderecoInstance = await models.Endereco.adiciona(models, transaction, {
+          endereco: endereco,
+          cidade: cidade,
+          bairro: bairro,
+          PessoaIdParam: pessoaInstance.id
+        })
      
-      return { pessoaInstance, enderecoInstance }
+      return { 
+        pessoaInstance: pessoaInstance, 
+        enderecoInstance: (enderecoInstance)? enderecoInstance: null 
+      }
     } catch (error) {
       console.log("\n catch \n")
       throw util.checkError(error, modelName)
