@@ -10,6 +10,7 @@ module.exports = (sequelize, DataTypes) => {
       autoIncrement: true,
       primaryKey: true
     },
+    faixaEtariaAtendimento: DataTypes.STRING,
     EspecialidadeId: DataTypes.INTEGER,
     PessoaId: DataTypes.INTEGER,
     updatedAt: DataTypes.DATE,
@@ -30,7 +31,8 @@ module.exports = (sequelize, DataTypes) => {
       cidade,
       bairro,
       pessoa,
-      especialidade
+      especialidade,
+      faixaEtariaAtendimento
     } = param
 
     let queryOptions = {}
@@ -40,7 +42,7 @@ module.exports = (sequelize, DataTypes) => {
     try {
       
       let especialidadeInstance = await models.Especialidade.pesquisaOuAdiciona(especialidade, transaction)
-      let pessoaInstance = await models.Pessoa.adiciona(models, transaction, {
+      let pessoaRetorno = await models.Pessoa.adiciona(models, transaction, {
         pessoa,
         endereco,
         cidade,
@@ -50,22 +52,39 @@ module.exports = (sequelize, DataTypes) => {
       if(transaction)
         queryOptions.transaction = transaction
       
-      if (!pessoaInstance)
+      if (!pessoaRetorno)
         return util.defineError(412, "Erro em Pessoa")
 
       if (!especialidadeInstance)
         return util.defineError(412, "Erro em Especialidade")
-      
+
+      let faixaEtariaConcat = ""
+      for (let index = 0; index < faixaEtariaAtendimento.length; index++) {
+        const element = faixaEtariaAtendimento[index];
+        
+        faixaEtariaConcat += element
+
+        if(index < faixaEtariaAtendimento.length-1)
+          faixaEtariaConcat += ","
+      }
+
+      console.log(faixaEtariaAtendimento)
+
       let voluntarioInstance = await Voluntario.create({
+        faixaEtariaAtendimento: faixaEtariaConcat,
         EspecialidadeId: especialidadeInstance[0].dataValues.id,
-        PessoaId: pessoaInstance.dataValues.id
+        PessoaId: pessoaRetorno.pessoaInstance.dataValues.id
       }, {
         queryOptions
       })
       
       // await transaction.commit()
-      voluntarioInstance.dataValues.pessoa = pessoaInstance.dataValues
-      return voluntarioInstance
+      voluntarioInstance.dataValues.especialidade = especialidadeInstance[0].dataValues
+      return {
+        voluntario: voluntarioInstance.dataValues,
+        pessoa: pessoaRetorno.pessoaInstance.dataValues,
+        endereco: pessoaRetorno.enderecoInstance.dataValues
+      }
     } catch (error) {
       // await transaction.rollback();
       console.log("\n", error, "\n")
