@@ -12,6 +12,13 @@ app.use(express.urlencoded({
 
 app.use('/api', router)
 
+
+
+var http = require('http').Server(app);
+var io = require('socket.io')(http);
+
+
+
 if (process.env.DATABASE_URL) {
   console.log("heroku");
   // the application is executed on Heroku ... use the postgres database
@@ -52,3 +59,21 @@ sequelize.sync({
       console.error('Unable to connect to the database:', err);
     });
 })
+
+
+
+app.get('/', function(req, res){
+  res.sendFile(__dirname + '/index.html');
+});
+
+io.on('connection', function(socket){
+  socket.on('chat message', function(msg, id){
+      io.emit('chat message', msg, id);
+      socket.broadcast.emit('chat message', msg, id);
+      // console.log('message: ' + msg);
+  });
+});
+
+http.listen(3001, function(){
+  console.log('Rodando na porta *:3001');
+});
