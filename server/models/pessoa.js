@@ -40,7 +40,7 @@ module.exports = (sequelize, DataTypes) => {
 
   Pessoa.adiciona = async function (models, transaction, param) {
     let {
-      pessoa,
+      pessoaParam,
       endereco,
       cidade,
       bairro
@@ -52,24 +52,28 @@ module.exports = (sequelize, DataTypes) => {
       queryOptions.transaction = transaction
 
     try {
+
+      valida(pessoaParam)
+
       let pessoaInstance = await Pessoa.create({
-        estado_civil: pessoa.estado_civil,
-        rg: pessoa.rg,
-        cpf: pessoa.cpf,
-        sexo: pessoa.sexo,
-        nacionalidade: pessoa.nacionalidade,
-        naturalidade: pessoa.naturalidade,
-        situacao_profissional: pessoa.situacao_profissional,
-        nome: pessoa.nome,
-        data_nascimento: pessoa.data_nascimento,
-        grauEscolaridade: pessoa.grauEscolaridade, 
-        estadoEscolaridade: pessoa.estadoEscolaridade,
-        telefoneCelular: pessoa.telefoneCelular,
-        telefoneResidencia: pessoa.telefoneResidencia,
-        telefoneComercial: pessoa.telefoneComercial,
-        email: pessoa.email
+        estado_civil: pessoaParam.estado_civil,
+        rg: pessoaParam.rg,
+        cpf: pessoaParam.cpf,
+        sexo: pessoaParam.sexo,
+        nacionalidade: pessoaParam.nacionalidade,
+        naturalidade: pessoaParam.naturalidade,
+        situacao_profissional: pessoaParam.situacao_profissional,
+        nome: pessoaParam.nome,
+        data_nascimento: pessoaParam.data_nascimento,
+        grauEscolaridade: pessoaParam.grauEscolaridade, 
+        estadoEscolaridade: pessoaParam.estadoEscolaridade,
+        telefoneCelular: pessoaParam.telefoneCelular,
+        telefoneResidencia: pessoaParam.telefoneResidencia,
+        telefoneComercial: pessoaParam.telefoneComercial,
+        email: pessoaParam.email
       }, queryOptions)
-      let enderecoInstance
+
+      let enderecoInstance = null
       if(endereco)
           enderecoInstance = await models.Endereco.adiciona(models, transaction, {
           endereco: endereco,
@@ -77,11 +81,9 @@ module.exports = (sequelize, DataTypes) => {
           bairro: bairro,
           PessoaIdParam: pessoaInstance.id
         })
-     
-      return { 
-        pessoaInstance: pessoaInstance, 
-        enderecoInstance: (enderecoInstance)? enderecoInstance: null 
-      }
+      
+      return pessoaInstance
+
     } catch (error) {
       console.log("\n catch \n")
       throw util.checkError(error, modelName)
@@ -174,6 +176,27 @@ module.exports = (sequelize, DataTypes) => {
       console.log("\n catch \n")
       throw util.checkError(error, modelName)
     }
+  }
+  
+  function valida(pessoa){
+    let {
+      data_nascimento = "",
+      email = "",
+      nome = "",
+      telefoneCelular = "",
+      telefoneComercial = "",
+      telefoneResidencia = ""
+    } = pessoa
+    
+    if(nome != "" &&
+      data_nascimento != "" &&
+      (telefoneCelular != "" || telefoneComercial != "" || telefoneResidencia != "") &&
+      email != ""
+    ) {
+      return true
+    }
+
+    throw util.defineError(412, "Erro em Pessoa")
   }
 
   return Pessoa;
