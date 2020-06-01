@@ -26,29 +26,30 @@ if (process.env.DATABASE_URL) {
     console.log("All models were synchronized successfully.");
   })
 }else {
-  sequelize = new Sequelize('postgres://postgres:postgres@postgresdb:5432/database_development');
+  // sequelize = new Sequelize('postgres://postgres:postgres@postgresdb:5432/database_development');
+  sequelize = new Sequelize('database_development', 'postgres', 'postgres', {
+    host: 'localhost',
+    dialect: 'postgres'
+  });
   sequelize.sync({ force: true }).then(() => {
     console.log("All models were synchronized successfully.");
   })
 }
 
-sequelize.sync({
-  force: true,
-  logging: console.log
-}).then(() => {
-
+// sequelize.sync({
+//   force: true,
+//   logging: console.log
+// }).then(() => {
   sequelize
     .authenticate()
     .then(() => {
-
       app.listen(3000, function () {
         console.log('Connection has been established successfully.');
         console.log("All models were synchronized successfully.");
         console.log('App listening on port 3000!');
       });
-
     })
     .catch(err => {
       console.error('Unable to connect to the database:', err);
     });
-})
+// })
