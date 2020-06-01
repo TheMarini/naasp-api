@@ -41,13 +41,14 @@ module.exports = (sequelize, DataTypes) => {
   Pessoa.adiciona = async function (models, transaction, param) {
     let {
       pessoaParam,
-      endereco,
-      cidade,
-      bairro
+      enderecoParam,
+      cidadeParam,
+      bairroParam
     } = param
 
     let queryOptions = {}
-
+    let enderecoInstance = null
+    
     if (transaction)
       queryOptions.transaction = transaction
 
@@ -73,12 +74,11 @@ module.exports = (sequelize, DataTypes) => {
         email: pessoaParam.email
       }, queryOptions)
 
-      let enderecoInstance = null
-      if(endereco)
+      if(enderecoParam)
           enderecoInstance = await models.Endereco.adiciona(models, transaction, {
-          endereco: endereco,
-          cidade: cidade,
-          bairro: bairro,
+          endereco: enderecoParam,
+          cidade: cidadeParam,
+          bairro: bairroParam,
           PessoaIdParam: pessoaInstance.id
         })
       
