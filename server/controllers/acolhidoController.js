@@ -4,17 +4,18 @@ var successStatus = 200
 
 exports.post = async function (req, res) {
 	let response = null
+	console.log(req.body)
 	try {
 		response = await models.Acolhido.adiciona(models, {
-			endereco: req.body.endereco,
-			cidade: req.body.cidade,
-			bairro: req.body.bairro,
-			pessoa: req.body.pessoa,
-			religiao: req.body.religiao,
-			acolhido: req.body.acolhido,
-			familiares: req.body.familiares,
-			medicamentos: req.body.medicamentos,
-			doencaFamilia: req.body.doencaFamilia
+			pessoaParam: 		req.body.pessoa,
+			religiaoParam: 		req.body.pessoa.religiao,
+			enderecoParam: 		req.body.pessoa.endereco,
+			cidadeParam: 		req.body.pessoa.endereco.cidade,
+			bairroParam: 		req.body.pessoa.endereco.bairro,
+			acolhidoParam: 		req.body.acolhido,
+			familiaresParam: 	req.body.acolhido.familiares,
+			medicamentosParam: 	req.body.acolhido.medicamentos,
+			doencaFamiliaParam: req.body.acolhido.doencaFamilia
 		})
 		res.status(successStatus).json(response)
 	} catch (error) {
