@@ -30,7 +30,7 @@ module.exports = {
         type: Sequelize.INTEGER
       },
       renda: {
-        type: Sequelize.INTEGER
+        type: Sequelize.DOUBLE
       },
       responsavel: {
         type: Sequelize.BOOLEAN

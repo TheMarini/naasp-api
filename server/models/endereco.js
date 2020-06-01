@@ -14,7 +14,7 @@ module.exports = (sequelize, DataTypes) => {
     rua: DataTypes.STRING,
     numero: DataTypes.INTEGER,
     complemento: DataTypes.STRING,
-    cep: DataTypes.INTEGER,
+    cep: DataTypes.STRING,
     PessoaId: DataTypes.INTEGER,
     BairroId: DataTypes.INTEGER,
     CidadeId: DataTypes.INTEGER

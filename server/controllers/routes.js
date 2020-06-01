@@ -20,8 +20,6 @@ router.get('/', function (req, res) {
 // ROTAS DO ACOLHIDO
 router.post('/acolhido', acolhidoController.post)
 
-router.get('/acolhido/completo', acolhidoController.getFull)
-
 router.get('/acolhido', acolhidoController.get)
 
 router.put('/acolhido', acolhidoController.put)
@@ -30,8 +28,6 @@ router.delete('/acolhido', acolhidoController.delete)
 
 // ROTAS DO VOLUNTÁRIO  
 router.post('/voluntario', voluntarioController.post)
-
-router.get('/voluntario/completo', voluntarioController.getFull)
 
 router.get('/voluntario', voluntarioController.get)
 
