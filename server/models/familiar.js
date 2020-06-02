@@ -19,7 +19,7 @@ module.exports = (sequelize, DataTypes) => {
     telefone: DataTypes.INTEGER,
     renda: DataTypes.DOUBLE,
     responsavel: DataTypes.BOOLEAN,
-    rg: DataTypes.INTEGER,
+    rg: DataTypes.STRING,
     AcolhidoId: DataTypes.INTEGER,
     createdAt: {
       allowNull: false,
@@ -166,9 +166,9 @@ module.exports = (sequelize, DataTypes) => {
     if (transaction)
       queryOptions.transaction = transaction
 
-    familiares.forEach(e => {
-      e.AcolhidoId= AcolhidoId
-    });
+    // familiares.forEach(e => {
+    //   e.AcolhidoId = AcolhidoId
+    // });
 
     try {
       let familiarInstance = await Familiar.bulkCreate(familiares, queryOptions)
