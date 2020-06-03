@@ -32,7 +32,7 @@ module.exports = (sequelize, DataTypes) => {
       bairroParam            = {},
       pessoaParam            = {},
       especialidadeParam     = "",
-      faixaEtariaAtendimento = null
+      faixaEtariaAtendimento = []
     } = param
     let t = await sequelize.transaction({type: sequelize.Transaction}) 
     let queryOptions = {transaction: t}
@@ -62,18 +62,21 @@ module.exports = (sequelize, DataTypes) => {
         faixaEtariaAtendimento: faixaEtariaConcat
       }, { queryOptions })
 
-      especialidadeInstance = await models.Especialidade.pesquisaOuAdiciona(especialidade, transaction)
-      pessoaInstance = await models.Pessoa.adiciona(models, t, {
+      especialidadeInstance = await models.Especialidade.pesquisaOuAdiciona(especialidadeParam, t)
+      pessoaInstance = await models.Pessoa.adiciona(models, null, {
         pessoaParam,
         enderecoParam,
         cidadeParam,
         bairroParam
       })
+  
+      if (!pessoaInstance)
+        throw util.defineError(500, "Erro em Pessoa")
       
-      voluntario.setPessoa(pessoaInstance)
-      voluntario.setEspecialidade(especialidadeInstance)
+      voluntarioInstance.setPessoa(pessoaInstance)
+      voluntarioInstance.setEspecialidade(especialidadeInstance)
       
-      await transaction.commit()
+      await t.commit()
       // return {
       //   voluntario: voluntarioInstance.dataValues,
       //   pessoa: pessoaRetorno.pessoaInstance.dataValues,
@@ -81,7 +84,7 @@ module.exports = (sequelize, DataTypes) => {
       // }
       return true
     } catch (error) {
-      // await transaction.rollback();
+      await t.rollback();
       console.log("\n", error, "\n")
       throw util.checkError(error, modelName)
     }
@@ -172,7 +175,8 @@ module.exports = (sequelize, DataTypes) => {
           }
         ]
       })
-      return voluntarioInstance
+
+      return preparaObj(voluntarioInstance.dataValues)
     } catch (error) {
       console.log("\n catch \n")
       throw util.checkError(error, modelName)
@@ -190,7 +194,9 @@ module.exports = (sequelize, DataTypes) => {
     } = models
     
     try {
-      let voluntarioInstance = await Voluntario.findAll({
+      let voluntarioArray = await Voluntario.findAll({
+        raw: true,
+        nest: true,
         include: [{
             model: Pessoa,
             as: 'Pessoa',
@@ -215,7 +221,11 @@ module.exports = (sequelize, DataTypes) => {
           }
         ]
       })
-      return voluntarioInstance 
+      voluntarioArray.map((e)=> {
+        e = preparaObj(e)
+      })
+      console.log(voluntarioArray)
+      return voluntarioArray
     } catch (error) {
       console.log("\n catch \n")
       throw util.checkError(error, modelName)
@@ -241,5 +251,28 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
 
+  function preparaObj(voluntarioRaw) {
+    voluntarioRaw.voluntario = {
+      id: voluntarioRaw.id,
+      faixaEtariaAtendimento: voluntarioRaw.faixaEtariaAtendimento,
+      EspecialidadeId: voluntarioRaw.EspecialidadeId,
+      PessoaId: voluntarioRaw.PessoaId,
+      updatedAt: voluntarioRaw.updatedAt,
+      createdAt: voluntarioRaw.createdAt,
+      Especialidade: voluntarioRaw.Especialidade
+    }
+
+    delete voluntarioRaw.id
+    delete voluntarioRaw.faixaEtariaAtendimento
+    delete voluntarioRaw.EspecialidadeId
+    delete voluntarioRaw.PessoaId
+    delete voluntarioRaw.updatedAt
+    delete voluntarioRaw.createdAt
+    delete voluntarioRaw.Especialidade
+    
+    console.log(voluntarioRaw)
+
+    return voluntarioRaw
+  }
   return Voluntario;
 };
