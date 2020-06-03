@@ -2,6 +2,7 @@ const Sequelize = require('sequelize');
 const cors = require('cors')
 const express = require('express');
 const router = require('./server/controllers/routes')
+const sessaoModel = require('./server/controllers/sessaoController')
 
 var app = express()
 app.use(cors())
@@ -18,7 +19,7 @@ var http = require('http').Server(app);
 var io = require('socket.io')(http);
 
 app.get('/', function(req, res){
-  res.sendFile(__dirname + '/index.html');
+  res.sendFile(__dirname + '/submit.html');
 });
 
 
@@ -64,15 +65,16 @@ sequelize.sync({
 })
 
 
-
-io.on('connection', function(socket){
-  socket.on('chat message', function(msg, id){
-      io.emit('chat message', msg, id);
-      socket.broadcast.emit('chat message', msg, id);
-      // console.log('message: ' + msg);
+io.on('connection', socket => {
+  async function emiteDados(){
+    let sessoes = await sessaoModel.get();
+    // console.log(sessoes[0].dataValues.id);
+    socket.emit('login', sessoes)
+  }
+  emiteDados();
+  socket.on('sessao', function(sessao){
+      // recebe o dado
+      sessaoModel.post(sessao);
+      io.emit('sessao', sessao);
   });
 });
-
-// http.listen(3001, function(){
-//   console.log('Rodando na porta *:3001');
-// });

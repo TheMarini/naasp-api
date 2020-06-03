@@ -22,10 +22,11 @@ module.exports = (sequelize, DataTypes) => {
     Voluntario.belongsTo(models.Pessoa, {
       foreignKey: 'PessoaId'
     });
+    // Voluntario.hasMany(models.Sessao)
   };
 
   Voluntario.adiciona = async function (models, param) {
-  
+
     let {
       endereco,
       cidade,
@@ -37,10 +38,10 @@ module.exports = (sequelize, DataTypes) => {
 
     let queryOptions = {}
     let transaction = null
-    // let transaction = await sequelize.transaction({type: sequelize.Transaction}) 
+    // let transaction = await sequelize.transaction({type: sequelize.Transaction})
 
     try {
-      
+
       let especialidadeInstance = await models.Especialidade.pesquisaOuAdiciona(especialidade, transaction)
       let pessoaRetorno = await models.Pessoa.adiciona(models, transaction, {
         pessoa,
@@ -48,10 +49,10 @@ module.exports = (sequelize, DataTypes) => {
         cidade,
         bairro
       })
-      
+
       if(transaction)
         queryOptions.transaction = transaction
-      
+
       if (!pessoaRetorno)
         return util.defineError(412, "Erro em Pessoa")
 
@@ -61,7 +62,7 @@ module.exports = (sequelize, DataTypes) => {
       let faixaEtariaConcat = ""
       for (let index = 0; index < faixaEtariaAtendimento.length; index++) {
         const element = faixaEtariaAtendimento[index];
-        
+
         faixaEtariaConcat += element
 
         if(index < faixaEtariaAtendimento.length-1)
@@ -77,7 +78,7 @@ module.exports = (sequelize, DataTypes) => {
       }, {
         queryOptions
       })
-      
+
       // await transaction.commit()
       voluntarioInstance.dataValues.especialidade = especialidadeInstance[0].dataValues
       return {
@@ -93,7 +94,7 @@ module.exports = (sequelize, DataTypes) => {
   }
 
   Voluntario.edita = async function (models, param) {
-  
+
     let {
       endereco,
       cidade,
@@ -105,10 +106,10 @@ module.exports = (sequelize, DataTypes) => {
 
     let queryOptions = {}
     let transaction = null
-    // let transaction = await sequelize.transaction({type: sequelize.Transaction}) 
+    // let transaction = await sequelize.transaction({type: sequelize.Transaction})
 
     try {
-      
+
       let especialidadeInstance = await models.Especialidade.pesquisaOuAdiciona(especialidade, transaction)
       let pessoaInstance = await models.Pessoa.edita(models, transaction, {
         pessoa,
@@ -116,22 +117,22 @@ module.exports = (sequelize, DataTypes) => {
         cidade,
         bairro
       })
-           
+
       if (!pessoaInstance)
       return util.defineError(412, "Erro em Pessoa")
-      
+
       if (!especialidadeInstance)
       return util.defineError(412, "Erro em Especialidade")
-      
+
       if(transaction)
         queryOptions.transaction = transaction
-      
+
       queryOptions.where = {id: voluntarioId}
 
       let voluntarioInstance = await Voluntario.update({
         EspecialidadeId: especialidadeInstance[0].dataValues.id
       }, queryOptions)
-      
+
       // await transaction.commit()
       return voluntarioInstance
     } catch (error) {
@@ -193,7 +194,7 @@ module.exports = (sequelize, DataTypes) => {
       Voluntario,
       Especialidade
     } = models
-    
+
     try {
       let voluntarioInstance = await Voluntario.findAll({
         include: [{
@@ -220,7 +221,7 @@ module.exports = (sequelize, DataTypes) => {
           }
         ]
       })
-      return voluntarioInstance 
+      return voluntarioInstance
     } catch (error) {
       console.log("\n catch \n")
       throw util.checkError(error, modelName)
@@ -233,7 +234,7 @@ module.exports = (sequelize, DataTypes) => {
         id: idParam
       }
     }
-    
+
     if (transaction)
       queryOptions.transaction = transaction
 
