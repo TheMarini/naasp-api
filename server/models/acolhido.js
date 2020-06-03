@@ -108,7 +108,7 @@ module.exports = (sequelize, DataTypes) => {
     } = param
 
     let queryOptions = {}
-    let transaction = null
+    let transaction = await sequelize.transaction({ autocommit: false })
 
     try {
 
@@ -154,9 +154,9 @@ module.exports = (sequelize, DataTypes) => {
 
       let acolhidoInstance = await Acolhido.update({ data }, queryOptions)
 
-      medicamentos.forEach(async medicamento => {
-        await models.MedicamentoContinuo.edita(medicamento)
-      });
+      // medicamentos.forEach(async medicamento => {
+      //   await models.MedicamentoContinuo.edita(medicamento)
+      // });
 
       familiares.forEach(async familiar => {
         await models.Familiar.edita(familiar)
@@ -242,7 +242,8 @@ module.exports = (sequelize, DataTypes) => {
 
     try {
       let acolhidoInstance = await Acolhido.findAll({
-        
+        raw:true,
+        nest:true,
         include: [{
           model: Religiao,
           attributes: ['nome'],
@@ -276,7 +277,13 @@ module.exports = (sequelize, DataTypes) => {
         }
         ]
       })
-      return preparaObj(acolhidoInstance.dataValues)
+
+      let i = 0
+      acolhidoInstance.map((e)=>{
+        e = preparaObj(e, i)
+        i++
+      })
+      return acolhidoInstance
   
     } catch (error) {
       console.log("\n catch \n")
@@ -339,8 +346,7 @@ module.exports = (sequelize, DataTypes) => {
     throw util.defineError(412, "Erro em Acolhido")
   }
 
-  function preparaObj(acolhidoRaw) {
-    
+  function preparaObj(acolhidoRaw, i) {   
     acolhidoRaw.acolhido = {
       id: acolhidoRaw.id,
       atividade_fisica: acolhidoRaw.atividade_fisica,
@@ -358,7 +364,11 @@ module.exports = (sequelize, DataTypes) => {
       ReligiaoId: acolhidoRaw.ReligiaoId,
       StatusId: acolhidoRaw.StatusId,
       updatedAt: acolhidoRaw.updatedAt,
-      createdAt: acolhidoRaw.createdAt
+      createdAt: acolhidoRaw.createdAt,
+      Religiao: acolhidoRaw.Religiao,
+      familiares: acolhidoRaw.familiares,
+      doencasFamilia: acolhidoRaw.doencasFamilia,
+      medicamentosContinuos: acolhidoRaw.medicamentosContinuos
     }
     
     delete acolhidoRaw.id
@@ -378,8 +388,15 @@ module.exports = (sequelize, DataTypes) => {
     delete acolhidoRaw.StatusId
     delete acolhidoRaw.updatedAt
     delete acolhidoRaw.createdAt
-
-    return acolhidoRaw
+    delete acolhidoRaw.Religiao
+    delete acolhidoRaw.familiares
+    delete acolhidoRaw.doencasFamilia
+    delete acolhidoRaw.medicamentosContinuos
+    
+    if(i == 1)
+      console.log(acolhidoRaw)
+    
+      return acolhidoRaw
   }
 
   async function cadastra(acolhidoParam, t) {
@@ -424,8 +441,7 @@ module.exports = (sequelize, DataTypes) => {
     if (religiaoParam != null)
       religiaoInstance = await models.Religiao.pesquisaOuAdiciona(religiaoParam, t)
     
-    console.log(religiaoParam)
-    pessoaInstance = await models.Pessoa.adiciona(models, null, {
+    pessoaInstance = await models.Pessoa.adiciona(models, t, {
       pessoaParam,
       enderecoParam,
       cidadeParam,
