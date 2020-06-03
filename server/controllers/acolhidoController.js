@@ -4,15 +4,15 @@ var successStatus = 200
 
 exports.post = async function (req, res) {
 	let response = null
-	console.log(req.body)
+
 	try {
 		response = await models.Acolhido.adiciona(models, {
 			pessoaParam: 		req.body.pessoa,
-			religiaoParam: 		req.body.pessoa.religiao,
 			enderecoParam: 		req.body.pessoa.endereco,
-			cidadeParam: 		req.body.pessoa.endereco.cidade,
-			bairroParam: 		req.body.pessoa.endereco.bairro,
+			cidadeParam: 		req.body.pessoa.endereco.cidade.nome,
+			bairroParam: 		req.body.pessoa.endereco.bairro.nome,
 			acolhidoParam: 		req.body.acolhido,
+			religiaoParam: 		req.body.acolhido.religiao.nome,
 			familiaresParam: 	req.body.acolhido.familiares,
 			medicamentosParam: 	req.body.acolhido.medicamentos,
 			doencaFamiliaParam: req.body.acolhido.doencaFamilia
