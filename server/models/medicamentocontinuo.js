@@ -117,15 +117,11 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
 
-  MedicamentoContinuo.adicionaVarios = async function (medicamentos = [], AcolhidoId, transaction) {
+  MedicamentoContinuo.adicionaVarios = async function (medicamentos = [], transaction) {
     let queryOptions = {}
     if (transaction)
       queryOptions.transaction = transaction
 
-    medicamentos.forEach(element => {
-      element.AcolhidoId = AcolhidoId
-    });
-    console.log(medicamentos)
     try {
       let MedicamentoContinuoInstance = await MedicamentoContinuo.bulkCreate(medicamentos, queryOptions)
       return MedicamentoContinuoInstance

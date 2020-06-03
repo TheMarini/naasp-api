@@ -27,38 +27,28 @@ module.exports = (sequelize, DataTypes) => {
   Voluntario.adiciona = async function (models, param) {
   
     let {
-      endereco,
-      cidade,
-      bairro,
-      pessoa,
-      especialidade,
-      faixaEtariaAtendimento
+      enderecoParam          = {},
+      cidadeParam            = {},
+      bairroParam            = {},
+      pessoaParam            = {},
+      especialidadeParam     = "",
+      faixaEtariaAtendimento = null
     } = param
+    let t = await sequelize.transaction({type: sequelize.Transaction}) 
+    let queryOptions = {transaction: t}
+    
+    if (!pessoaParam)
+      return util.defineError(412, "Erro em Pessoa")
 
-    let queryOptions = {}
-    let transaction = null
-    // let transaction = await sequelize.transaction({type: sequelize.Transaction}) 
+    if (!especialidadeParam)
+      return util.defineError(412, "Erro em Especialidade")
 
     try {
-      
-      let especialidadeInstance = await models.Especialidade.pesquisaOuAdiciona(especialidade, transaction)
-      let pessoaRetorno = await models.Pessoa.adiciona(models, transaction, {
-        pessoa,
-        endereco,
-        cidade,
-        bairro
-      })
-      
-      if(transaction)
-        queryOptions.transaction = transaction
-      
-      if (!pessoaRetorno)
-        return util.defineError(412, "Erro em Pessoa")
+      let especialidadeInstance = null
+      let pessoaInstance        = null
+      let voluntarioInstance    = null
+      let faixaEtariaConcat     = ""
 
-      if (!especialidadeInstance)
-        return util.defineError(412, "Erro em Especialidade")
-
-      let faixaEtariaConcat = ""
       for (let index = 0; index < faixaEtariaAtendimento.length; index++) {
         const element = faixaEtariaAtendimento[index];
         
@@ -68,23 +58,28 @@ module.exports = (sequelize, DataTypes) => {
           faixaEtariaConcat += ","
       }
 
-      console.log(faixaEtariaAtendimento)
+      voluntarioInstance = await Voluntario.create({
+        faixaEtariaAtendimento: faixaEtariaConcat
+      }, { queryOptions })
 
-      let voluntarioInstance = await Voluntario.create({
-        faixaEtariaAtendimento: faixaEtariaConcat,
-        EspecialidadeId: especialidadeInstance[0].dataValues.id,
-        PessoaId: pessoaRetorno.pessoaInstance.dataValues.id
-      }, {
-        queryOptions
+      especialidadeInstance = await models.Especialidade.pesquisaOuAdiciona(especialidade, transaction)
+      pessoaInstance = await models.Pessoa.adiciona(models, t, {
+        pessoaParam,
+        enderecoParam,
+        cidadeParam,
+        bairroParam
       })
       
-      // await transaction.commit()
-      voluntarioInstance.dataValues.especialidade = especialidadeInstance[0].dataValues
-      return {
-        voluntario: voluntarioInstance.dataValues,
-        pessoa: pessoaRetorno.pessoaInstance.dataValues,
-        endereco: pessoaRetorno.enderecoInstance.dataValues
-      }
+      voluntario.setPessoa(pessoaInstance)
+      voluntario.setEspecialidade(especialidadeInstance)
+      
+      await transaction.commit()
+      // return {
+      //   voluntario: voluntarioInstance.dataValues,
+      //   pessoa: pessoaRetorno.pessoaInstance.dataValues,
+      //   endereco: pessoaRetorno.enderecoInstance.dataValues
+      // }
+      return true
     } catch (error) {
       // await transaction.rollback();
       console.log("\n", error, "\n")

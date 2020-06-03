@@ -160,15 +160,11 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
 
-  Familiar.adicionaVarios = async function(familiares = [], AcolhidoId, transaction) {
+  Familiar.adicionaVarios = async function(familiares = [], transaction) {
     let queryOptions = {}
 
     if (transaction)
       queryOptions.transaction = transaction
-
-    // familiares.forEach(e => {
-    //   e.AcolhidoId = AcolhidoId
-    // });
 
     try {
       let familiarInstance = await Familiar.bulkCreate(familiares, queryOptions)

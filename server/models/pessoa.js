@@ -75,7 +75,7 @@ module.exports = (sequelize, DataTypes) => {
       }, queryOptions)
 
       if(enderecoParam)
-          enderecoInstance = await models.Endereco.adiciona(models, transaction, {
+          enderecoInstance = await models.Endereco.adiciona(models, null, {
           endereco: enderecoParam,
           cidade: cidadeParam,
           bairro: bairroParam,
