@@ -220,7 +220,8 @@ module.exports = (sequelize, DataTypes) => {
         }
         ]
       })
-      return acolhidoInstance
+      
+      return preparaObj(acolhidoInstance.dataValues)
     } catch (error) {
       console.log("\n catch \n")
       throw util.checkError(error, modelName)
@@ -241,6 +242,7 @@ module.exports = (sequelize, DataTypes) => {
 
     try {
       let acolhidoInstance = await Acolhido.findAll({
+        
         include: [{
           model: Religiao,
           attributes: ['nome'],
@@ -274,7 +276,8 @@ module.exports = (sequelize, DataTypes) => {
         }
         ]
       })
-      return acolhidoInstance
+      return preparaObj(acolhidoInstance.dataValues)
+  
     } catch (error) {
       console.log("\n catch \n")
       throw util.checkError(error, modelName)
@@ -334,6 +337,49 @@ module.exports = (sequelize, DataTypes) => {
       return true
 
     throw util.defineError(412, "Erro em Acolhido")
+  }
+
+  function preparaObj(acolhidoRaw) {
+    
+    acolhidoRaw.acolhido = {
+      id: acolhidoRaw.id,
+      atividade_fisica: acolhidoRaw.atividade_fisica,
+      atividades_religiosas: acolhidoRaw.atividades_religiosas,
+      bebida_quantidade: acolhidoRaw.bebida_quantidade,
+      bebida_periodicidade: acolhidoRaw.bebida_periodicidade,
+      demanda: acolhidoRaw.demanda,
+      encaminhamento: acolhidoRaw.encaminhamento,
+      numero_cigarros_por_dia: acolhidoRaw.numero_cigarros_por_dia,
+      observacao: acolhidoRaw.observacao,
+      paroquia: acolhidoRaw.paroquia,
+      preferenciaAtendimento: acolhidoRaw.preferenciaAtendimento,
+      prioridade: acolhidoRaw.prioridade,
+      PessoaId: acolhidoRaw.PessoaId,
+      ReligiaoId: acolhidoRaw.ReligiaoId,
+      StatusId: acolhidoRaw.StatusId,
+      updatedAt: acolhidoRaw.updatedAt,
+      createdAt: acolhidoRaw.createdAt
+    }
+    
+    delete acolhidoRaw.id
+    delete acolhidoRaw.atividade_fisica
+    delete acolhidoRaw.atividades_religiosas
+    delete acolhidoRaw.bebida_quantidade
+    delete acolhidoRaw.bebida_periodicidade
+    delete acolhidoRaw.demanda
+    delete acolhidoRaw.encaminhamento
+    delete acolhidoRaw.numero_cigarros_por_dia
+    delete acolhidoRaw.observacao
+    delete acolhidoRaw.paroquia
+    delete acolhidoRaw.preferenciaAtendimento
+    delete acolhidoRaw.prioridade
+    delete acolhidoRaw.PessoaId
+    delete acolhidoRaw.ReligiaoId
+    delete acolhidoRaw.StatusId
+    delete acolhidoRaw.updatedAt
+    delete acolhidoRaw.createdAt
+
+    return acolhidoRaw
   }
 
   async function cadastra(acolhidoParam, t) {
