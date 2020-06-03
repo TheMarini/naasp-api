@@ -106,7 +106,7 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
 
-  Cidade.pesquisaOuAdiciona = async function (nome) {
+  Cidade.pesquisaOuAdiciona = async function (nome, t) {
     let queryOptions = {
       where: {
         nome: nome
@@ -116,9 +116,13 @@ module.exports = (sequelize, DataTypes) => {
       }
     }
 
+    if (t)
+      queryOptions.transaction = t
+
     try {
       let cidadeInstance = await Cidade.findOrCreate(queryOptions)
-      return cidadeInstance
+      
+      return cidadeInstance[0]
     } catch (error) {
       console.log("\n catch \n")
       throw util.checkError(error, modelName)

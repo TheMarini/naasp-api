@@ -114,7 +114,7 @@ module.exports = (sequelize, DataTypes) => {
         nome: nome
       }
     }
-   console.log(queryOptions)
+
     if (t)
       queryOptions.transaction = t
 

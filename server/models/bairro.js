@@ -104,7 +104,7 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
 
-  Bairro.pesquisaOuAdiciona = async function(nome) {
+  Bairro.pesquisaOuAdiciona = async function(nome, t) {
     let queryOptions = {
       where: {
         nome: nome
@@ -114,9 +114,12 @@ module.exports = (sequelize, DataTypes) => {
       }
     }
     
+    if (t)
+      queryOptions.transaction = t
+    
     try {
       let bairroInstance = await Bairro.findOrCreate(queryOptions)
-      return bairroInstance
+      return bairroInstance[0]
     } catch (error) {
       console.log("\n catch \n")
       throw util.checkError(error, modelName)
