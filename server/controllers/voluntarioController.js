@@ -6,12 +6,12 @@ exports.post = async function (req, res) {
 	let response = null
 	try {
 		response = await models.Voluntario.adiciona(models, {
-			endereco: req.body.endereco,
-			cidade: req.body.cidade,
-			bairro: req.body.bairro,
-			pessoa: req.body.pessoa,
-			especialidade: req.body.especialidade,
-			faixaEtariaAtendimento: req.body.faixaEtariaAtendimento
+			pessoaParam: req.body.pessoa,
+			enderecoParam: req.body.pessoa.endereco,
+			cidadeParam: req.body.pessoa.endereco.cidade.nome,
+			bairroParam: req.body.pessoa.endereco.bairro.nome,
+			especialidadeParam: req.body.voluntario.especialidade.nome,
+			faixaEtariaAtendimentoParam: req.body.voluntario.faixaEtariaAtendimento
 		})
 		res.status(successStatus).json(response)
 	} catch (error) {
