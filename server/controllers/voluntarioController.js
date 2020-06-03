@@ -10,21 +10,9 @@ exports.post = async function (req, res) {
 			cidade: req.body.cidade,
 			bairro: req.body.bairro,
 			pessoa: req.body.pessoa,
-			especialidade: req.body.especialidade
+			especialidade: req.body.especialidade,
+			faixaEtariaAtendimento: req.body.faixaEtariaAtendimento
 		})
-		res.status(successStatus).json(response)
-	} catch (error) {
-		console.log("\n", error, "\n")
-		res.status(error.code).json(error.message)
-	}
-
-}
-
-exports.getFull = async function (req, res) {
-	let response = null
-	try {
-		response = await models.Voluntario.pesquisaVoluntarioCompleto(models, req.query.id)
-
 		res.status(successStatus).json(response)
 	} catch (error) {
 		console.log("\n", error, "\n")
@@ -37,9 +25,9 @@ exports.get = async function (req, res) {
 	let response = null
 	try {
 		if (req.query.id)
-			response = await models.Voluntario.pesquisa(req.query.id)
+			response = await models.Voluntario.pesquisa(models, req.query.id)
 		else
-			response = await models.Voluntario.lista()
+			response = await models.Voluntario.lista(models)
 
 		res.status(successStatus).json(response)
 	} catch (error) {

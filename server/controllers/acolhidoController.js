@@ -24,24 +24,11 @@ exports.post = async function (req, res) {
 
 }
 
-exports.getFull = async function (req, res) {
-	let response = null
-	try {
-		response = await models.Acolhido.pesquisaAcolhidoCompleto(models, req.query.id)
-
-		res.status(successStatus).json(response)
-	} catch (error) {
-		console.log("\n", error, "\n")
-		res.status(error.code).json(error.message)
-	}
-
-}
-
 exports.get = async function (req, res) {
 	let response = null
 	try {
 		if (req.query.id)
-			response = await models.Acolhido.pesquisa(req.query.id)
+			response = await models.Acolhido.pesquisa(models, req.query.id)
 		else
 			response = await models.Acolhido.lista(models)
 

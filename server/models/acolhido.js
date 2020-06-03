@@ -18,11 +18,22 @@ module.exports = (sequelize, DataTypes) => {
     paroquia: DataTypes.STRING,
     atividades_religiosas: DataTypes.STRING,
     demanda: DataTypes.STRING,
-    localNascimento: DataTypes.STRING,
     encaminhamento: DataTypes.STRING,
     observacao: DataTypes.STRING,
-    PessoaId: DataTypes.INTEGER,
-    ReligiaoId: DataTypes.INTEGER,
+    preferenciaAtendimento: DataTypes.STRING,
+    prioridade: DataTypes.INTEGER,
+    PessoaId: {
+      allowNull: true,
+      type: DataTypes.INTEGER
+    },
+    ReligiaoId: {
+      allowNull: true,
+      type: DataTypes.INTEGER
+    },
+    StatusId: {
+      type: DataTypes.INTEGER,
+      defaultValue: 1
+    },
     updatedAt: DataTypes.DATE,
     createdAt: DataTypes.DATE
   }, {
@@ -44,13 +55,13 @@ module.exports = (sequelize, DataTypes) => {
   Acolhido.adiciona = async function (models, param) {
 
     let {
-      endereco,
-      cidade,
-      bairro,
-      pessoa,
-      religiao,
-      acolhido,
-      familiares = [],
+      enderecoParam,
+      cidadeParam,
+      bairroParam,
+      pessoaParam,
+      religiaoParam,
+      acolhidoParam,
+      familiaresParam = [],
       medicamentos = [],
       doencaFamilia = [],
     } = param
@@ -60,45 +71,66 @@ module.exports = (sequelize, DataTypes) => {
     // let transaction = await sequelize.transaction({type: sequelize.Transaction}) 
 
     try {
-      let religiaoInstance = await models.Religiao.pesquisaOuAdiciona(religiao, transaction)
-      let pessoaInstance = await models.Pessoa.adiciona(models, transaction, {
-        pessoa,
-        endereco,
-        cidade,
-        bairro
-      })
+      let religiaoInstance = null
+      let pessoaRetorno = null
 
-      if (!religiaoInstance)
-        return util.defineError(412, "Erro em religião")
+      if(religiaoParam)
+        religiaoInstance = await models.Religiao.pesquisaOuAdiciona(religiaoParam, transaction)
+      
+      if(pessoaParam)
+        pessoaRetorno = await models.Pessoa.adiciona(models, transaction, {
+          pessoaParam,
+          enderecoParam,
+          cidadeParam,
+          bairroParam
+        })
 
-      if (!pessoaInstance)
-        return util.defineError(412, "Erro em Pessoa")
+      // if (!religiaoInstance)
+      //   return util.defineError(412, "Erro em religião")
+
+      // if (!pessoaInstance)
+      //   return util.defineError(412, "Erro em Pessoa")
 
       if (transaction)
         queryOptions.transaction = transaction
 
-      let acolhidoInstance = await Acolhido.create({
-        atividade_fisica: acolhido.atividade_fisica,
-        bebida_quantidade: acolhido.bebida_quantidade,
-        bebida_periodicidade: acolhido.bebida_periodicidade,
-        paroquia: acolhido.paroquia,
-        atividades_religiosas: acolhido.atividades_religiosas,
-        localNascimento: acolhido.localNascimento,
-        demanda: acolhido.demanda,
-        encaminhamento: acolhido.encaminhamento,
-        observacao: acolhido.observacao,
-        PessoaId: pessoaInstance.dataValues.id,
-        ReligiaoId: religiaoInstance[0].dataValues.id
-      }, {
-        queryOptions
-      })
+      let data = {
+        atividade_fisica: acolhidoParam.atividade_fisica,
+        bebida_quantidade: acolhidoParam.bebida_quantidade,
+        bebida_periodicidade: acolhidoParam.bebida_periodicidade,
+        paroquia: acolhidoParam.paroquia,
+        atividades_religiosas: acolhidoParam.atividades_religiosas,
+        demanda: acolhidoParam.demanda,
+        encaminhamento: acolhidoParam.encaminhamento,
+        observacao: acolhidoParam.observacao,
+        prioridade: acolhidoParam.prioridade,
+        PessoaId: (pessoaRetorno)? pessoaRetorno.pessoaInstance.dataValues.id: null,
+        ReligiaoId: (religiaoInstance)? religiaoInstance[0].dataValues.id : null
+      }
 
+      if(pessoaParam && pessoaParam.cpf)
+        data.StatusId = 2
+
+      let acolhidoInstance = await Acolhido.create( data, { queryOptions } )
+      
       let AcolhidoId = acolhidoInstance.dataValues.id
-      let medicamentoContinuo = await models.MedicamentoContinuo.adicionaVarios(medicamentos, AcolhidoId, transaction)
-      let familiaresInstance = await models.Familiar.adicionaVarios(familiares, AcolhidoId, transaction)
+      let medicamentoContinuoInstance
+      let familiaresInstance
+      if(medicamentos)
+        medicamentoContinuoInstance = await models.MedicamentoContinuo.adicionaVarios(medicamentos, AcolhidoId, transaction)
+        
+      if(familiaresParam)
+        familiaresInstance = await models.Familiar.adicionaVarios(familiaresParam, AcolhidoId, transaction)
 
       // await transaction.commit()
-      return acolhidoInstance
+      return {
+          pessoa: (pessoaParam)? pessoaRetorno.pessoaInstance.dataValues: null,
+          endereco: (enderecoParam)? pessoaRetorno.enderecoInstance.dataValues: null,
+          acolhido: acolhidoInstance.dataValues,
+          familiares:(familiaresParam)? familiaresInstance.dataValues : null,
+          medicamentoContinuo: (medicamentoContinuoInstance)? medicamentoContinuoInstance.dataValues : null
+        }
+
     } catch (error) {
       // await transaction.rollback();
       console.log("\n", error, "\n")
@@ -123,7 +155,10 @@ module.exports = (sequelize, DataTypes) => {
     let transaction = null
 
     try {
-      //religiaoInstance - array
+
+      if(modelStatus.pesquisa(idStatus) == null) 
+        throw util.defineError(404, "Status não econtrado.")
+
       let religiaoInstance = await models.Religiao.pesquisaOuAdiciona(religiao)
       let pessoaInstance = await models.Pessoa.edita(models, transaction, {
         pessoa,
@@ -144,18 +179,24 @@ module.exports = (sequelize, DataTypes) => {
         return util.defineError(412, "Erro em religião")
       }
 
-      let acolhidoInstance = await Acolhido.update({
+      let data = {
         atividade_fisica: acolhido.atividade_fisica,
         bebida_quantidade: acolhido.bebida_quantidade,
         bebida_periodicidade: acolhido.bebida_periodicidade,
         paroquia: acolhido.paroquia,
         atividades_religiosas: acolhido.atividades_religiosas,
-        localNascimento: acolhido.localNascimento,
         demanda: acolhido.demanda,
         encaminhamento: acolhido.encaminhamento,
         observacao: acolhido.observacao,
-        ReligiaoId: religiaoInstance[0].dataValues.id
-      }, queryOptions)
+        prioridade: acolhido.prioridade,
+        ReligiaoId: religiaoInstance[0].dataValues.id,
+        StatusId: acolhido.StatusId
+      }
+
+      if(pessoa.cpf && !data.StatusId)
+        data.StatusId = 2
+      
+      let acolhidoInstance = await Acolhido.update({data}, queryOptions)
 
       medicamentos.forEach(async medicamento => {
         await models.MedicamentoContinuo.edita(medicamento)
@@ -176,17 +217,7 @@ module.exports = (sequelize, DataTypes) => {
 
   }
 
-  Acolhido.pesquisa = async function (id) {
-    try {
-      let acolhidoInstance = await Acolhido.findByPk(id)
-      return acolhidoInstance
-    } catch (error) {
-      console.log("\n catch \n")
-      throw util.checkError(error, modelName)
-    }
-  }
-
-  Acolhido.pesquisaAcolhidoCompleto = async function (models, id) {
+  Acolhido.pesquisa = async function (models, id) {
     let {
       Religiao,
       Pessoa,
@@ -241,12 +272,51 @@ module.exports = (sequelize, DataTypes) => {
   }
 
   Acolhido.lista = async function (models) {
+    let {
+      Religiao,
+      Pessoa,
+      Endereco,
+      Cidade,
+      Bairro,
+      Familiar,
+      DoencaFamilia,
+      MedicamentoContinuo
+    } = models
+
     try {
       let acolhidoInstance = await Acolhido.findAll({
         include: [{
-          model: models.Pessoa,
-          as: 'Pessoa'
-        }]
+            model: Religiao,
+            attributes: ['nome'],
+            as: 'Religiao'
+          },
+          {
+            model: Pessoa,
+            as: 'Pessoa',
+            include: [{
+              model: Endereco,
+              as: 'Endereco',
+              include: [{
+                model: Cidade,
+                attributes: ['nome'],
+                as: 'Cidade'
+              }, {
+                model: Bairro,
+                attributes: ['nome'],
+                as: 'Bairro'
+              }]
+            }]
+          }, {
+            model: Familiar,
+            as: 'Familiars'
+          }, {
+            model: DoencaFamilia,
+            as: 'DoencaFamilia'
+          }, {
+            model: MedicamentoContinuo,
+            as: 'MedicamentoContinuos'
+          }
+        ]
       })
       return acolhidoInstance
     } catch (error) {
@@ -268,6 +338,32 @@ module.exports = (sequelize, DataTypes) => {
     try {
       let acolhido = await Acolhido.destroy(queryOptions)
       return acolhido
+    } catch (error) {
+      console.log("\n catch \n")
+      throw util.checkError(error, modelName)
+    }
+  }
+
+  Acolhido.listaFilaPorStatus = async function (idStatus, modelStatus) {
+
+    let queryOptions = {
+      where: {
+        StatusId: idStatus
+      }
+    }
+
+    try {
+
+      if(modelStatus.pesquisa(idStatus) == null) 
+        throw util.defineError(404, "Status não econtrado.")
+
+      let acolhidoInstance = await Acolhido.findAll({
+        include: [{
+          model: models.Pessoa,
+          as: 'Pessoa'
+        }]
+      }, queryOptions)
+      return acolhidoInstance
     } catch (error) {
       console.log("\n catch \n")
       throw util.checkError(error, modelName)
