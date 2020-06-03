@@ -8,4 +8,5 @@ build:
   config:
     NODE_ENV: production
 run:
+  node: npm install
   node: node index.js
