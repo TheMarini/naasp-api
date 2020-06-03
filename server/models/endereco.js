@@ -37,8 +37,7 @@ module.exports = (sequelize, DataTypes) => {
     let {
       endereco,
       cidade,
-      bairro,
-      PessoaIdParam
+      bairro
     } = param
     let queryOptions = {}
 
@@ -46,21 +45,25 @@ module.exports = (sequelize, DataTypes) => {
       queryOptions.transaction = transaction
 
     try {
-      let bairroInstance = await models.Bairro.pesquisaOuAdiciona(bairro)
       let cidadeInstance = await models.Cidade.pesquisaOuAdiciona(cidade)
+      let bairroInstance = await models.Bairro.pesquisaOuAdiciona(bairro)
 
-      if (!cidadeInstance || !bairroInstance)
-        return util.defineError(412, "Erro em cidade ou bairro")
+      if (!cidadeInstance )
+        return util.defineError(412, "Erro em cidade")
+
+      if (!bairroInstance )
+        return util.defineError(412, "Erro em bairro")
 
       let enderecoInstance = await Endereco.create({
         rua: endereco.rua,
         numero: endereco.numero,
         complemento: endereco.complemento,
-        cep: endereco.cep,
-        PessoaId: PessoaIdParam,
-        BairroId: bairroInstance[0].dataValues.id,
-        CidadeId: cidadeInstance[0].dataValues.id
+        cep: endereco.cep
       }, queryOptions)
+
+      enderecoInstance.setBairro(bairroInstance, queryOptions)
+      enderecoInstance.setCidade(cidadeInstance, queryOptions)
+
       return enderecoInstance
     } catch (error) {
       console.log("\n catch \n")
