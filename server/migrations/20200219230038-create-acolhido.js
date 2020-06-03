@@ -32,6 +32,7 @@ module.exports = {
         type: Sequelize.STRING
       },
       preferenciaAtendimento: {
+        allowNull: false,
         type: Sequelize.STRING
       },
       observacao: {
