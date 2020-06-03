@@ -9,12 +9,36 @@ module.exports = (sequelize, DataTypes) => {
     },
     dataSessao: DataTypes.DATE,
     AcolhidoId: DataTypes.INTEGER,
-    voluntarioId: DataTypes.INTEGER,
+    VoluntarioId: DataTypes.INTEGER,
     presenca: DataTypes.STRING,
     observacao: DataTypes.STRING
   }, {});
   Sessao.associate = function(models) {
-    // associations can be defined here
+    Sessao.belongsTo(models.Acolhido, {
+      foreignKey: 'AcolhidoId'
+    })
+
+    Sessao.belongsTo(models.Voluntario, {
+      foreignKey: 'VoluntarioId'
+    })
+
   };
+
+  Sessao.adiciona = async function (models, param) {
+
+    try {
+      let cidadeInstance = await Sessao.create({
+        dataSessao: param.dataSessao,
+        presenca: param.presenca,
+        observacao: DataTypes.STRING,
+        AcolhidoId: DataTypes.INTEGER,
+        voluntarioId: DataTypes.INTEGER})
+      return cidadeInstance
+    } catch (error) {
+      console.log("\n catch \n")
+      throw util.checkError(error, modelName)
+    }
+  }
+
   return Sessao;
 };

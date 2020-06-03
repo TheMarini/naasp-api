@@ -17,6 +17,9 @@ app.use('/api', router)
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 
+app.get('/', function(req, res){
+  res.sendFile(__dirname + '/index.html');
+});
 
 
 if (process.env.DATABASE_URL) {
@@ -48,7 +51,7 @@ sequelize.sync({
     .authenticate()
     .then(() => {
       var port_number = app.listen(process.env.PORT || 3000);
-      app.listen(port_number, function () {
+      http.listen(port_number, function () {
         console.log('Connection has been established successfully.');
         console.log("All models were synchronized successfully.");
         console.log('App listening on port 3000!');
@@ -62,10 +65,6 @@ sequelize.sync({
 
 
 
-app.get('/', function(req, res){
-  res.sendFile(__dirname + '/index.html');
-});
-
 io.on('connection', function(socket){
   socket.on('chat message', function(msg, id){
       io.emit('chat message', msg, id);
@@ -74,6 +73,6 @@ io.on('connection', function(socket){
   });
 });
 
-http.listen(3001, function(){
-  console.log('Rodando na porta *:3001');
-});
+// http.listen(3001, function(){
+//   console.log('Rodando na porta *:3001');
+// });
