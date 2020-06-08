@@ -37,10 +37,9 @@ if (process.env.DATABASE_URL) {
     console.log("All models were synchronized successfully.");
   })
 }else {
-  // sequelize = new Sequelize('postgres://postgres:postgres@postgresdb:5432/database_development');
   sequelize = new Sequelize('database_development', 'postgres', 'postgres', {
     host: 'localhost',
-    dialect: 'postgres'
+    dialect: 'postgres' /* one of 'mysql' | 'mariadb' | '' | 'mssql' */
   });
   sequelize.sync({ force: true }).then(() => {
     console.log("All models were synchronized successfully.");
