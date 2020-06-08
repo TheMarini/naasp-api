@@ -25,64 +25,39 @@ module.exports = (sequelize, DataTypes) => {
   };
 
   Voluntario.adiciona = async function (models, param) {
-  
     let {
-      enderecoParam          = {},
-      cidadeParam            = {},
-      bairroParam            = {},
-      pessoaParam            = {},
-      especialidadeParam     = "",
       faixaEtariaAtendimento = []
     } = param
     let t = await sequelize.transaction({type: sequelize.Transaction}) 
-    let queryOptions = {transaction: t}
+    let queryOptions = {
+      transaction: t
+    }
+    let faixaEtariaConcat = ""
     
-    if (!pessoaParam)
-      return util.defineError(412, "Erro em Pessoa")
+    for (let index = 0; index < faixaEtariaAtendimento.length; index++) {
+      const element = faixaEtariaAtendimento[index];
+      
+      faixaEtariaConcat += element
 
-    if (!especialidadeParam)
-      return util.defineError(412, "Erro em Especialidade")
+      if(index < faixaEtariaAtendimento.length-1)
+        faixaEtariaConcat += ","
+    }
 
     try {
-      let especialidadeInstance = null
-      let pessoaInstance        = null
-      let voluntarioInstance    = null
-      let faixaEtariaConcat     = ""
-
-      for (let index = 0; index < faixaEtariaAtendimento.length; index++) {
-        const element = faixaEtariaAtendimento[index];
-        
-        faixaEtariaConcat += element
-
-        if(index < faixaEtariaAtendimento.length-1)
-          faixaEtariaConcat += ","
-      }
+      let voluntarioInstance = null
 
       voluntarioInstance = await Voluntario.create({
-        faixaEtariaAtendimento: faixaEtariaConcat
+          faixaEtariaAtendimento: faixaEtariaConcat
       }, { queryOptions })
 
-      especialidadeInstance = await models.Especialidade.pesquisaOuAdiciona(especialidadeParam, t)
-      pessoaInstance = await models.Pessoa.adiciona(models, null, {
-        pessoaParam,
-        enderecoParam,
-        cidadeParam,
-        bairroParam
-      })
-  
-      if (!pessoaInstance)
-        throw util.defineError(500, "Erro em Pessoa")
-      
-      voluntarioInstance.setPessoa(pessoaInstance)
-      voluntarioInstance.setEspecialidade(especialidadeInstance)
-      
+      await cadastraAssociacoes(models, param, voluntarioInstance, t)
       await t.commit()
+      return true
       // return {
       //   voluntario: voluntarioInstance.dataValues,
       //   pessoa: pessoaRetorno.pessoaInstance.dataValues,
       //   endereco: pessoaRetorno.enderecoInstance.dataValues
       // }
-      return true
     } catch (error) {
       await t.rollback();
       console.log("\n", error, "\n")
@@ -251,6 +226,27 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
 
+  Voluntario.adicionaUsuario = async function(Usuario, param, t) {
+    let {
+      usuarioParam,
+      voluntarioId
+    } = param
+
+    try {
+      let voluntarioId = Voluntario.findByPk(voluntarioId, {fields: ["id"]})
+
+      if(voluntarioId == null)
+        return util.defineError(404, "Voluntario não existe")
+
+      let usuarioInstance = await Usuario.adiciona()
+
+    } catch (error) {
+      await t.rollback();
+      console.log("\n", error, "\n")
+      throw util.checkError(error, modelName)
+    }
+  }
+
   function preparaObj(voluntarioRaw) {
     voluntarioRaw.voluntario = {
       id: voluntarioRaw.id,
@@ -274,5 +270,39 @@ module.exports = (sequelize, DataTypes) => {
 
     return voluntarioRaw
   }
+
+  async function cadastraAssociacoes(models, param, voluntarioInstance, t){
+    let {
+      enderecoParam          = {},
+      cidadeParam            = {},
+      bairroParam            = {},
+      pessoaParam            = {},
+      especialidadeParam     = ""
+    }  = param
+    
+    if (!pessoaParam)
+      return util.defineError(412, "Erro em Pessoa")
+
+    if (!especialidadeParam)
+      return util.defineError(412, "Erro em Especialidade")
+    
+    if (!enderecoParam)
+      return util.defineError(412, "Erro em Endereco")
+
+    let especialidadeInstance = null
+    let pessoaInstance        = null
+
+    especialidadeInstance = await models.Especialidade.pesquisaOuAdiciona(especialidadeParam, t)
+    pessoaInstance = await models.Pessoa.adiciona(models, null, {
+      pessoaParam,
+      enderecoParam,
+      cidadeParam,
+      bairroParam
+    })
+
+    voluntarioInstance.setPessoa(pessoaInstance)
+    voluntarioInstance.setEspecialidade(especialidadeInstance)
+  }
+
   return Voluntario;
 };
