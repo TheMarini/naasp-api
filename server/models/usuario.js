@@ -23,7 +23,7 @@ module.exports = (sequelize, DataTypes) => {
   Usuario.adiciona = async function (usuarioParam, t) {
     let queryOptions = {}
 
-    if (transaction)
+    if (t)
       queryOptions.transaction = t
 
     try {
@@ -45,7 +45,7 @@ module.exports = (sequelize, DataTypes) => {
       }
     }
 
-    if (transaction)
+    if (t)
       queryOptions.transaction = t
 
     try {
