@@ -33,36 +33,37 @@ module.exports = (sequelize, DataTypes) => {
 
   };
 
-  Endereco.adiciona = async function (models, transaction, param) {
+  Endereco.adiciona = async function (models, param, t) {
     let {
-      endereco,
-      cidade,
-      bairro
+      enderecoParam,
+      cidadeParam,
+      bairroParam
     } = param
     let queryOptions = {}
 
-    if (transaction)
-      queryOptions.transaction = transaction
+    if (t)
+      queryOptions.transaction = t
 
     try {
-      let cidadeInstance = await models.Cidade.pesquisaOuAdiciona(cidade)
-      let bairroInstance = await models.Bairro.pesquisaOuAdiciona(bairro)
 
-      if (!cidadeInstance )
-        return util.defineError(412, "Erro em cidade")
-
-      if (!bairroInstance )
-        return util.defineError(412, "Erro em bairro")
+      if (!valida())
+        return util.defineError(400, "Erro na validação dos campos")
 
       let enderecoInstance = await Endereco.create({
-        rua: endereco.rua,
-        numero: endereco.numero,
-        complemento: endereco.complemento,
-        cep: endereco.cep
+        rua: enderecoParam.rua,
+        numero: enderecoParam.numero,
+        complemento: enderecoParam.complemento,
+        cep: enderecoParam.cep
       }, queryOptions)
 
-      enderecoInstance.setBairro(bairroInstance, queryOptions)
-      enderecoInstance.setCidade(cidadeInstance, queryOptions)
+      await Endereco.atualizaCidade(models.Cidade, cidadeParam, enderecoInstance, t)
+      await Endereco.atualizaBairro(models.Bairro, bairroParam, enderecoInstance, t)
+
+      // if (!cidadeInstance )
+      //   return util.defineError(412, "Erro em cidade")
+
+      // if (!bairroInstance )
+      //   return util.defineError(412, "Erro em bairro")
 
       return enderecoInstance
     } catch (error) {
@@ -91,12 +92,12 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
 
-  Endereco.edita = async function (models, transaction, param) {
-    
+  Endereco.edita = async function (models, param, t) {
+
     let {
-      endereco,
-      cidade,
-      bairro,
+      enderecoParam,
+      cidadeParam,
+      bairroParam
     } = param
 
     let queryOptions = {
@@ -105,24 +106,23 @@ module.exports = (sequelize, DataTypes) => {
       }
     }
 
-    if (transaction)
-      queryOptions.transaction = transaction
+    if (t)
+      queryOptions.transaction = t
 
     try {
-      let bairroInstance = await models.Bairro.pesquisaOuAdiciona(bairro)
-      let cidadeInstance = await models.Cidade.pesquisaOuAdiciona(cidade)
       
-      if (!cidadeInstance || !bairroInstance)
-        return util.defineError(412, "Erro em cidade ou bairro")
+      if (!valida())
+        return util.defineError(400, "Erro na validação dos campos")
 
       let enderecoInstance = await Endereco.update({
-        rua: endereco.rua,
-        numero: endereco.numero,
-        complemento: endereco.complemento,
-        cep: endereco.cep,
-        BairroId: bairroInstance[0].dataValues.id,
-        CidadeId: cidadeInstance[0].dataValues.id
+        rua: enderecoParam.rua,
+        numero: enderecoParam.numero,
+        complemento: enderecoParam.complemento,
+        cep: enderecoParam.cep
       }, queryOptions)
+
+      await Endereco.atualizaCidade(models.Cidade, cidadeParam, enderecoInstance, t)
+      await Endereco.atualizaBairro(models.Bairro, bairroParam, enderecoInstance, t)
 
       return enderecoInstance
       
@@ -150,5 +150,44 @@ module.exports = (sequelize, DataTypes) => {
       throw util.checkError(error, modelName)
     }
   }
+
+  function valida(param) {
+    let {
+      enderecoParam,
+      cidadeParam,
+      bairroParam
+    } = param
+
+    if (enderecoParam.rua != "" &&
+      enderecoParam.numero != "" &&
+      enderecoParam.cep != "" &&
+      cidadeParam != "" &&
+      bairroParam != "")
+      return true
+    else
+      return false
+
+  }
+
+  Endereco.atualizaCidade = async function (Cidade, cidadeParam, enderecoInstance, t) {
+    let queryOptions = {
+      transaction: t
+    }
+
+    let cidadeInstance = Cidade.pesquisaOuAdiciona(cidadeParam, t)
+
+    enderecoInstance.setCidade(cidadeInstance, queryOptions)
+  }
+
+  Endereco.atualizaBairro = async function (Bairro, bairroParam, enderecoInstance, t) {
+    let queryOptions = {
+      transaction: t
+    }
+
+    let bairroInstance = Bairro.pesquisaOuAdiciona(bairroParam, t)
+
+    enderecoInstance.setBairro(bairroInstance, queryOptions)
+  }
+
   return Endereco;
 };
