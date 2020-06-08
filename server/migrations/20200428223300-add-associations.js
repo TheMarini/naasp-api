@@ -16,11 +16,11 @@ module.exports = {
     ).then(() => {
       return queryInterface.addColumn(
         'Usuario', // name of Source model
-        'AcolhidoId', // name of the key we're adding
+        'VoluntarioId', // name of the key we're adding
         {
           type: Sequelize.INTEGER,
           references: {
-            model: 'Acolhido', // name of Target model
+            model: 'Voluntario', // name of Target model
             key: 'id', // key in Target model that we're referencing
           },
           onUpdate: 'CASCADE',
@@ -261,7 +261,7 @@ module.exports = {
   down: (queryInterface, Sequelize) => {
     return queryInterface.removeColumn(
       'Usuario', // name of Source model
-      'AcolhidoId' // key we want to remove
+      'VoluntarioId' // key we want to remove
     ).then(() => {
       return queryInterface.removeColumn(
         'Endereco', // name of Source model
