@@ -9,7 +9,7 @@ module.exports = (sequelize, DataTypes) => {
     },
     login: DataTypes.STRING,
     senha: DataTypes.STRING,
-    VoluntarioId: DataTypes.INTERGER,
+    VoluntarioId: DataTypes.INTEGER,
     updatedAt: DataTypes.DATE,
     createdAt: DataTypes.DATE
   }, {freezeTableName: true});
