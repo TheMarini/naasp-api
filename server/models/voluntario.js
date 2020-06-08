@@ -30,6 +30,8 @@ module.exports = (sequelize, DataTypes) => {
 
   };
 
+  }
+
   Voluntario.adiciona = async function (models, param) {
     let {
       faixaEtariaAtendimento = []

@@ -1,18 +1,15 @@
 'use strict';
 module.exports = {
   up: (queryInterface, Sequelize) => {
-    return queryInterface.createTable('Contato', {
+    return queryInterface.createTable('TentativaContato', {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      status: {
-        type: Sequelize.STRING
-      },
-      AcolhidoId: {
-        type: Sequelize.INTEGER
+      presenca: {
+        type: Sequelize.BOOLEAN
       },
       createdAt: {
         allowNull: false,

@@ -53,6 +53,7 @@ module.exports = (sequelize, DataTypes) => {
     Acolhido.hasMany(models.Familiar)
     Acolhido.hasMany(models.DoencaFamilia)
     Acolhido.hasMany(models.MedicamentoContinuo)
+    Acolhido.hasMany(models.TentativaContato)
     // Acolhido.hasMany(models.Sessao)
   };
 
