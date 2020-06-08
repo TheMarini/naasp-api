@@ -44,15 +44,15 @@ exports.put = async function (req, res) {
 	let response = null
 	try {
 		response = await models.Acolhido.edita(models, {
-			endereco: req.body.endereco,
-			cidade: req.body.cidade,
-			bairro: req.body.bairro,
-			pessoa: req.body.pessoa,
-			religiao: req.body.religiao,
-			acolhido: req.body.acolhido,
-			familiares: req.body.familiares,
-			medicamentos: req.body.medicamentos,
-			doencaFamilia: req.body.doencaFamilia
+			pessoaParam: 		req.body.pessoa,
+			enderecoParam: 		req.body.pessoa.endereco,
+			cidadeParam: 		req.body.pessoa.endereco.cidade.nome,
+			bairroParam: 		req.body.pessoa.endereco.bairro.nome,
+			acolhidoParam: 		req.body.acolhido,
+			religiaoParam: 		req.body.acolhido.religiao.nome,
+			familiaresParam: 	req.body.acolhido.familiares,
+			medicamentosParam: 	req.body.acolhido.medicamentos,
+			doencaFamiliaParam: req.body.acolhido.doencaFamilia
 		})
 
 		res.status(successStatus).json(response)

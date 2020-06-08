@@ -81,7 +81,7 @@ module.exports = (sequelize, DataTypes) => {
 
     try {
       acolhidoInstance = await cadastra(acolhidoParam, t)
-      let status = await preencheAssociacoes(models, acolhidoInstance, param, t)
+      let status = await cadastraAssociacoes(models, acolhidoInstance, param, t)
 
       await t.commit()
       return {
@@ -96,62 +96,68 @@ module.exports = (sequelize, DataTypes) => {
 
   Acolhido.edita = async function (models, param) {
     let {
-      endereco,
-      cidade,
-      bairro,
-      pessoa,
-      religiao,
-      acolhido,
-      familiares = [],
-      medicamentos = [],
-      doencaFamilia = [],
+      acolhidoParam = {},
+      enderecoParam = {},
+      cidadeParam = {},
+      bairroParam = {},
+      pessoaParam = {},
+      religiaoParam = {},
+      familiaresParam = [],
+      medicamentosParam = "",
+      doencaFamiliaParam = []
     } = param
+    
+    let religiaoInstance = null
+    let pessoaInstance = null
+    let medicamentoContinuoInstance = null
+    let familiaresInstance = null
 
-    let queryOptions = {}
-    let transaction = await sequelize.transaction({ autocommit: false })
+    let queryOptions = {
+      where: {
+        id: acolhido.id
+      }
+    }
+    
+    let t = await sequelize.transaction({ autocommit: false })
 
     try {
 
-      if (modelStatus.pesquisa(idStatus) == null)
-        throw util.defineError(404, "Status não econtrado.")
+      if (models.Status.pesquisa(acolhidoParam.StatusId) == null)
+        throw util.defineError(404, "Status não existe.")
 
-      let religiaoInstance = await models.Religiao.pesquisaOuAdiciona(religiao)
-      let pessoaInstance = await models.Pessoa.edita(models, transaction, {
-        pessoa,
-        endereco,
-        cidade,
-        bairro
+      religiaoInstance = await models.Religiao.pesquisaOuAdiciona(religiaoParam, t)
+      pessoaInstance = await models.Pessoa.edita(models, t, {
+        pessoaParam,
+        enderecoParam,
+        cidadeParam,
+        bairroParam
       })
 
       if (transaction)
-        queryOptions.transaction = transaction
-
-      queryOptions.where = {
-        id: acolhido.id
-      }
-
-      if (!religiaoInstance || !pessoaInstance) {
-        // transaction.rollback();
+        queryOptions.transaction = t
+        
+      if (!religiaoInstance ) {
+          // transaction.rollback();
         return util.defineError(412, "Erro em religião")
+      }
+      
+      if (!pessoaInstance ) {
+        return util.defineError(412, "Erro em pessoa")
       }
 
       let data = {
-        atividade_fisica: acolhido.atividade_fisica,
-        bebida_quantidade: acolhido.bebida_quantidade,
-        bebida_periodicidade: acolhido.bebida_periodicidade,
-        paroquia: acolhido.paroquia,
-        atividades_religiosas: acolhido.atividades_religiosas,
-        demanda: acolhido.demanda,
-        encaminhamento: acolhido.encaminhamento,
-        observacao: acolhido.observacao,
-        prioridade: acolhido.prioridade,
+        atividade_fisica: acolhidoParam.atividade_fisica,
+        bebida_quantidade: acolhidoParam.bebida_quantidade,
+        bebida_periodicidade: acolhidoParam.bebida_periodicidade,
+        paroquia: acolhidoParam.paroquia,
+        atividades_religiosas: acolhidoParam.atividades_religiosas,
+        demanda: acolhidoParam.demanda,
+        encaminhamento: acolhidoParam.encaminhamento,
+        observacao: acolhidoParam.observacao,
+        prioridade: acolhidoParam.prioridade,
         ReligiaoId: religiaoInstance[0].dataValues.id,
-        StatusId: acolhido.StatusId
+        StatusId: acolhidoParam.StatusId
       }
-
-      if (pessoa.cpf && !data.StatusId)
-        data.StatusId = 2
-
       let acolhidoInstance = await Acolhido.update({ data }, queryOptions)
 
       // medicamentos.forEach(async medicamento => {
@@ -161,12 +167,12 @@ module.exports = (sequelize, DataTypes) => {
       familiares.forEach(async familiar => {
         await models.Familiar.edita(familiar)
       });
+      
       // await models.DoencaFamilia.adicionaVarios(doencaFamilia, AcolhidoId)
-      // await transaction.commit()
-
+      await transaction.commit()
       return acolhidoInstance
     } catch (error) {
-      // await transaction.rollback();
+      await transaction.rollback();
       console.log("\n", error, "\n")
       throw util.checkError(error, modelName)
     }
@@ -420,7 +426,7 @@ module.exports = (sequelize, DataTypes) => {
     return await Acolhido.create(acolhido, queryOptions)
   }
 
-  async function preencheAssociacoes(models, acolhidoInstance, param, t) {
+  async function cadastraAssociacoes(models, acolhidoInstance, param, t) {
     let {
       enderecoParam = {},
       cidadeParam = {},
