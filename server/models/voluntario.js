@@ -62,6 +62,7 @@ module.exports = (sequelize, DataTypes) => {
 
       await atualizaAssociacoes(models, param, voluntarioInstance, t)
       await t.commit()
+      
       return true
       // return {
       //   voluntario: voluntarioInstance.dataValues,
@@ -76,51 +77,48 @@ module.exports = (sequelize, DataTypes) => {
   }
 
   Voluntario.edita = async function (models, param) {
-
     let {
-      endereco,
-      cidade,
-      bairro,
-      pessoa,
-      especialidade,
-      voluntarioId
+      faixaEtariaAtendimento = []
     } = param
+    let t = await sequelize.transaction({
+      type: sequelize.Transaction
+    })
+    let queryOptions = {
+      transaction: t
+    }
+    let faixaEtariaConcat = ""
 
-    let queryOptions = {}
-    let transaction = null
-    // let transaction = await sequelize.transaction({type: sequelize.Transaction}) 
+    for (let index = 0; index < faixaEtariaAtendimento.length; index++) {
+      const element = faixaEtariaAtendimento[index];
+
+      faixaEtariaConcat += element
+
+      if (index < faixaEtariaAtendimento.length - 1)
+        faixaEtariaConcat += ","
+    }
 
     try {
+      let voluntarioInstance = null
 
-      let especialidadeInstance = await models.Especialidade.pesquisaOuAdiciona(especialidade, transaction)
-      let pessoaInstance = await models.Pessoa.edita(models, transaction, {
-        pessoa,
-        endereco,
-        cidade,
-        bairro
+      voluntarioInstance = await Voluntario.update({
+        faixaEtariaAtendimento: faixaEtariaConcat
+      }, {
+        queryOptions
       })
 
-      if (!pessoaInstance)
-        return util.defineError(412, "Erro em Pessoa")
+      valida()
 
-      if (!especialidadeInstance)
-        return util.defineError(412, "Erro em Especialidade")
-
-      if (transaction)
-        queryOptions.transaction = transaction
-
-      queryOptions.where = {
-        id: voluntarioId
-      }
-
-      let voluntarioInstance = await Voluntario.update({
-        EspecialidadeId: especialidadeInstance[0].dataValues.id
-      }, queryOptions)
-
-      // await transaction.commit()
-      return voluntarioInstance
+      await atualizaAssociacoes(models, param, voluntarioInstance, t)
+      await t.commit()
+      
+      return true
+      // return {
+      //   voluntario: voluntarioInstance.dataValues,
+      //   pessoa: pessoaRetorno.pessoaInstance.dataValues,
+      //   endereco: pessoaRetorno.enderecoInstance.dataValues
+      // }
     } catch (error) {
-      // await transaction.rollback();
+      await t.rollback();
       console.log("\n", error, "\n")
       throw util.checkError(error, modelName)
     }
@@ -246,15 +244,15 @@ module.exports = (sequelize, DataTypes) => {
     let usuarioInstance = null
 
     //param já com id
-    if (Object.keys(UsuarioParam).find(key => key == "id") != false)
-      usuarioInstance = await Usuario.findByPk(usuarioParam.id)
+    if (Object.keys(usuarioParam).find(key => key == "id"))
+      usuarioInstance = await Usuario.edita(usuarioParam, t)
     else
       usuarioInstance = await Usuario.adiciona(usuarioParam, t)
 
     voluntarioInstance.setUsuario(usuarioInstance, queryOptions)
   }
 
-  Voluntario.atualizaPessoa = async function (models, pessoaParam, voluntarioInstance, t) {
+  Voluntario.atualizaPessoa = async function (models, param, voluntarioInstance, t) {
     let queryOptions = {
       transaction: t
     }
@@ -263,9 +261,9 @@ module.exports = (sequelize, DataTypes) => {
 
     //param já com id
     if (Object.keys(pessoaParam).find(key => key == "id") != false)
-      pessoaInstance = await Pessoa.findByPk(pessoaParam.id)
+      pessoaInstance = await Pessoa.edita(models, param, t)
     else
-      pessoaInstance = await Pessoa.adiciona(models, t, pessoaParam)
+      pessoaInstance = await Pessoa.adiciona(models, param, t)
 
     voluntarioInstance.setPessoa(pessoaInstance, queryOptions)
   }
@@ -274,15 +272,9 @@ module.exports = (sequelize, DataTypes) => {
     let queryOptions = {
       transaction: t
     }
-    let especialidadeInstance = null
+    let especialidadeInstance = Especialidade.pesquisaOuAdiciona(especialidadeParam, t)
 
-    //param já com id
-    if (Object.keys(especialidadeParam).find(key => key == "id") != false)
-      especialidadeInstance = await Especialidade.findByPk(especialidadeParam.id)
-    else
-      especialidadeInstance = await Especialidade.adiciona(especialidadeParam.nome, t)
-
-    voluntarioInstance.setEspecialidade(especialidadeInstance)
+    voluntarioInstance.setEspecialidade(especialidadeInstance, queryOptions)
   }
 
   function preparaObj(voluntarioRaw) {
