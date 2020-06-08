@@ -7,7 +7,6 @@ module.exports = (sequelize, DataTypes) => {
       autoIncrement: true,
       primaryKey: true
     },
-    horario: DataTypes.DATE,
     presenca: DataTypes.BOOLEAN,
     AcolhidoId: DataTypes.INTEGER,
     UsuarioId: DataTypes.INTEGER,
@@ -21,6 +20,25 @@ module.exports = (sequelize, DataTypes) => {
     TentativaContato.belongsTo(models.Acolhido, {
       foreignKey: 'AcolhidoId'
     })
-  };
+  }
+
+  TentativaContato.adiciona = async function (presencaParam, t) {
+    
+    let queryOptions = {}
+
+    if (transaction)
+      queryOptions.transaction = t
+
+    try {
+      let tentativaContatoInstance = await TentativaContato.create({
+        presenca: presencaParam
+      }, queryOptions)
+      return tentativaContatoInstance
+    } catch (error) {
+      console.log("\n catch \n")
+      throw util.checkError(error, modelName)
+    }
+  }
+
   return TentativaContato;
 };
