@@ -38,22 +38,17 @@ module.exports = (sequelize, DataTypes) => {
     Pessoa.hasOne(models.Endereco);
   };
 
-  Pessoa.adiciona = async function (models, transaction, param) {
+  Pessoa.adiciona = async function (models, param, t) {
     let {
-      pessoaParam,
-      enderecoParam,
-      cidadeParam,
-      bairroParam
+      pessoaParam
     } = param
 
     let queryOptions = {}
-    let enderecoInstance = null
-    
-    if (transaction)
-      queryOptions.transaction = transaction
+
+    if (t)
+      queryOptions.transaction = t
 
     try {
-
       valida(pessoaParam)
 
       let pessoaInstance = await Pessoa.create({
@@ -66,7 +61,7 @@ module.exports = (sequelize, DataTypes) => {
         situacao_profissional: pessoaParam.situacao_profissional,
         nome: pessoaParam.nome,
         data_nascimento: pessoaParam.data_nascimento,
-        grauEscolaridade: pessoaParam.grauEscolaridade, 
+        grauEscolaridade: pessoaParam.grauEscolaridade,
         estadoEscolaridade: pessoaParam.estadoEscolaridade,
         telefoneCelular: pessoaParam.telefoneCelular,
         telefoneResidencia: pessoaParam.telefoneResidencia,
@@ -74,17 +69,9 @@ module.exports = (sequelize, DataTypes) => {
         email: pessoaParam.email
       }, queryOptions)
 
-      if(enderecoParam)
-          enderecoInstance = await models.Endereco.adiciona(models, transaction, {
-          endereco: enderecoParam,
-          cidade: cidadeParam,
-          bairro: bairroParam,
-        })
-      
-      pessoaInstance.setEndereco(enderecoInstance, {queryOptions})
-      
-      return pessoaInstance
+      await Pessoa.atualizaEndereco(models, param, pessoaInstance, t)
 
+      return pessoaInstance
     } catch (error) {
       console.log("\n catch \n")
       throw util.checkError(error, modelName)
@@ -111,13 +98,8 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
 
-  Pessoa.edita = async function (models, transaction, param) {
-    let {
-      pessoa,
-      endereco,
-      cidade,
-      bairro
-    } = param
+  Pessoa.edita = async function (models, param, t) {
+    let { pessoaParam } = param
 
     let queryOptions = {
       where: {
@@ -139,7 +121,7 @@ module.exports = (sequelize, DataTypes) => {
         escolaridade: pessoa.escolaridade,
         nome: pessoa.nome,
         data_nascimento: pessoa.data_nascimento,
-        grauEscolaridade: pessoa.grauEscolaridade, 
+        grauEscolaridade: pessoa.grauEscolaridade,
         estadoEscolaridade: pessoa.estadoEscolaridade,
         telefoneCelular: pessoa.telefoneCelular,
         telefoneResidencia: pessoa.telefoneResidencia,
@@ -147,11 +129,7 @@ module.exports = (sequelize, DataTypes) => {
         email: pessoa.email
       }, queryOptions)
 
-      await models.Endereco.edita(models, transaction, {
-        endereco: endereco,
-        cidade: cidade,
-        bairro: bairro,
-      })
+      await Pessoa.atualizaEndereco(models, param, pessoaInstance, t)
 
       return pessoaInstance
     } catch (error) {
@@ -178,18 +156,37 @@ module.exports = (sequelize, DataTypes) => {
       throw util.checkError(error, modelName)
     }
   }
-  
-  function valida(pessoa){
+
+  Pessoa.atualizaEndereco = async function (models, param, pessoaInstance, t) {
+    let {
+      enderecoParam
+    } = param
+    let queryOptions = {
+      transaction: t
+    }
+
+    let enderecoInstance = null
+
+    //param já com id
+    if (Object.keys(enderecoParam).find(key => key == "id"))
+      enderecoInstance = await Endereco.edita(models, param, t)
+    else
+      enderecoInstance = await Endereco.adiciona(models, param, t)
+
+    pessoaInstance.setEndereco(enderecoInstance, queryOptions)
+  }
+
+  function valida(pessoa) {
     let {
       data_nascimento = "",
-      email = "",
-      nome = "",
-      telefoneCelular = "",
-      telefoneComercial = "",
-      telefoneResidencia = ""
+        email = "",
+        nome = "",
+        telefoneCelular = "",
+        telefoneComercial = "",
+        telefoneResidencia = ""
     } = pessoa
-    
-    if(nome != "" &&
+
+    if (nome != "" &&
       data_nascimento != "" &&
       (telefoneCelular != "" || telefoneComercial != "" || telefoneResidencia != "") &&
       email != ""
@@ -199,6 +196,7 @@ module.exports = (sequelize, DataTypes) => {
 
     throw util.defineError(412, "Erro em Pessoa")
   }
+
 
   return Pessoa;
 };
