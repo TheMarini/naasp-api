@@ -26,6 +26,8 @@ module.exports = (sequelize, DataTypes) => {
     Voluntario.belongsTo(models.Pessoa, {
       foreignKey: 'PessoaId'
     });
+    Voluntario.hasOne(models.Usuario);
+
   };
 
   Voluntario.adiciona = async function (models, param) {
@@ -51,6 +53,8 @@ module.exports = (sequelize, DataTypes) => {
 
     try {
       let voluntarioInstance = null
+      
+      valida(param)
 
       voluntarioInstance = await Voluntario.create({
         faixaEtariaAtendimento: faixaEtariaConcat
@@ -58,7 +62,6 @@ module.exports = (sequelize, DataTypes) => {
         queryOptions
       })
 
-      valida()
 
       await atualizaAssociacoes(models, param, voluntarioInstance, t)
       await t.commit()
@@ -249,10 +252,11 @@ module.exports = (sequelize, DataTypes) => {
     else
       usuarioInstance = await Usuario.adiciona(usuarioParam, t)
 
-    voluntarioInstance.setUsuario(usuarioInstance, queryOptions)
+    await voluntarioInstance.setUsuario(usuarioInstance, queryOptions)
   }
 
   Voluntario.atualizaPessoa = async function (models, param, voluntarioInstance, t) {
+    let {pessoaParam} = param
     let queryOptions = {
       transaction: t
     }
@@ -260,21 +264,21 @@ module.exports = (sequelize, DataTypes) => {
     let pessoaInstance = null
 
     //param já com id
-    if (Object.keys(pessoaParam).find(key => key == "id") != false)
-      pessoaInstance = await Pessoa.edita(models, param, t)
+    if (Object.keys(pessoaParam).find(key => key == "id"))
+      pessoaInstance = await models.Pessoa.edita(models, param, t)
     else
-      pessoaInstance = await Pessoa.adiciona(models, param, t)
+      pessoaInstance = await models.Pessoa.adiciona(models, param, t)
 
-    voluntarioInstance.setPessoa(pessoaInstance, queryOptions)
+    await voluntarioInstance.setPessoa(pessoaInstance, queryOptions)
   }
 
   Voluntario.atualizaEspecialidade = async function (Especialidade, especialidadeParam, voluntarioInstance, t) {
     let queryOptions = {
       transaction: t
     }
-    let especialidadeInstance = Especialidade.pesquisaOuAdiciona(especialidadeParam, t)
+    let especialidadeInstance = await Especialidade.pesquisaOuAdiciona(especialidadeParam, t)
 
-    voluntarioInstance.setEspecialidade(especialidadeInstance, queryOptions)
+    await voluntarioInstance.setEspecialidade(especialidadeInstance, queryOptions)
   }
 
   function preparaObj(voluntarioRaw) {
@@ -311,11 +315,10 @@ module.exports = (sequelize, DataTypes) => {
       especialidadeParam,
       usuarioParam
     } = param
-
+    
+    await Voluntario.atualizaUsuario(Usuario, usuarioParam, voluntarioInstance, t)
     await Voluntario.atualizaPessoa(models, param, voluntarioInstance, t)
     await Voluntario.atualizaEspecialidade(Especialidade, especialidadeParam, voluntarioInstance, t)
-    await Voluntario.atualizaUsuario(Usuario, usuarioParam, voluntarioInstance, t)
-
   }
 
   function valida(param) {
