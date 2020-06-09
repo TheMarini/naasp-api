@@ -1,4 +1,7 @@
 'use strict';
+const util = require('../util')
+const modelName = "Usuário"
+
 module.exports = (sequelize, DataTypes) => {
   const Usuario = sequelize.define('Usuario', {
     id: {
@@ -15,7 +18,7 @@ module.exports = (sequelize, DataTypes) => {
   }, {freezeTableName: true});
   Usuario.associate = function(models) {
     // associations can be defined here
-    Usuario.belongsTo(models.Pessoa, {
+    Usuario.belongsTo(models.Voluntario, {
       foreignKey: 'VoluntarioId'
     })
   }
@@ -25,12 +28,12 @@ module.exports = (sequelize, DataTypes) => {
 
     if (t)
       queryOptions.transaction = t
-
-    try {
-      let usuarioInstance = await Usuario.create({
-        login: usuarioParam.login,
-        senha: usuarioParam.senha
-      }, queryOptions)
+      
+      try {
+        let usuarioInstance = await Usuario.create({
+          login: usuarioParam.login,
+          senha: usuarioParam.senha
+        }, queryOptions)
       return usuarioInstance
     } catch (error) {
       console.log("\n catch \n")
