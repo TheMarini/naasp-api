@@ -33,7 +33,6 @@ module.exports = (sequelize, DataTypes) => {
 
   Pessoa.associate = function (models) {
     Pessoa.hasOne(models.Acolhido);
-    Pessoa.hasOne(models.Usuario);
     Pessoa.hasOne(models.Voluntario);
     Pessoa.hasOne(models.Endereco);
   };
@@ -103,30 +102,30 @@ module.exports = (sequelize, DataTypes) => {
 
     let queryOptions = {
       where: {
-        id: pessoa.id
+        id: pessoaParam.id
       }
     }
 
-    if (transaction)
-      queryOptions.transaction = transaction
+    if (t)
+      queryOptions.transaction = t
 
     try {
       let pessoaInstance = await Pessoa.update({
-        estado_civil: pessoa.estado_civil,
-        cpf: pessoa.cpf,
-        sexo: pessoa.sexo,
-        nacionalidade: pessoa.nacionalidade,
-        naturalidade: pessoa.naturalidade,
-        situacao_profissional: pessoa.situacao_profissional,
-        escolaridade: pessoa.escolaridade,
-        nome: pessoa.nome,
-        data_nascimento: pessoa.data_nascimento,
-        grauEscolaridade: pessoa.grauEscolaridade,
-        estadoEscolaridade: pessoa.estadoEscolaridade,
-        telefoneCelular: pessoa.telefoneCelular,
-        telefoneResidencia: pessoa.telefoneResidencia,
-        telefoneComercial: pessoa.telefoneComercial,
-        email: pessoa.email
+        estado_civil: pessoaParam.estado_civil,
+        cpf: pessoaParam.cpf,
+        sexo: pessoaParam.sexo,
+        nacionalidade: pessoaParam.nacionalidade,
+        naturalidade: pessoaParam.naturalidade,
+        situacao_profissional: pessoaParam.situacao_profissional,
+        escolaridade: pessoaParam.escolaridade,
+        nome: pessoaParam.nome,
+        data_nascimento: pessoaParam.data_nascimento,
+        grauEscolaridade: pessoaParam.grauEscolaridade,
+        estadoEscolaridade: pessoaParam.estadoEscolaridade,
+        telefoneCelular: pessoaParam.telefoneCelular,
+        telefoneResidencia: pessoaParam.telefoneResidencia,
+        telefoneComercial: pessoaParam.telefoneComercial,
+        email: pessoaParam.email
       }, queryOptions)
 
       await Pessoa.atualizaEndereco(models, param, pessoaInstance, t)
@@ -164,16 +163,15 @@ module.exports = (sequelize, DataTypes) => {
     let queryOptions = {
       transaction: t
     }
-
     let enderecoInstance = null
 
     //param já com id
     if (Object.keys(enderecoParam).find(key => key == "id"))
-      enderecoInstance = await Endereco.edita(models, param, t)
+      enderecoInstance = await models.Endereco.edita(models, param, t)
     else
-      enderecoInstance = await Endereco.adiciona(models, param, t)
+      enderecoInstance = await models.Endereco.adiciona(models, param, t)
 
-    pessoaInstance.setEndereco(enderecoInstance, queryOptions)
+    await pessoaInstance.setEndereco(enderecoInstance, queryOptions)
   }
 
   function valida(pessoa) {
