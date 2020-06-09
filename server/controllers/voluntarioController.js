@@ -6,13 +6,13 @@ exports.post = async function (req, res) {
 	let response = null
 	try {
 		response = await models.Voluntario.adiciona(models, {
-			pessoaParam: 				 req.body.pessoa,
-			enderecoParam:			  	 req.body.pessoa.endereco,
-			cidadeParam: 				 req.body.pessoa.endereco.cidade.nome,
-			bairroParam: 				 req.body.pessoa.endereco.bairro.nome,
-			usuarioParam: 				 req.body.voluntario.usuario,
-			especialidadeParam: 		 req.body.voluntario.especialidade.nome,
-			faixaEtariaAtendimentoParam: req.body.voluntario.faixaEtariaAtendimento
+			pessoaParam: 				 req.body.Pessoa,
+			enderecoParam:			  	 req.body.Pessoa.Endereco,
+			cidadeParam: 				 req.body.Pessoa.Endereco.Cidade.nome,
+			bairroParam: 				 req.body.Pessoa.Endereco.Bairro.nome,
+			usuarioParam: 				 req.body.Voluntario.Usuario,
+			especialidadeParam: 		 req.body.Voluntario.Especialidade.nome,
+			faixaEtariaAtendimentoParam: req.body.Voluntario.FaixaEtariaAtendimento
 		})
 		res.status(successStatus).json(response)
 	} catch (error) {
@@ -41,13 +41,14 @@ exports.put = async function (req, res) {
 	let response = null
 	try {
 		response = await models.Voluntario.edita(models, {
-			pessoaParam: 				 req.body.pessoa,
-			enderecoParam:			  	 req.body.pessoa.endereco,
-			cidadeParam: 				 req.body.pessoa.endereco.cidade.nome,
-			bairroParam: 				 req.body.pessoa.endereco.bairro.nome,
-			usuarioParam: 				 req.body.voluntario.usuario,
-			especialidadeParam: 		 req.body.voluntario.especialidade.nome,
-			faixaEtariaAtendimentoParam: req.body.voluntario.faixaEtariaAtendimento
+			pessoaParam: 				 req.body.Pessoa,
+			enderecoParam:			  	 req.body.Pessoa.Endereco,
+			cidadeParam: 				 req.body.Pessoa.Endereco.Cidade.nome,
+			bairroParam: 				 req.body.Pessoa.Endereco.Bairro.nome,
+			usuarioParam: 				 req.body.Voluntario.Usuario,
+			especialidadeParam: 		 req.body.Voluntario.Especialidade.nome,
+			faixaEtariaAtendimentoParam: req.body.Voluntario.FaixaEtariaAtendimento,
+			voluntarioId:				 req.body.Voluntario.id
 		})
 
 		res.status(successStatus).json(response)
