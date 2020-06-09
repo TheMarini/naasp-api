@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=IE11">
+    <title>Teste de Socket 2</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+    #teste {
+        background-color: rgb(204, 162, 243);
+        width: 10px;
+    }
+    table, th, td {
+      border: 1px solid black;
+    }
+    </style>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        var socket = io();
+
+        function manda(valor, id) {
+            socket.emit('chat message', valor, id);
+        }
+
+        socket.on('chat message', function(msg, id){
+            // alert('recebido');
+            // document.getElementById('teste').innerHTML = msg + '<BR>';
+            // document.getElementById('teste').style.width = msg + '1px';
+            document.getElementById(id).value = msg;
+        });
+
+
+    </script>
+</head>
+<body>
+    <h1>Teste</h1>
+          <!-- <input oninput="manda(this.value);" type="range" min="1" max="100" value="20" class="slider" id="myRange">
+          <p>Valor: <div id="teste"></div></p -->
+        <table style="width:50%">
+          <tr>
+            <th>Domingo</th>
+            <th>Segunda</th>
+            <th>Terça</th>
+            <th>Quarta</th>
+            <th>Quinta</th>
+            <th>Sexta</th>
+            <th>Sábado</th>
+          </tr>
+          <tr>
+            <td><input oninput="manda(this.value, this.id);" type="text" id="1th1" name="th1"><br></td>
+            <td><input oninput="manda(this.value, this.id);" type="text" id="1th2" name="th2"><br></td>
+            <td><input oninput="manda(this.value, this.id);" type="text" id="1th3" name="th3"><br></td>
+            <td><input oninput="manda(this.value, this.id);" type="text" id="1th4" name="th1"><br></td>
+            <td><input oninput="manda(this.value, this.id);" type="text" id="1th5" name="th2"><br></td>
+            <td><input oninput="manda(this.value, this.id);" type="text" id="1th6" name="th3"><br></td>
+            <td><input oninput="manda(this.value, this.id);" type="text" id="1th7" name="th3"><br></td>
+          </tr>
+          <tr>
+            <td><input oninput="manda(this.value, this.id);" type="text" id="2h1" name="th1"><br></td>
+            <td><input oninput="manda(this.value, this.id);" type="text" id="2h2" name="th2"><br></td>
+            <td><input oninput="manda(this.value, this.id);" type="text" id="2h3" name="th3"><br></td>
+            <td><input oninput="manda(this.value, this.id);" type="text" id="2h4" name="th1"><br></td>
+            <td><input oninput="manda(this.value, this.id);" type="text" id="2h5" name="th2"><br></td>
+            <td><input oninput="manda(this.value, this.id);" type="text" id="2h6" name="th3"><br></td>
+            <td><input oninput="manda(this.value, this.id);" type="text" id="2h7" name="th3"><br></td>
+          </tr>
+          <tr>
+            <td><input oninput="manda(this.value, this.id);" type="text" id="3th1" name="th1"><br></td>
+            <td><input oninput="manda(this.value, this.id);" type="text" id="3th2" name="th2"><br></td>
+            <td><input oninput="manda(this.value, this.id);" type="text" id="3th3" name="th3"><br></td>
+            <td><input oninput="manda(this.value, this.id);" type="text" id="3th4" name="th1"><br></td>
+            <td><input oninput="manda(this.value, this.id);" type="text" id="3th5" name="th2"><br></td>
+            <td><input oninput="manda(this.value, this.id);" type="text" id="3th6" name="th3"><br></td>
+            <td><input oninput="manda(this.value, this.id);" type="text" id="3th7" name="th3"><br></td>
+          </tr>
+          <tr>
+            <td><input oninput="manda(this.value, this.id);" type="text" id="4th1" name="th1"><br></td>
+            <td><input oninput="manda(this.value, this.id);" type="text" id="4th2" name="th2"><br></td>
+            <td><input oninput="manda(this.value, this.id);" type="text" id="4th3" name="th3"><br></td>
+            <td><input oninput="manda(this.value, this.id);" type="text" id="4th4" name="th1"><br></td>
+            <td><input oninput="manda(this.value, this.id);" type="text" id="4th5" name="th2"><br></td>
+            <td><input oninput="manda(this.value, this.id);" type="text" id="4th6" name="th3"><br></td>
+            <td><input oninput="manda(this.value, this.id);" type="text" id="4th7" name="th3"><br></td>
+          </tr>
+        </table>
+
+
+</body>
+</html>

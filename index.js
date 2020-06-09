@@ -2,6 +2,7 @@ const Sequelize = require('sequelize');
 const cors = require('cors')
 const express = require('express');
 const router = require('./server/controllers/routes')
+const sessaoModel = require('./server/controllers/sessaoController')
 
 var app = express()
 app.use(cors())
@@ -12,14 +13,24 @@ app.use(express.urlencoded({
 
 app.use('/api', router)
 
+
+
+var http = require('http').Server(app);
+var io = require('socket.io')(http);
+
+app.get('/', function(req, res){
+  res.sendFile(__dirname + '/submit.html');
+});
+
+
 if (process.env.DATABASE_URL) {
   console.log("heroku");
   // the application is executed on Heroku ... use the postgres database
   sequelize = new Sequelize(process.env.DATABASE_URL, {
     dialect:  'postgres',
     protocol: 'postgres',
-    port:     match[4],
-    host:     match[3],
+    port:     '5432',
+    host:     'ec2-34-234-228-127.compute-1.amazonaws.com',
     logging:  true //false
   })
   sequelize.sync({ force: true }).then(() => {
@@ -43,8 +54,8 @@ sequelize.sync({
   sequelize
     .authenticate()
     .then(() => {
-
-      app.listen(3000, function () {
+      var port_number = app.listen(process.env.PORT || 3000);
+      http.listen(port_number, function () {
         console.log('Connection has been established successfully.');
         console.log("All models were synchronized successfully.");
         console.log('App listening on port 3000!');
@@ -55,3 +66,18 @@ sequelize.sync({
       console.error('Unable to connect to the database:', err);
     });
 })
+
+
+io.on('connection', socket => {
+  async function emiteDados(){
+    let sessoes = await sessaoModel.get();
+    // console.log(sessoes[0].dataValues.id);
+    socket.emit('login', sessoes)
+  }
+  emiteDados();
+  socket.on('sessao', function(sessao){
+      // recebe o dado
+      sessaoModel.post(sessao);
+      io.emit('sessao', sessao);
+  });
+});

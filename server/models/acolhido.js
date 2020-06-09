@@ -50,6 +50,7 @@ module.exports = (sequelize, DataTypes) => {
     Acolhido.hasMany(models.Familiar)
     Acolhido.hasMany(models.DoencaFamilia)
     Acolhido.hasMany(models.MedicamentoContinuo)
+    // Acolhido.hasMany(models.Sessao)
   };
 
   Acolhido.adiciona = async function (models, param) {
@@ -68,7 +69,7 @@ module.exports = (sequelize, DataTypes) => {
 
     let queryOptions = {}
     let transaction = null
-    // let transaction = await sequelize.transaction({type: sequelize.Transaction}) 
+    // let transaction = await sequelize.transaction({type: sequelize.Transaction})
 
     try {
       let religiaoInstance = null
@@ -76,7 +77,7 @@ module.exports = (sequelize, DataTypes) => {
 
       if(religiaoParam)
         religiaoInstance = await models.Religiao.pesquisaOuAdiciona(religiaoParam, transaction)
-      
+
       if(pessoaParam)
         pessoaRetorno = await models.Pessoa.adiciona(models, transaction, {
           pessoaParam,
@@ -112,13 +113,13 @@ module.exports = (sequelize, DataTypes) => {
         data.StatusId = 2
 
       let acolhidoInstance = await Acolhido.create( data, { queryOptions } )
-      
+
       let AcolhidoId = acolhidoInstance.dataValues.id
       let medicamentoContinuoInstance
       let familiaresInstance
       if(medicamentos)
         medicamentoContinuoInstance = await models.MedicamentoContinuo.adicionaVarios(medicamentos, AcolhidoId, transaction)
-        
+
       if(familiaresParam)
         familiaresInstance = await models.Familiar.adicionaVarios(familiaresParam, AcolhidoId, transaction)
 
@@ -156,7 +157,7 @@ module.exports = (sequelize, DataTypes) => {
 
     try {
 
-      if(modelStatus.pesquisa(idStatus) == null) 
+      if(modelStatus.pesquisa(idStatus) == null)
         throw util.defineError(404, "Status não econtrado.")
 
       let religiaoInstance = await models.Religiao.pesquisaOuAdiciona(religiao)
@@ -195,7 +196,7 @@ module.exports = (sequelize, DataTypes) => {
 
       if(pessoa.cpf && !data.StatusId)
         data.StatusId = 2
-      
+
       let acolhidoInstance = await Acolhido.update({data}, queryOptions)
 
       medicamentos.forEach(async medicamento => {
@@ -354,7 +355,7 @@ module.exports = (sequelize, DataTypes) => {
 
     try {
 
-      if(modelStatus.pesquisa(idStatus) == null) 
+      if(modelStatus.pesquisa(idStatus) == null)
         throw util.defineError(404, "Status não econtrado.")
 
       let acolhidoInstance = await Acolhido.findAll({
