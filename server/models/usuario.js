@@ -45,7 +45,8 @@ module.exports = (sequelize, DataTypes) => {
     let queryOptions = {
       where: {
         id: usuarioParam.id
-      }
+      },
+      returning: true
     }
 
     if (t)
@@ -56,7 +57,7 @@ module.exports = (sequelize, DataTypes) => {
         login: usuarioParam.login,
         senha: usuarioParam.senha
       }, queryOptions)
-      return usuarioInstance
+      return usuarioInstance[1][0]
     } catch (error) {
       console.log("\n catch \n")
       throw util.checkError(error, modelName)

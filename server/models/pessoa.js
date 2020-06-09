@@ -103,7 +103,8 @@ module.exports = (sequelize, DataTypes) => {
     let queryOptions = {
       where: {
         id: pessoaParam.id
-      }
+      },
+      returning: true
     }
 
     if (t)
@@ -127,7 +128,8 @@ module.exports = (sequelize, DataTypes) => {
         telefoneComercial: pessoaParam.telefoneComercial,
         email: pessoaParam.email
       }, queryOptions)
-
+      
+      pessoaInstance = pessoaInstance[1][0]
       await Pessoa.atualizaEndereco(models, param, pessoaInstance, t)
 
       return pessoaInstance

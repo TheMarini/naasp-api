@@ -81,12 +81,17 @@ module.exports = (sequelize, DataTypes) => {
 
   Voluntario.edita = async function (models, param) {
     let {
-      faixaEtariaAtendimento = []
+      faixaEtariaAtendimento = [],
+      voluntarioId
     } = param
     let t = await sequelize.transaction({
       type: sequelize.Transaction
     })
     let queryOptions = {
+      where: {
+        id: voluntarioId
+      },
+      returning: true,
       transaction: t
     }
     let faixaEtariaConcat = ""
@@ -99,17 +104,16 @@ module.exports = (sequelize, DataTypes) => {
       if (index < faixaEtariaAtendimento.length - 1)
         faixaEtariaConcat += ","
     }
-
     try {
       let voluntarioInstance = null
 
       voluntarioInstance = await Voluntario.update({
         faixaEtariaAtendimento: faixaEtariaConcat
-      }, {
-        queryOptions
-      })
+      }, queryOptions)
 
-      valida()
+      voluntarioInstance = voluntarioInstance[1][0]
+      
+      valida(param)
 
       await atualizaAssociacoes(models, param, voluntarioInstance, t)
       await t.commit()
@@ -178,7 +182,8 @@ module.exports = (sequelize, DataTypes) => {
       Cidade,
       Bairro,
       Voluntario,
-      Especialidade
+      Especialidade,
+      Usuario
     } = models
 
     try {
@@ -206,6 +211,10 @@ module.exports = (sequelize, DataTypes) => {
             model: Especialidade,
             attributes: ['nome'],
             as: 'Especialidade'
+          },
+          {
+            model: Usuario,
+            as: 'Usuario'
           }
         ]
       })
@@ -289,7 +298,8 @@ module.exports = (sequelize, DataTypes) => {
       PessoaId: voluntarioRaw.PessoaId,
       updatedAt: voluntarioRaw.updatedAt,
       createdAt: voluntarioRaw.createdAt,
-      Especialidade: voluntarioRaw.Especialidade
+      Especialidade: voluntarioRaw.Especialidade,
+      Usuario: voluntarioRaw.Usuario
     }
 
     delete voluntarioRaw.id
@@ -299,6 +309,7 @@ module.exports = (sequelize, DataTypes) => {
     delete voluntarioRaw.updatedAt
     delete voluntarioRaw.createdAt
     delete voluntarioRaw.Especialidade
+    delete voluntarioRaw.Usuario
 
     console.log(voluntarioRaw)
 
@@ -323,7 +334,7 @@ module.exports = (sequelize, DataTypes) => {
 
   function valida(param) {
     let {
-      enderecoParam = {},
+        enderecoParam = {},
         pessoaParam = {},
         especialidadeParam = ""
     } = param

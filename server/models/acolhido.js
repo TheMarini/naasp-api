@@ -342,6 +342,96 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
 
+  Acolhido.atualizaPessoa = async function (models, param, acolhidoInstance, t) {
+    let queryOptions = {
+      transaction: t
+    }
+
+    let pessoaInstance = null
+
+    //param já com id
+    if (Object.keys(pessoaParam).find(key => key == "id") != false)
+      pessoaInstance = await Pessoa.edita(models, param, t)
+    else
+      pessoaInstance = await Pessoa.adiciona(models, param, t)
+
+    acolhidoInstance.setPessoa(pessoaInstance, queryOptions)
+  }
+
+  Acolhido.atualizaReligiao = async function (Religiao, religiaoParam, acolhidoInstance, t) {
+    let queryOptions = {
+      transaction: t
+    }
+    let religiaoInstance = Religiao.pesquisaOuAdiciona(religiaoParam, t)
+
+    acolhidoInstance.setEspecialidade(especialidadeInstance, queryOptions)
+  }
+
+  Acolhido.atualizaFamiliares = async function (){
+    if (familiaresParam.length > 0) {
+      familiaresInstance = await models.Familiar.adicionaVarios(familiaresParam, t)
+      await acolhidoInstance.setFamiliares(familiaresInstance, { transaction: t })
+    }
+  }
+
+  async function cadastra(acolhidoParam, t) {
+    let queryOptions = t ? t : {}
+    let acolhidoInstance = null
+
+    let acolhido = {
+      atividade_fisica: acolhidoParam.atividade_fisica,
+      bebida_quantidade: acolhidoParam.bebida_quantidade,
+      bebida_periodicidade: acolhidoParam.bebida_periodicidade,
+      paroquia: acolhidoParam.paroquia,
+      atividades_religiosas: acolhidoParam.atividades_religiosas,
+      demanda: acolhidoParam.demanda,
+      encaminhamento: acolhidoParam.encaminhamento,
+      observacao: acolhidoParam.observacao,
+      preferenciaAtendimento: acolhidoParam.preferenciaAtendimento,
+      prioridade: acolhidoParam.prioridade,
+    }
+    valida(acolhido)
+
+    return await Acolhido.create(acolhido, queryOptions)
+  }
+
+  async function cadastraAssociacoes(models, acolhidoInstance, param, t) {
+    let {
+      enderecoParam = {},
+      cidadeParam = {},
+      bairroParam = {},
+      pessoaParam = {},
+      religiaoParam = {},
+      familiaresParam = [],
+      medicamentosParam = "",
+      doencaFamiliaParam = []
+    } = param
+    
+    let religiaoInstance = null
+    let pessoaInstance = null
+    let medicamentoContinuoInstance = null
+    let familiaresInstance = null
+    // let status = (pessoaParam && pessoaParam.cpf) ? 2 : 1
+    
+    // await acolhidoInstance.setStatus(status, { transaction: t })
+
+    if (medicamentosParam != "") {
+      let medicamentos = []
+
+      medicamentosParam.split(",").forEach(element => {
+        medicamentos.push(element)
+      })
+
+      medicamentoContinuoInstance = await models.MedicamentoContinuo.adicionaVarios(medicamentos, t)
+      await acolhidoInstance.setMedicamentosContinuos(medicamentoContinuoInstance, { transaction: t })
+    }
+
+
+//  ARRANJO TECNICO
+    return status
+
+  }
+
   function valida(acolhido) {
     let {
       preferenciaAtendimento
@@ -403,82 +493,6 @@ module.exports = (sequelize, DataTypes) => {
       console.log(acolhidoRaw)
     
       return acolhidoRaw
-  }
-
-  async function cadastra(acolhidoParam, t) {
-    let queryOptions = t ? t : {}
-    let acolhidoInstance = null
-
-    let acolhido = {
-      atividade_fisica: acolhidoParam.atividade_fisica,
-      bebida_quantidade: acolhidoParam.bebida_quantidade,
-      bebida_periodicidade: acolhidoParam.bebida_periodicidade,
-      paroquia: acolhidoParam.paroquia,
-      atividades_religiosas: acolhidoParam.atividades_religiosas,
-      demanda: acolhidoParam.demanda,
-      encaminhamento: acolhidoParam.encaminhamento,
-      observacao: acolhidoParam.observacao,
-      preferenciaAtendimento: acolhidoParam.preferenciaAtendimento,
-      prioridade: acolhidoParam.prioridade,
-    }
-    valida(acolhido)
-
-    return await Acolhido.create(acolhido, queryOptions)
-  }
-
-  async function cadastraAssociacoes(models, acolhidoInstance, param, t) {
-    let {
-      enderecoParam = {},
-      cidadeParam = {},
-      bairroParam = {},
-      pessoaParam = {},
-      religiaoParam = {},
-      familiaresParam = [],
-      medicamentosParam = "",
-      doencaFamiliaParam = []
-    } = param
-    
-    let religiaoInstance = null
-    let pessoaInstance = null
-    let medicamentoContinuoInstance = null
-    let familiaresInstance = null
-    let status = (pessoaParam && pessoaParam.cpf) ? 2 : 1
-    
-    if (religiaoParam != null)
-      religiaoInstance = await models.Religiao.pesquisaOuAdiciona(religiaoParam, t)
-    
-    pessoaInstance = await models.Pessoa.adiciona(models, t, {
-      pessoaParam,
-      enderecoParam,
-      cidadeParam,
-      bairroParam
-    })
-
-    if (!pessoaInstance)
-      throw util.defineError(500, "Erro em Pessoa")
-
-    await acolhidoInstance.setPessoa(pessoaInstance, { transaction: t })
-    await acolhidoInstance.setReligiao(religiaoInstance, { transaction: t })
-    await acolhidoInstance.setStatus(status, { transaction: t })
-
-    if (medicamentosParam != "") {
-      let medicamentos = []
-
-      medicamentosParam.split(",").forEach(element => {
-        medicamentos.push(element)
-      })
-
-      medicamentoContinuoInstance = await models.MedicamentoContinuo.adicionaVarios(medicamentos, t)
-      await acolhidoInstance.setMedicamentosContinuos(medicamentoContinuoInstance, { transaction: t })
-    }
-
-    if (familiaresParam.length > 0) {
-      familiaresInstance = await models.Familiar.adicionaVarios(familiaresParam, t)
-      await acolhidoInstance.setFamiliares(familiaresInstance, { transaction: t })
-    }
-//  ARRANJO TECNICO
-    return status
-
   }
 
   return Acolhido;

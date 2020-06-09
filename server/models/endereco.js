@@ -103,8 +103,9 @@ module.exports = (sequelize, DataTypes) => {
 
     let queryOptions = {
       where: {
-        id: endereco.id
-      }
+        id: enderecoParam.id
+      },
+      returning: true
     }
 
     if (t)
@@ -112,8 +113,8 @@ module.exports = (sequelize, DataTypes) => {
 
     try {
       
-      if (!valida())
-        return util.defineError(400, "Erro na validação dos campos")
+      if (!valida(param))
+        return util.defineError(400, "Erro no endereco")
 
       let enderecoInstance = await Endereco.update({
         rua: enderecoParam.rua,
@@ -122,6 +123,7 @@ module.exports = (sequelize, DataTypes) => {
         cep: enderecoParam.cep
       }, queryOptions)
 
+      enderecoInstance = enderecoInstance[1][0]
       await Endereco.atualizaCidade(models.Cidade, cidadeParam, enderecoInstance, t)
       await Endereco.atualizaBairro(models.Bairro, bairroParam, enderecoInstance, t)
 
