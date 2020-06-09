@@ -34,6 +34,7 @@ module.exports = (sequelize, DataTypes) => {
   };
 
   Endereco.adiciona = async function (models, param, t) {
+
     let {
       enderecoParam,
       cidadeParam,
@@ -46,7 +47,7 @@ module.exports = (sequelize, DataTypes) => {
 
     try {
 
-      if (!valida())
+      if (!valida(param))
         return util.defineError(400, "Erro na validação dos campos")
 
       let enderecoInstance = await Endereco.create({
@@ -174,9 +175,9 @@ module.exports = (sequelize, DataTypes) => {
       transaction: t
     }
 
-    let cidadeInstance = Cidade.pesquisaOuAdiciona(cidadeParam, t)
+    let cidadeInstance = await Cidade.pesquisaOuAdiciona(cidadeParam, t)
 
-    enderecoInstance.setCidade(cidadeInstance, queryOptions)
+    await enderecoInstance.setCidade(cidadeInstance, queryOptions)
   }
 
   Endereco.atualizaBairro = async function (Bairro, bairroParam, enderecoInstance, t) {
@@ -184,9 +185,9 @@ module.exports = (sequelize, DataTypes) => {
       transaction: t
     }
 
-    let bairroInstance = Bairro.pesquisaOuAdiciona(bairroParam, t)
+    let bairroInstance = await Bairro.pesquisaOuAdiciona(bairroParam, t)
 
-    enderecoInstance.setBairro(bairroInstance, queryOptions)
+    await enderecoInstance.setBairro(bairroInstance, queryOptions)
   }
 
   return Endereco;
