@@ -27,12 +27,12 @@ module.exports = (sequelize, DataTypes) => {
       foreignKey: 'PessoaId'
     });
     Voluntario.hasOne(models.Usuario);
-
+    // Voluntario.hasMany(models.Sessao)
   };
 
   Voluntario.adiciona = async function (models, param) {
     let {
-      faixaEtariaAtendimento = []
+      faixaEtariaAtendimentoParam = []
     } = param
     let t = await sequelize.transaction({
       type: sequelize.Transaction
@@ -42,15 +42,15 @@ module.exports = (sequelize, DataTypes) => {
     }
     let faixaEtariaConcat = ""
 
-    for (let index = 0; index < faixaEtariaAtendimento.length; index++) {
-      const element = faixaEtariaAtendimento[index];
+    for (let index = 0; index < faixaEtariaAtendimentoParam.length; index++) {
+      const element = faixaEtariaAtendimentoParam[index];
 
       faixaEtariaConcat += element
 
-      if (index < faixaEtariaAtendimento.length - 1)
+      if (index < faixaEtariaAtendimentoParam.length - 1)
         faixaEtariaConcat += ","
     }
-
+    console.log(faixaEtariaAtendimentoParam)
     try {
       let voluntarioInstance = null
       
@@ -222,7 +222,6 @@ module.exports = (sequelize, DataTypes) => {
       voluntarioArray.map((e) => {
         e = preparaObj(e)
       })
-      console.log(voluntarioArray)
       return voluntarioArray
     } catch (error) {
       console.log("\n catch \n")
@@ -292,9 +291,12 @@ module.exports = (sequelize, DataTypes) => {
   }
 
   function preparaObj(voluntarioRaw) {
+    
+    let faixaEtariaAtendimento = voluntarioRaw.faixaEtariaAtendimento.split(",")
+    
     voluntarioRaw.voluntario = {
       id: voluntarioRaw.id,
-      faixaEtariaAtendimento: voluntarioRaw.faixaEtariaAtendimento,
+      faixaEtariaAtendimento: faixaEtariaAtendimento,
       EspecialidadeId: voluntarioRaw.EspecialidadeId,
       PessoaId: voluntarioRaw.PessoaId,
       updatedAt: voluntarioRaw.updatedAt,
@@ -311,8 +313,6 @@ module.exports = (sequelize, DataTypes) => {
     delete voluntarioRaw.createdAt
     delete voluntarioRaw.Especialidade
     delete voluntarioRaw.Usuario
-
-    console.log(voluntarioRaw)
 
     return voluntarioRaw
   }

@@ -12,7 +12,7 @@ exports.post = async function (req, res) {
 			bairroParam: 				 req.body.Pessoa.Endereco.Bairro.nome,
 			usuarioParam: 				 req.body.Voluntario.Usuario,
 			especialidadeParam: 		 req.body.Voluntario.Especialidade.nome,
-			faixaEtariaAtendimentoParam: req.body.Voluntario.FaixaEtariaAtendimento
+			faixaEtariaAtendimentoParam: req.body.Voluntario.faixaEtariaAtendimento
 		})
 		res.status(successStatus).json(response)
 	} catch (error) {
@@ -47,7 +47,7 @@ exports.put = async function (req, res) {
 			bairroParam: 				 req.body.Pessoa.Endereco.Bairro.nome,
 			usuarioParam: 				 req.body.Voluntario.Usuario,
 			especialidadeParam: 		 req.body.Voluntario.Especialidade.nome,
-			faixaEtariaAtendimentoParam: req.body.Voluntario.FaixaEtariaAtendimento,
+			faixaEtariaAtendimentoParam: req.body.Voluntario.faixaEtariaAtendimento,
 			voluntarioId:				 req.body.Voluntario.id
 		})
 
