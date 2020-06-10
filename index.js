@@ -37,10 +37,9 @@ if (process.env.DATABASE_URL) {
     console.log("All models were synchronized successfully.");
   })
 }else {
-  sequelize = new Sequelize('database_development', 'postgres', 'postgres', {
-    host: 'localhost',
-    dialect: 'postgres' /* one of 'mysql' | 'mariadb' | '' | 'mssql' */
-  });
+  sequelize = new Sequelize('postgres://postgres:postgres@postgresdb:5432/database_development');
+  // sequelize = new Sequelize('postgres://postgres:postgres@localhost:5432/database_development');
+
   sequelize.sync({ force: true }).then(() => {
     console.log("All models were synchronized successfully.");
   })
@@ -63,7 +62,7 @@ if (process.env.DATABASE_URL) {
     .catch(err => {
       console.error('Unable to connect to the database:', err);
     });
-})
+// })
 
 
 io.on('connection', socket => {
