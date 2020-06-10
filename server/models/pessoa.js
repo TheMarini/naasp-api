@@ -25,6 +25,10 @@ module.exports = (sequelize, DataTypes) => {
     telefoneCelular: DataTypes.STRING,
     telefoneResidencia: DataTypes.STRING,
     telefoneComercial: DataTypes.STRING,
+    ReligiaoId: {
+      allowNull: true,
+      type: DataTypes.INTEGER
+    },
     updatedAt: DataTypes.DATE,
     createdAt: DataTypes.DATE
   }, {
@@ -32,56 +36,53 @@ module.exports = (sequelize, DataTypes) => {
   });
 
   Pessoa.associate = function (models) {
-    Pessoa.hasOne(models.Acolhido);
-    Pessoa.hasOne(models.Usuario);
-    Pessoa.hasOne(models.Voluntario);
-    Pessoa.hasOne(models.Endereco);
+    Pessoa.hasOne(models.Acolhido)
+    Pessoa.hasOne(models.Voluntario)
+    Pessoa.hasOne(models.Endereco)
+    Pessoa.belongsTo(models.Religiao, {
+      foreignKey: 'ReligiaoId'
+    });
   };
 
-  Pessoa.adiciona = async function (models, transaction, param) {
+  Pessoa.adiciona = async function (models, param, t) {
     let {
-      pessoa,
-      endereco,
-      cidade,
-      bairro
+      pessoaParam,
+      religiaoParam
     } = param
 
     let queryOptions = {}
 
-    if (transaction)
-      queryOptions.transaction = transaction
+    if (t)
+      queryOptions.transaction = t
 
     try {
+      valida(pessoaParam)
+
       let pessoaInstance = await Pessoa.create({
-        estado_civil: pessoa.estado_civil,
-        rg: pessoa.rg,
-        cpf: pessoa.cpf,
-        sexo: pessoa.sexo,
-        nacionalidade: pessoa.nacionalidade,
-        naturalidade: pessoa.naturalidade,
-        situacao_profissional: pessoa.situacao_profissional,
-        nome: pessoa.nome,
-        data_nascimento: pessoa.data_nascimento,
-        grauEscolaridade: pessoa.grauEscolaridade, 
-        estadoEscolaridade: pessoa.estadoEscolaridade,
-        telefoneCelular: pessoa.telefoneCelular,
-        telefoneResidencia: pessoa.telefoneResidencia,
-        telefoneComercial: pessoa.telefoneComercial,
-        email: pessoa.email
+        estado_civil: pessoaParam.estado_civil,
+        rg: pessoaParam.rg,
+        cpf: pessoaParam.cpf,
+        sexo: pessoaParam.sexo,
+        nacionalidade: pessoaParam.nacionalidade,
+        naturalidade: pessoaParam.naturalidade,
+        situacao_profissional: pessoaParam.situacao_profissional,
+        nome: pessoaParam.nome,
+        data_nascimento: pessoaParam.data_nascimento,
+        grauEscolaridade: pessoaParam.grauEscolaridade,
+        estadoEscolaridade: pessoaParam.estadoEscolaridade,
+        telefoneCelular: pessoaParam.telefoneCelular,
+        telefoneResidencia: pessoaParam.telefoneResidencia,
+        telefoneComercial: pessoaParam.telefoneComercial,
+        email: pessoaParam.email
       }, queryOptions)
-      let enderecoInstance
-      if(endereco)
-          enderecoInstance = await models.Endereco.adiciona(models, transaction, {
-          endereco: endereco,
-          cidade: cidade,
-          bairro: bairro,
-          PessoaIdParam: pessoaInstance.id
-        })
-     
-      return { 
-        pessoaInstance: pessoaInstance, 
-        enderecoInstance: (enderecoInstance)? enderecoInstance: null 
-      }
+      
+      if(param.enderecoParam)
+        await Pessoa.atualizaEndereco(models, param, pessoaInstance, t)
+      
+      if(param.religiaoParam)
+        await Pessoa.atualizaReligiao(models.Religiao, religiaoParam, pessoaInstance, t)
+
+      return pessoaInstance
     } catch (error) {
       console.log("\n catch \n")
       throw util.checkError(error, modelName)
@@ -108,47 +109,40 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
 
-  Pessoa.edita = async function (models, transaction, param) {
-    let {
-      pessoa,
-      endereco,
-      cidade,
-      bairro
-    } = param
+  Pessoa.edita = async function (models, param, t) {
+    let { pessoaParam } = param
 
     let queryOptions = {
       where: {
-        id: pessoa.id
-      }
+        id: pessoaParam.id
+      },
+      returning: true
     }
 
-    if (transaction)
-      queryOptions.transaction = transaction
+    if (t)
+      queryOptions.transaction = t
 
     try {
       let pessoaInstance = await Pessoa.update({
-        estado_civil: pessoa.estado_civil,
-        cpf: pessoa.cpf,
-        sexo: pessoa.sexo,
-        nacionalidade: pessoa.nacionalidade,
-        naturalidade: pessoa.naturalidade,
-        situacao_profissional: pessoa.situacao_profissional,
-        escolaridade: pessoa.escolaridade,
-        nome: pessoa.nome,
-        data_nascimento: pessoa.data_nascimento,
-        grauEscolaridade: pessoa.grauEscolaridade, 
-        estadoEscolaridade: pessoa.estadoEscolaridade,
-        telefoneCelular: pessoa.telefoneCelular,
-        telefoneResidencia: pessoa.telefoneResidencia,
-        telefoneComercial: pessoa.telefoneComercial,
-        email: pessoa.email
+        estado_civil: pessoaParam.estado_civil,
+        cpf: pessoaParam.cpf,
+        sexo: pessoaParam.sexo,
+        nacionalidade: pessoaParam.nacionalidade,
+        naturalidade: pessoaParam.naturalidade,
+        situacao_profissional: pessoaParam.situacao_profissional,
+        escolaridade: pessoaParam.escolaridade,
+        nome: pessoaParam.nome,
+        data_nascimento: pessoaParam.data_nascimento,
+        grauEscolaridade: pessoaParam.grauEscolaridade,
+        estadoEscolaridade: pessoaParam.estadoEscolaridade,
+        telefoneCelular: pessoaParam.telefoneCelular,
+        telefoneResidencia: pessoaParam.telefoneResidencia,
+        telefoneComercial: pessoaParam.telefoneComercial,
+        email: pessoaParam.email
       }, queryOptions)
-
-      await models.Endereco.edita(models, transaction, {
-        endereco: endereco,
-        cidade: cidade,
-        bairro: bairro,
-      })
+      
+      pessoaInstance = pessoaInstance[1][0]
+      await Pessoa.atualizaEndereco(models, param, pessoaInstance, t)
 
       return pessoaInstance
     } catch (error) {
@@ -175,6 +169,55 @@ module.exports = (sequelize, DataTypes) => {
       throw util.checkError(error, modelName)
     }
   }
+
+  Pessoa.atualizaEndereco = async function (models, param, pessoaInstance, t) {
+    let {
+      enderecoParam
+    } = param
+    let queryOptions = {
+      transaction: t
+    }
+    let enderecoInstance = null
+
+    //param já com id
+    if (Object.keys(enderecoParam).find(key => key == "id"))
+      enderecoInstance = await models.Endereco.edita(models, param, t)
+    else
+      enderecoInstance = await models.Endereco.adiciona(models, param, t)
+
+    await pessoaInstance.setEndereco(enderecoInstance, queryOptions)
+  }
+
+  Pessoa.atualizaReligiao = async function (Religiao, religiaoParam, pessoaInstance, t) {
+    let queryOptions = {
+      transaction: t
+    }
+    let religiaoInstance = await Religiao.pesquisaOuAdiciona(religiaoParam, t)
+
+    await pessoaInstance.setReligiao(religiaoInstance, queryOptions)
+  }
+
+  function valida(pessoa) {
+    let {
+      data_nascimento = "",
+        email = "",
+        nome = "",
+        telefoneCelular = "",
+        telefoneComercial = "",
+        telefoneResidencia = ""
+    } = pessoa
+
+    if (nome != "" &&
+      data_nascimento != "" &&
+      (telefoneCelular != "" || telefoneComercial != "" || telefoneResidencia != "") &&
+      email != ""
+    ) {
+      return true
+    }
+
+    throw util.defineError(412, "Erro em Pessoa")
+  }
+
 
   return Pessoa;
 };

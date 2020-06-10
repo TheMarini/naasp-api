@@ -4,18 +4,25 @@ var successStatus = 200
 
 exports.post = async function (req, res) {
 	let response = null
+
 	try {
-		response = await models.Acolhido.adiciona(models, {
-			endereco: req.body.endereco,
-			cidade: req.body.cidade,
-			bairro: req.body.bairro,
-			pessoa: req.body.pessoa,
-			religiao: req.body.religiao,
-			acolhido: req.body.acolhido,
-			familiares: req.body.familiares,
-			medicamentos: req.body.medicamentos,
-			doencaFamilia: req.body.doencaFamilia
-		})
+		let param = {
+			pessoaParam: 		req.body.Pessoa,
+			acolhidoParam: 		req.body.Acolhido,
+			familiaresParam: 	req.body.Acolhido.Familiares
+		}
+		
+		if(req.body.Pessoa.Endereco){
+			param.enderecoParam = req.body.Pessoa.Endereco
+			param.cidadeParam = req.body.Pessoa.Endereco.Cidade.nome
+			param.bairroParam = req.body.Pessoa.Endereco.Bairro.nome
+		}
+		
+		if(req.body.Pessoa.Religiao)
+			param.religiaoParam = req.body.Pessoa.Religiao.nome
+
+
+		response = await models.Acolhido.adiciona(models, param)
 		res.status(successStatus).json(response)
 	} catch (error) {
 		console.log("\n", error, "\n")
@@ -43,15 +50,13 @@ exports.put = async function (req, res) {
 	let response = null
 	try {
 		response = await models.Acolhido.edita(models, {
-			endereco: req.body.endereco,
-			cidade: req.body.cidade,
-			bairro: req.body.bairro,
-			pessoa: req.body.pessoa,
-			religiao: req.body.religiao,
-			acolhido: req.body.acolhido,
-			familiares: req.body.familiares,
-			medicamentos: req.body.medicamentos,
-			doencaFamilia: req.body.doencaFamilia
+			pessoaParam: 		req.body.Pessoa,
+			enderecoParam: 		req.body.Pessoa.Endereco,
+			cidadeParam: 		req.body.Pessoa.Endereco.Cidade.nome,
+			bairroParam: 		req.body.Pessoa.Endereco.Bairro.nome,
+			religiaoParam: 		req.body.Pessoa.Religiao.nome,
+			acolhidoParam: 		req.body.Acolhido,
+			familiaresParam: 	req.body.Acolhido.Familiares
 		})
 
 		res.status(successStatus).json(response)

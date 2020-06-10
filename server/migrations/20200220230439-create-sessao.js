@@ -8,19 +8,19 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      dataSessao: {
+      dataInicioSessao: {
         type: Sequelize.DATEONLY
       },
-      horaSessao: {
+      horaInicioSessao: {
+        type: Sequelize.TIME
+      },
+      dataTerminoSessao: {
+        type: Sequelize.DATEONLY
+      },
+      horaTerminoSessao: {
         type: Sequelize.TIME
       },
       presenca: {
-        type: Sequelize.STRING
-      },
-      acolhidoId: {
-        type: Sequelize.STRING
-      },
-      voluntarioId: {
         type: Sequelize.STRING
       },
       observacao: {

@@ -3,27 +3,26 @@ module.exports = {
   up: (queryInterface, Sequelize) => {
     return queryInterface.createTable('Acolhido', {
       id: {
-        allowNull: false,
+        type: Sequelize.INTEGER,
         autoIncrement: true,
-        primaryKey: true,
+        primaryKey: true
+      },
+      alcoolismoFamilia: {
+        type: Sequelize.STRING
+      },
+      atividadeFisica: {
+        type: Sequelize.STRING
+      },
+      atividadesReligiosas: {
+        type: Sequelize.STRING
+      },
+      bebidaQuantidade: {
+        type: Sequelize.STRING
+      },
+      cigarroQuantidade: {
         type: Sequelize.INTEGER
       },
-      atividade_fisica: {
-        type: Sequelize.STRING
-      },
-      bebida_quantidade: {
-        type: Sequelize.STRING
-      },
-      bebida_periodicidade: {
-        type: Sequelize.STRING
-      },
-      numero_cigarros_por_dia: {
-        type: Sequelize.INTEGER
-      },
-      paroquia: {
-        type: Sequelize.STRING
-      },
-      atividades_religiosas: {
+      condicoesMoradia:{
         type: Sequelize.STRING
       },
       demanda: {
@@ -32,14 +31,30 @@ module.exports = {
       encaminhamento: {
         type: Sequelize.STRING
       },
-      preferenciaAtendimento: {
+      medicamentosFamilia: {
         type: Sequelize.STRING
       },
       observacao: {
         type: Sequelize.STRING
       },
+      observacaoBeneficioGoverno: {
+        type: Sequelize.STRING
+      },
+      paroquia: {
+        type: Sequelize.STRING
+      },
+      preferenciaAtendimento: {
+        allowNull: false,
+        type: Sequelize.STRING
+      },
       prioridade: {
         type: Sequelize.INTEGER
+      },
+      tipoBeneficioGoverno: {
+        type: Sequelize.STRING
+      },
+      valorBeneficioGoverno:{
+        type: Sequelize.DOUBLE
       },
       createdAt: {
         allowNull: false,

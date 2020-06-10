@@ -35,11 +35,10 @@ if (process.env.DATABASE_URL) {
   // sequelize = new Sequelize('postgres://postgres:postgres@localhost:5432/database_development');
 }
 
-sequelize.sync({
-  force: true,
-  logging: console.log
-}).then(() => {
-
+// sequelize.sync({
+//   force: true,
+//   logging: console.log
+// }).then(() => {
   sequelize
     .authenticate()
     .then(() => {
@@ -49,12 +48,11 @@ sequelize.sync({
         console.log("All models were synchronized successfully.");
         console.log('App listening on port 3000!');
       });
-
     })
     .catch(err => {
       console.error('Unable to connect to the database:', err);
     });
-})
+// })
 
 io.on('connection', socket => {
   async function emiteDados(){
@@ -65,7 +63,31 @@ io.on('connection', socket => {
   emiteDados();
   socket.on('sessao', function(sessao){
       // recebe o dado
-      sessaoModel.post(sessao);
-      io.emit('sessao', sessao);
+      var verificaSessao = false;
+      try {
+        sessaoModel.post(sessao);
+
+      } catch (error) {
+        verificaSessao = true;
+      }
+      if (verificaSessao) {
+        io.emit('sessao', sessao);
+      }else {
+        io.emit('sessao', false);
+      }
   });
+  socket.on('deleta', function(id){
+    var verificaDelete = false;
+    try {
+      sessaoModel.delete(id);
+    } catch (e) {
+      verificaDelete = true;
+    }
+    if (verificaDelete) {
+      io.emit('deleta', id)
+    }else {
+      io.emit('deleta', false)
+    }
+  })
+
 });

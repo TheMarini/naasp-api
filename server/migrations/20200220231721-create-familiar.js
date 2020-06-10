@@ -27,7 +27,7 @@ module.exports = {
         type: Sequelize.BOOLEAN
       },
       telefone: {
-        type: Sequelize.INTEGER
+        type: Sequelize.STRING
       },
       renda: {
         type: Sequelize.DOUBLE
@@ -36,7 +36,7 @@ module.exports = {
         type: Sequelize.BOOLEAN
       },
       rg: {
-        type: Sequelize.INTEGER
+        type: Sequelize.STRING
       },
       createdAt: {
         allowNull: false,

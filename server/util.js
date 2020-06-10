@@ -7,10 +7,12 @@ function defineError(codigo, mensagem) {
 }
 
 function checkError(error, model) {
-    if (error.name == "SequelizeUniqueConstraintError")
+    if( error.code)
+        throw error
+    // else if (error.name == "SequelizeValidationError")
+    //     return this.defineError(500, error.errors[0].message)
+    else if (error.name == "SequelizeUniqueConstraintError")
         return this.defineError(500, `${model} já existe`)
-    else if (error.name == "SequelizeValidationError")
-        return this.defineError(500, error.errors[0].message)
     else {
         logFile.log(error)
         throw this.defineError(500, `Erro interno`)

@@ -16,10 +16,13 @@ module.exports = (sequelize, DataTypes) => {
     escolaridade: DataTypes.STRING,
     ocupacao: DataTypes.STRING,
     cohabita: DataTypes.BOOLEAN,
-    telefone: DataTypes.INTEGER,
+    telefone: DataTypes.STRING,
     renda: DataTypes.DOUBLE,
-    responsavel: DataTypes.BOOLEAN,
-    rg: DataTypes.INTEGER,
+    responsavel: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false
+    },
+    rg: DataTypes.STRING,
     AcolhidoId: DataTypes.INTEGER,
     createdAt: {
       allowNull: false,
@@ -29,13 +32,16 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       type: DataTypes.DATE
     }
-  }, {});
-  Familiar.associate = function(models) {
-      Familiar.belongsTo(models.Acolhido)
-      Familiar.hasMany(models.DoencaFamilia)
-  };
+  }, {})
 
-  Familiar.adiciona = async function (AcolhidoId, familiar, transaction) {
+  Familiar.associate = function(models) {
+      Familiar.belongsTo(models.Acolhido, {
+        foreignKey: "AcolhidoId"
+      })
+      Familiar.hasMany(models.DoencaFamilia)
+  }
+
+  Familiar.adiciona = async function (familiar, transaction) {
     let queryOptions = {}
 
     if (transaction)
@@ -52,8 +58,7 @@ module.exports = (sequelize, DataTypes) => {
         telefone: familiar.telefone,
         renda: familiar.renda,
         responsavel: familiar.responsavel,
-        rg: familiar.rg,
-        AcolhidoId: AcolhidoId
+        rg: familiar.rg
       }, queryOptions)
       return familiarInstance
     } catch (error) {
@@ -82,15 +87,16 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
 
-  Familiar.edita = async function (familiar, transaction) {
+  Familiar.edita = async function (familiar, t) {
     let queryOptions = {
       where: {
         id: familiar.id
-      }
+      },
+      returning: true
     }
 
-    if (transaction)
-      queryOptions.transaction = transaction
+    if (t)
+      queryOptions.transaction = t
 
     try {
       let familiarInstance = await Familiar.update({
@@ -105,6 +111,9 @@ module.exports = (sequelize, DataTypes) => {
         responsavel: familiar.responsavel,
         rg: familiar.rg
       }, queryOptions)
+
+      familiarInstance = familiarInstance[1][0]
+      
       return familiarInstance
     } catch (error) {
       console.log("\n catch \n")
@@ -160,18 +169,15 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
 
-  Familiar.adicionaVarios = async function(familiares = [], AcolhidoId, transaction) {
-    let queryOptions = {}
+  Familiar.adicionaVarios = async function(familiares = [], transaction) {
+    let queryOptions = { returning: true }
 
     if (transaction)
       queryOptions.transaction = transaction
 
-    familiares.forEach(e => {
-      e.AcolhidoId= AcolhidoId
-    });
-
     try {
       let familiarInstance = await Familiar.bulkCreate(familiares, queryOptions)
+
       return familiarInstance
     } catch (error) {
       console.log("\n catch \n")
