@@ -90,6 +90,18 @@
               />
             </div>
 
+            <div class="form-group">
+              <input
+                type="text"
+                id="salaSessao"accept=""
+                class="form-control bg-dark text-white"
+                placeholder="Sala"
+                maxlength="20"
+                required
+              />
+            </div>
+
+
             <button type="submit" class="btn btn-primary btn-block">
               Enviar
             </button>
@@ -126,6 +138,7 @@
         const acolhidoHTML = document.getElementById('acolhidoSessao');
         const presenteHTML = document.getElementById('presenteSessao');
         const observacaoHTML = document.getElementById('observacaoSessao');
+        const salaHTML = document.getElementById('salaSessao');
 
         // Create new idea
         // app.service('ideas').create({
@@ -137,9 +150,10 @@
         const sessao = {
           dataSessao: dataHTML.value,
           horaSessao: horaHTML.value,
-          acolhidoId: voluntarioHTML.value,
-          voluntarioId: acolhidoHTML.value,
+          AcolhidoId: voluntarioHTML.value,
+          VoluntarioId: acolhidoHTML.value,
           presenca: presenteHTML.value,
+          salanome: salaHTML.value,
           observacao: observacaoHTML.value
         }
         // envia para o back salvar
@@ -151,6 +165,7 @@
         voluntarioHTML.value = '';
         acolhidoHTML.value = '';
         presenteHTML.value = '';
+        salaHTML.value = '';
         observacaoHTML.value = '';
       }
 
@@ -162,13 +177,15 @@
                 <p class="lead">
                   <strong>${sessao.dataSessao} às ${sessao.horaSessao}</strong>
                   <br />
-                  <em> Acolhido: ${sessao.acolhidoId}</em>
+                  <em> Acolhido: ${sessao.AcolhidoId}</em>
                   <br />
-                  <small>Voluntario: ${sessao.voluntarioId}</small>
+                  <small>Voluntario: ${sessao.VoluntarioId}</small>
                   <br />
                   <small>Presença: ${sessao.presenca}</small>
                   <br />
                   <small>Observação: ${sessao.observacao}</small>
+                  <br />
+                  <small>Sala: ${sessao.salanome}</small>
                 </p>
               </div>
             </div>`;
