@@ -11,20 +11,55 @@ module.exports = (sequelize, DataTypes) => {
       primaryKey: true,
       autoIncrement: true
     },
-    atividade_fisica: DataTypes.STRING,
-    atividades_religiosas: DataTypes.STRING,
-    bebida_quantidade: DataTypes.STRING,
-    bebida_periodicidade: DataTypes.STRING,
-    demanda: DataTypes.STRING,
-    encaminhamento: DataTypes.STRING,
-    numero_cigarros_por_dia: DataTypes.STRING,
-    observacao: DataTypes.STRING,
-    paroquia: DataTypes.STRING,
+    alcoolismoFamilia: {
+      type: Sequelize.STRING
+    },
+    atividadeFisica: {
+      type: Sequelize.STRING
+    },
+    atividadesReligiosas: {
+      type: Sequelize.STRING
+    },
+    bebidaQuantidade: {
+      type: Sequelize.STRING
+    },
+    cigarroQuantidade: {
+      type: Sequelize.INTEGER
+    },
+    condicoesMoradia:{
+      type: Sequelize.STRING
+    },
+    demanda: {
+      type: Sequelize.STRING
+    },
+    encaminhamento: {
+      type: Sequelize.STRING
+    },
+    medicamentosFamilia: {
+      type: Sequelize.STRING
+    },
+    observacao: {
+      type: Sequelize.STRING
+    },
+    observacaoBeneficioGoverno: {
+      type: Sequelize.STRING
+    },
+    paroquia: {
+      type: Sequelize.STRING
+    },
     preferenciaAtendimento: {
       allowNull: false,
-      type: DataTypes.STRING
+      type: Sequelize.STRING
     },
-    prioridade: DataTypes.INTEGER,
+    prioridade: {
+      type: Sequelize.INTEGER
+    },
+    tipoBeneficioGoverno: {
+      type: Sequelize.STRING
+    },
+    valorBeneficioGoverno:{
+      type: Sequelize.DOUBLE
+    },
     PessoaId: {
       allowNull: true,
       type: DataTypes.INTEGER
@@ -58,85 +93,36 @@ module.exports = (sequelize, DataTypes) => {
   };
 
   Acolhido.adiciona = async function (models, param) {
-    let t = await sequelize.transaction({ autocommit: false })
-    let acolhidoParam = param.acolhidoParam ? param.acolhidoParam : {}
-    let acolhidoInstance = null
-
-    let {
-      enderecoParam,
-      cidadeParam,
-      bairroParam,
-      pessoaParam,
+    let { 
+      acolhidoParam,
       religiaoParam,
-      familiaresParam = [],
-      medicamentos = [],
-      doencaFamilia = [],
+      familiaresParam = []
     } = param
-
-    let queryOptions = {}
-    let transaction = null
-    // let transaction = await sequelize.transaction({type: sequelize.Transaction})
+    
+    valida(acolhidoParam)
 
     try {
-      acolhidoInstance = await cadastra(acolhidoParam, t)
-      let status = await cadastraAssociacoes(models, acolhidoInstance, param, t)
-
-      if(religiaoParam)
-        religiaoInstance = await models.Religiao.pesquisaOuAdiciona(religiaoParam, transaction)
-
-      if(pessoaParam)
-        pessoaRetorno = await models.Pessoa.adiciona(models, transaction, {
-          pessoaParam,
-          enderecoParam,
-          cidadeParam,
-          bairroParam
-        })
-
-      // if (!religiaoInstance)
-      //   return util.defineError(412, "Erro em religião")
-
-      // if (!pessoaInstance)
-      //   return util.defineError(412, "Erro em Pessoa")
-
-      if (transaction)
-        queryOptions.transaction = transaction
-
-      let data = {
+      let t = await sequelize.transaction({ autocommit: false })
+      let queryOptions = {transaction: t}
+      
+      let acolhidoInstance = await Acolhido.create({
         atividade_fisica: acolhidoParam.atividade_fisica,
+        atividades_religiosas: acolhidoParam.atividades_religiosas,
         bebida_quantidade: acolhidoParam.bebida_quantidade,
         bebida_periodicidade: acolhidoParam.bebida_periodicidade,
-        paroquia: acolhidoParam.paroquia,
-        atividades_religiosas: acolhidoParam.atividades_religiosas,
         demanda: acolhidoParam.demanda,
         encaminhamento: acolhidoParam.encaminhamento,
+        numero_cigarros_por_dia: acolhidoParam.numero_cigarros_por_dia,
         observacao: acolhidoParam.observacao,
+        paroquia: acolhidoParam.paroquia,
+        preferenciaAtendimento: acolhidoParam.preferenciaAtendimento,
         prioridade: acolhidoParam.prioridade,
-        PessoaId: (pessoaRetorno)? pessoaRetorno.pessoaInstance.dataValues.id: null,
-        ReligiaoId: (religiaoInstance)? religiaoInstance[0].dataValues.id : null
-      }
+        StatusId: (param.pessoaParam.cpf != "")? 2 : 1
+      }, queryOptions)
 
-      if(pessoaParam && pessoaParam.cpf)
-        data.StatusId = 2
-
-      let acolhidoInstance = await Acolhido.create( data, { queryOptions } )
-
-      let AcolhidoId = acolhidoInstance.dataValues.id
-      let medicamentoContinuoInstance
-      let familiaresInstance
-      if(medicamentos)
-        medicamentoContinuoInstance = await models.MedicamentoContinuo.adicionaVarios(medicamentos, AcolhidoId, transaction)
-
-      if(familiaresParam)
-        familiaresInstance = await models.Familiar.adicionaVarios(familiaresParam, AcolhidoId, transaction)
-
-      // await transaction.commit()
-      return {
-          pessoa: (pessoaParam)? pessoaRetorno.pessoaInstance.dataValues: null,
-          endereco: (enderecoParam)? pessoaRetorno.enderecoInstance.dataValues: null,
-          acolhido: acolhidoInstance.dataValues,
-          familiares:(familiaresParam)? familiaresInstance.dataValues : null,
-          medicamentoContinuo: (medicamentoContinuoInstance)? medicamentoContinuoInstance.dataValues : null
-        }
+      await Acolhido.atualizaPessoa(models, param, acolhidoInstance, t)
+      await Acolhido.atualizaReligiao(models.Religiao, religiaoParam, acolhidoInstance, t)
+      await Acolhido.atualizaFamiliares(models.Familiar, familiaresParam, acolhidoInstance, t)
 
     } catch (error) {
       await t.rollback();
@@ -415,78 +401,20 @@ module.exports = (sequelize, DataTypes) => {
     }
     let religiaoInstance = Religiao.pesquisaOuAdiciona(religiaoParam, t)
 
-    acolhidoInstance.setEspecialidade(especialidadeInstance, queryOptions)
+    acolhidoInstance.setReligiao(religiaoInstance, queryOptions)
   }
 
-  Acolhido.atualizaFamiliares = async function (){
+  Acolhido.atualizaFamiliares = async function (Familiar, familiaresParam, acolhidoInstance, t){
     if (familiaresParam.length > 0) {
-      familiaresInstance = await models.Familiar.adicionaVarios(familiaresParam, t)
+      familiaresInstance = await Familiar.adicionaVarios(familiaresParam, t)
       await acolhidoInstance.setFamiliares(familiaresInstance, { transaction: t })
     }
   }
 
-  async function cadastra(acolhidoParam, t) {
-    let queryOptions = t ? t : {}
-    let acolhidoInstance = null
-
-    let acolhido = {
-      atividade_fisica: acolhidoParam.atividade_fisica,
-      bebida_quantidade: acolhidoParam.bebida_quantidade,
-      bebida_periodicidade: acolhidoParam.bebida_periodicidade,
-      paroquia: acolhidoParam.paroquia,
-      atividades_religiosas: acolhidoParam.atividades_religiosas,
-      demanda: acolhidoParam.demanda,
-      encaminhamento: acolhidoParam.encaminhamento,
-      observacao: acolhidoParam.observacao,
-      preferenciaAtendimento: acolhidoParam.preferenciaAtendimento,
-      prioridade: acolhidoParam.prioridade,
-    }
-    valida(acolhido)
-
-    return await Acolhido.create(acolhido, queryOptions)
-  }
-
-  async function cadastraAssociacoes(models, acolhidoInstance, param, t) {
-    let {
-      enderecoParam = {},
-      cidadeParam = {},
-      bairroParam = {},
-      pessoaParam = {},
-      religiaoParam = {},
-      familiaresParam = [],
-      medicamentosParam = "",
-      doencaFamiliaParam = []
-    } = param
-    
-    let religiaoInstance = null
-    let pessoaInstance = null
-    let medicamentoContinuoInstance = null
-    let familiaresInstance = null
-    // let status = (pessoaParam && pessoaParam.cpf) ? 2 : 1
-    
-    // await acolhidoInstance.setStatus(status, { transaction: t })
-
-    if (medicamentosParam != "") {
-      let medicamentos = []
-
-      medicamentosParam.split(",").forEach(element => {
-        medicamentos.push(element)
-      })
-
-      medicamentoContinuoInstance = await models.MedicamentoContinuo.adicionaVarios(medicamentos, t)
-      await acolhidoInstance.setMedicamentosContinuos(medicamentoContinuoInstance, { transaction: t })
-    }
-
-
-//  ARRANJO TECNICO
-    return status
-
-  }
-
-  function valida(acolhido) {
+  function valida(acolhidoParam) {
     let {
       preferenciaAtendimento
-    } = acolhido
+    } = acolhidoParam
     if (preferenciaAtendimento != null)
       return true
 

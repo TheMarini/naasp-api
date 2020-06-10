@@ -7,22 +7,22 @@ module.exports = {
         autoIncrement: true,
         primaryKey: true
       },
-      atividade_fisica: {
+      alcoolismoFamilia: {
         type: Sequelize.STRING
       },
-      bebida_quantidade: {
+      atividadeFisica: {
         type: Sequelize.STRING
       },
-      bebida_periodicidade: {
+      atividadesReligiosas: {
         type: Sequelize.STRING
       },
-      numero_cigarros_por_dia: {
+      bebidaQuantidade: {
+        type: Sequelize.STRING
+      },
+      cigarroQuantidade: {
         type: Sequelize.INTEGER
       },
-      paroquia: {
-        type: Sequelize.STRING
-      },
-      atividades_religiosas: {
+      condicoesMoradia:{
         type: Sequelize.STRING
       },
       demanda: {
@@ -31,15 +31,30 @@ module.exports = {
       encaminhamento: {
         type: Sequelize.STRING
       },
-      preferenciaAtendimento: {
-        allowNull: false,
+      medicamentosFamilia: {
         type: Sequelize.STRING
       },
       observacao: {
         type: Sequelize.STRING
       },
+      observacaoBeneficioGoverno: {
+        type: Sequelize.STRING
+      },
+      paroquia: {
+        type: Sequelize.STRING
+      },
+      preferenciaAtendimento: {
+        allowNull: false,
+        type: Sequelize.STRING
+      },
       prioridade: {
         type: Sequelize.INTEGER
+      },
+      tipoBeneficioGoverno: {
+        type: Sequelize.STRING
+      },
+      valorBeneficioGoverno:{
+        type: Sequelize.DOUBLE
       },
       createdAt: {
         allowNull: false,
