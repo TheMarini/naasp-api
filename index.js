@@ -46,11 +46,10 @@ if (process.env.DATABASE_URL) {
   })
 }
 
-sequelize.sync({
-  force: true,
-  logging: console.log
-}).then(() => {
-
+// sequelize.sync({
+//   force: true,
+//   logging: console.log
+// }).then(() => {
   sequelize
     .authenticate()
     .then(() => {
@@ -60,7 +59,6 @@ sequelize.sync({
         console.log("All models were synchronized successfully.");
         console.log('App listening on port 3000!');
       });
-
     })
     .catch(err => {
       console.error('Unable to connect to the database:', err);

@@ -16,11 +16,11 @@ module.exports = {
     ).then(() => {
       return queryInterface.addColumn(
         'Usuario', // name of Source model
-        'AcolhidoId', // name of the key we're adding
+        'VoluntarioId', // name of the key we're adding
         {
           type: Sequelize.INTEGER,
           references: {
-            model: 'Acolhido', // name of Target model
+            model: 'Voluntario', // name of Target model
             key: 'id', // key in Target model that we're referencing
           },
           onUpdate: 'CASCADE',
@@ -87,34 +87,6 @@ module.exports = {
     }).then(() => {
       return queryInterface.addColumn(
         'Familiar', // name of Source model
-        'AcolhidoId', // name of the key we're adding 
-        {
-          type: Sequelize.INTEGER,
-          references: {
-            model: 'Acolhido', // name of Target model
-            key: 'id', // key in Target model that we're referencing
-          },
-          onUpdate: 'CASCADE',
-          onDelete: 'SET NULL',
-        }
-      )
-    }).then(() => {
-      return queryInterface.addColumn(
-        'MedicamentoContinuo', // name of Source model
-        'AcolhidoId', // name of the key we're adding 
-        {
-          type: Sequelize.INTEGER,
-          references: {
-            model: 'Acolhido', // name of Target model
-            key: 'id', // key in Target model that we're referencing
-          },
-          onUpdate: 'CASCADE',
-          onDelete: 'SET NULL',
-        }
-      )
-    }).then(() => {
-      return queryInterface.addColumn(
-        'DoencaFamilia', // name of Source model
         'AcolhidoId', // name of the key we're adding 
         {
           type: Sequelize.INTEGER,
@@ -198,20 +170,6 @@ module.exports = {
       )
     }).then(() => {
       return queryInterface.addColumn(
-        'AbusoAlcoolFamilia', // name of Source model
-        'AcolhidoId', // name of the key we're adding 
-        {
-          type: Sequelize.INTEGER,
-          references: {
-            model: 'Acolhido', // name of Target model
-            key: 'id', // key in Target model that we're referencing
-          },
-          onUpdate: 'CASCADE',
-          onDelete: 'SET NULL',
-        }
-      )
-    }).then(() => {
-      return queryInterface.addColumn(
         'Acolhido', // name of Source model
         'ReligiaoId', // name of the key we're adding 
         {
@@ -240,28 +198,88 @@ module.exports = {
           onDelete: 'SET NULL',
         }
       )
+    }).then(() => {
+      return queryInterface.addColumn(
+        'TentativaContato', // name of Source model
+        'UsuarioId', // name of the key we're adding 
+        {
+          allowNull: true,
+          type: Sequelize.INTEGER,
+          references: {
+            model: 'Usuario', // name of Target model
+            key: 'id', // key in Target model that we're referencing
+          },
+          onUpdate: 'CASCADE',
+          onDelete: 'SET NULL',
+        }
+      )
+    }).then(() => {
+      return queryInterface.addColumn(
+        'TentativaContato', // name of Source model
+        'AcolhidoId', // name of the key we're adding 
+        {
+          allowNull: true,
+          type: Sequelize.INTEGER,
+          references: {
+            model: 'Acolhido', // name of Target model
+            key: 'id', // key in Target model that we're referencing
+          },
+          onUpdate: 'CASCADE',
+          onDelete: 'SET NULL',
+        }
+      )
     })
 
-    // then(() => {
+    // .then(() => {
     //   return queryInterface.addColumn(
     //     'MedicamentoContinuo', // name of Source model
-    //     'FamiliarId', // name of the key we're adding 
+    //     'AcolhidoId', // name of the key we're adding 
     //     {
     //       type: Sequelize.INTEGER,
     //       references: {
-    //         model: 'Familiar', // name of Target model
+    //         model: 'Acolhido', // name of Target model
     //         key: 'id', // key in Target model that we're referencing
     //       },
     //       onUpdate: 'CASCADE',
     //       onDelete: 'SET NULL',
     //     }
     //   )
-    // }).
+    // }).then(() => {
+    //   return queryInterface.addColumn(
+    //     'AbusoAlcoolFamilia', // name of Source model
+    //     'AcolhidoId', // name of the key we're adding 
+    //     {
+    //       type: Sequelize.INTEGER,
+    //       references: {
+    //         model: 'Acolhido', // name of Target model
+    //         key: 'id', // key in Target model that we're referencing
+    //       },
+    //       onUpdate: 'CASCADE',
+    //       onDelete: 'SET NULL',
+    //     }
+    //   )
+    // }).then(() => {
+    //   return queryInterface.addColumn(
+    //     'DoencaFamilia', // name of Source model
+    //     'AcolhidoId', // name of the key we're adding 
+    //     {
+    //       type: Sequelize.INTEGER,
+    //       references: {
+    //         model: 'Acolhido', // name of Target model
+    //         key: 'id', // key in Target model that we're referencing
+    //       },
+    //       onUpdate: 'CASCADE',
+    //       onDelete: 'SET NULL',
+    //     }
+    //   )
+    // })
+
+
   },
   down: (queryInterface, Sequelize) => {
     return queryInterface.removeColumn(
       'Usuario', // name of Source model
-      'AcolhidoId' // key we want to remove
+      'VoluntarioId' // key we want to remove
     ).then(() => {
       return queryInterface.removeColumn(
         'Endereco', // name of Source model
@@ -291,16 +309,6 @@ module.exports = {
       )
     }).then(() => {
       return queryInterface.removeColumn(
-        'medicamentoContinuo', // name of Source model
-        'AcolhidoId' // key we want to remove
-      )
-    }).then(() => {
-      return queryInterface.removeColumn(
-        'DoencaFamilia', // name of Source model
-        'AcolhidoId' // key we want to remove
-      )
-    }).then(() => {
-      return queryInterface.removeColumn(
         'Endereco', // name of Source model
         'CidadeId' // key we want to remove
       )
@@ -321,23 +329,23 @@ module.exports = {
       )
     }).then(() => {
       return queryInterface.removeColumn(
-        'MedicamentoContinuo', // name of Source model
-        'AcolhidoId' // key we want to remove
-      )
-    }).then(() => {
-      return queryInterface.removeColumn(
         'DoencaFamilia', // name of Source model
         'FamiliarId' // key we want to remove
       )
     }).then(() => {
       return queryInterface.removeColumn(
-        'AbusoAlcoolFamilia', // name of Source model
+        'Acolhido', // name of Source model
+        'ReligiaoId' // key we want to remove
+      )
+    }).then(() => {
+      return queryInterface.removeColumn(
+        'TentativaContato', // name of Source model
         'AcolhidoId' // key we want to remove
       )
     }).then(() => {
       return queryInterface.removeColumn(
-        'Acolhido', // name of Source model
-        'ReligiaoId' // key we want to remove
+        'TentativaContato', // name of Source model
+        'UsuarioId' // key we want to remove
       )
     });
 
@@ -345,6 +353,16 @@ module.exports = {
     //   return queryInterface.removeColumn(
     //     'MedicamentoContinuo', // name of Source model
     //     'FamiliarId' // key we want to remove
+    //   )
+    // }).then(() => {
+    //   return queryInterface.removeColumn(
+    //     'DoencaFamilia', // name of Source model
+    //     'AcolhidoId' // key we want to remove
+    //   )
+    // }).then(() => {
+    //   return queryInterface.removeColumn(
+    //     'AbusoAlcoolFamilia', // name of Source model
+    //     'AcolhidoId' // key we want to remove
     //   )
     // })
   }
