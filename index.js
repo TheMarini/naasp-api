@@ -14,9 +14,9 @@ app.use(express.urlencoded({
   extended: false
 }))
 
-app.get('/', function(req, res){
-  res.sendFile(__dirname + '/submit.html');
-})
+// app.get('/', function(req, res){
+//   res.sendFile(__dirname + '/submit.html');
+// })
 
 app.use('/api', router)
 
