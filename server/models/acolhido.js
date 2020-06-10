@@ -12,53 +12,53 @@ module.exports = (sequelize, DataTypes) => {
       autoIncrement: true
     },
     alcoolismoFamilia: {
-      type: Sequelize.STRING
+      type: DataTypes.STRING
     },
     atividadeFisica: {
-      type: Sequelize.STRING
+      type: DataTypes.STRING
     },
     atividadesReligiosas: {
-      type: Sequelize.STRING
+      type: DataTypes.STRING
     },
     bebidaQuantidade: {
-      type: Sequelize.STRING
+      type: DataTypes.STRING
     },
     cigarroQuantidade: {
-      type: Sequelize.INTEGER
+      type: DataTypes.INTEGER
     },
     condicoesMoradia:{
-      type: Sequelize.STRING
+      type: DataTypes.STRING
     },
     demanda: {
-      type: Sequelize.STRING
+      type: DataTypes.STRING
     },
     encaminhamento: {
-      type: Sequelize.STRING
+      type: DataTypes.STRING
     },
     medicamentosFamilia: {
-      type: Sequelize.STRING
+      type: DataTypes.STRING
     },
     observacao: {
-      type: Sequelize.STRING
+      type: DataTypes.STRING
     },
     observacaoBeneficioGoverno: {
-      type: Sequelize.STRING
+      type: DataTypes.STRING
     },
     paroquia: {
-      type: Sequelize.STRING
+      type: DataTypes.STRING
     },
     preferenciaAtendimento: {
       allowNull: false,
-      type: Sequelize.STRING
+      type: DataTypes.STRING
     },
     prioridade: {
-      type: Sequelize.INTEGER
+      type: DataTypes.INTEGER
     },
     tipoBeneficioGoverno: {
-      type: Sequelize.STRING
+      type: DataTypes.STRING
     },
     valorBeneficioGoverno:{
-      type: Sequelize.DOUBLE
+      type: DataTypes.DOUBLE
     },
     PessoaId: {
       allowNull: true,
