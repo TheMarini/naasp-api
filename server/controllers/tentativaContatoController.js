@@ -35,7 +35,7 @@ exports.get = async function (req, res) {
 exports.put = async function (req, res) {
 	let response = null
 	try {
-        response = await models.TentativaContato.edita(models, req.body.tentativaContato)
+        response = await models.TentativaContato.edita(models, req.body)
 
 		res.status(successStatus).json(response)
 	} catch (error) {

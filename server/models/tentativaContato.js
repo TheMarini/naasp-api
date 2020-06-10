@@ -16,11 +16,6 @@ module.exports = (sequelize, DataTypes) => {
     createdAt: DataTypes.DATE,
     updatedAt: DataTypes.DATE
   }, {
-    hooks: {
-      afterCreate: (param1, param2, param3) => {
-        console.log(param1, param2, param3)
-      }
-    }
   })
 
   TentativaContato.associate = function(models) {
@@ -33,7 +28,6 @@ module.exports = (sequelize, DataTypes) => {
   }
 
   TentativaContato.adiciona = async function (models, param) {
-    console.log(param)
     let t = await sequelize.transaction({type: sequelize.Transaction})
     let queryOptions = {}
     let {
@@ -52,20 +46,24 @@ module.exports = (sequelize, DataTypes) => {
 
       await TentativaContato.atualizaUsuario(Usuario, param, tentativaContatoInstance, t)
       await TentativaContato.atualizaAcolhido(Acolhido, param, tentativaContatoInstance, t)
+      await TentativaContato.atualizaStatusAcolhido(models, tentativaContatoInstance, t)
 
+      await t.commit()
       return tentativaContatoInstance
     } catch (error) {
+      await t.rollback();
       console.log("\n catch \n")
       throw util.checkError(error, modelName)
     }
   }
 
-  TentativaContato.edita = async function (models, presencaParam) {
+  TentativaContato.edita = async function (models, param) {
     let t = await sequelize.transaction({type: sequelize.Transaction})
-
+    
     let queryOptions = {
+      returning: true,
       where: {
-        id: presencaParam.id
+        id: param.id
       }
     }
     let {
@@ -77,16 +75,21 @@ module.exports = (sequelize, DataTypes) => {
       queryOptions.transaction = t
 
     try {
-      let tentativaContatoInstance = await TentativaContato.create({
-        presenca: presencaParam,
-        horario: horarioParam
+      let tentativaContatoInstance = await TentativaContato.update({
+        presenca: param.presenca,
+        horario: param.horario
       }, queryOptions)
 
-      await TentativaContato.atualizaUsuario(Usuario, param, tentativaContatoInstance, t)
-      await TentativaContato.atualizaAcolhido(Acolhido, param, tentativaContatoInstance, t)
+      tentativaContatoInstance = tentativaContatoInstance[1][0]
 
+      await TentativaContato.atualizaUsuario(Usuario, param, tentativaContatoInstance, t)
+      await TentativaContato.atualizaAcolhido(Acolhido, param, tentativaContatoInstance, t)      
+      
+      await t.commit()
+      
       return tentativaContatoInstance
     } catch (error) {
+      await t.rollback();
       console.log("\n catch \n")
       throw util.checkError(error, modelName)
     }
@@ -188,6 +191,23 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
 
+  TentativaContato.listaStatusPorAcolhido = async function(models, acolhidoId) {  
+    console.log("listaStatusPorAcolhido")
+
+    try {
+      let tentativaContatoInstance = await TentativaContato.findAll({
+        where: {
+          AcolhidoId: acolhidoId
+        }
+      })
+      return tentativaContatoInstance
+    } catch (error) {
+      console.log("\n catch \n")
+      throw util.checkError(error, modelName)
+    }
+  }
+
+
   TentativaContato.listaPorUsuario = async function(models, usuarioId) {
     let {
       Usuario,
@@ -270,6 +290,25 @@ module.exports = (sequelize, DataTypes) => {
       throw util.checkError(error, modelName)
     }
   }
+
+  // TentativaContato.atualizaStatusAcolhido = async function (models, tentativaContatoInstance, t) {
+  //   console.log("atualizaStatusAcolhido")
+  //   let contatos = await TentativaContato.listaStatusPorAcolhido(models, tentativaContatoInstance.AcolhidoId)
+        
+  //   let cont = 0 
+  //   contatos.forEach(e => {
+  //     if(!e.presenca)
+  //       cont++
+  //   })
+  //   console.log(cont)   
+  //   // if(cont < 10)
+  //     // return
+        
+  //   let acolhidoInstance = await models.Acolhido.findByPk(tentativaContatoInstance.AcolhidoId)
+
+  //   await acolhidoInstance.update({StatusId: 4}, {transaction: t})
+
+  // }
 
   return TentativaContato
 }
