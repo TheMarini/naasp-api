@@ -173,7 +173,8 @@ module.exports = (sequelize, DataTypes) => {
       acolhidoInstance = acolhidoInstance[1][0]
       
       await Acolhido.atualizaPessoa(models, param, acolhidoInstance, t)
-      await Acolhido.atualizaFamiliares(models.Familiar, familiaresParam, acolhidoInstance, t)
+      if(familiaresParam.length > 0)
+        await Acolhido.atualizaFamiliares(models.Familiar, familiaresParam, acolhidoInstance, t)
       
       await t.commit()
       return true

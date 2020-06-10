@@ -75,9 +75,12 @@ module.exports = (sequelize, DataTypes) => {
         telefoneComercial: pessoaParam.telefoneComercial,
         email: pessoaParam.email
       }, queryOptions)
-
-      await Pessoa.atualizaEndereco(models, param, pessoaInstance, t)
-      await Pessoa.atualizaReligiao(models.Religiao, religiaoParam, pessoaInstance, t)
+      
+      if(param.enderecoParam)
+        await Pessoa.atualizaEndereco(models, param, pessoaInstance, t)
+      
+      if(param.religiaoParam)
+        await Pessoa.atualizaReligiao(models.Religiao, religiaoParam, pessoaInstance, t)
 
       return pessoaInstance
     } catch (error) {
