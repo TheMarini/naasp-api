@@ -78,6 +78,20 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
 
+  Sessao.deleta = async function (id) {
+    let queryOptions = {
+      where: {
+        id: id
+      }
+    }
+    try {
+      let sessaoInstance = await Sessao.destroy(queryOptions)
+      return sessaoInstance
+    } catch (error) {
+      console.log("\n catch \n")
+      throw util.checkError(error, modelName)
+    }
+  }
 
   return Sessao;
 };
