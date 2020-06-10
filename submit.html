@@ -174,23 +174,7 @@
       function renderIdea(sessao) {
         document.getElementById(
           'ideas'
-        ).innerHTML += `<div class="card bg-secondary my-3">
-              <div class="card-body">
-                <p class="lead">
-                  <strong>${sessao.dataSessao} às ${sessao.horaSessao}</strong>
-                  <br />
-                  <em> Acolhido: ${sessao.AcolhidoId}</em>
-                  <br />
-                  <small>Voluntario: ${sessao.VoluntarioId}</small>
-                  <br />
-                  <small>Presença: ${sessao.presenca}</small>
-                  <br />
-                  <small>Observação: ${sessao.observacao}</small>
-                  <br />
-                  <small>Sala: ${sessao.salanome}</small>
-                </p>
-              </div>
-            </div>`;
+        ).innerHTML += JSON.stringify(sessao);
       }
 
       socket.on('login', function(sessoes){
