@@ -11,6 +11,9 @@ module.exports = {
       presenca: {
         type: Sequelize.BOOLEAN
       },
+      horario: {
+        type: Sequelize.DATE
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE
