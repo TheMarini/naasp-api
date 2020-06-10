@@ -101,7 +101,6 @@ module.exports = (sequelize, DataTypes) => {
           ]
         }
       )
-      console.log(sessaoInstance)
       return sessaoInstance
     } catch (error) {
       console.log("\n catch \n")
@@ -150,7 +149,7 @@ module.exports = (sequelize, DataTypes) => {
 
     let voluntarioInstance = await Voluntario.findByPk(param.voluntarioId)
 
-    await sessaoInstance.setAcolhido(voluntarioInstance, queryOptions)
+    await sessaoInstance.setVoluntario(voluntarioInstance, queryOptions)
   }
 
   Sessao.atualizaSala = async function(Sala, param, sessaoInstance, t) {
