@@ -65,14 +65,31 @@ io.on('connection', socket => {
   emiteDados();
   socket.on('sessao', function(sessao){
       // recebe o dado
+      var verificaSessao = false;
       try {
         sessaoModel.post(sessao);
 
       } catch (error) {
-        var verifica = true;
+        verificaSessao = true;
       }
-      if (verifica) {
+      if (verificaSessao) {
         io.emit('sessao', sessao);
+      }else {
+        io.emit('sessao', false);
       }
   });
+  socket.on('deleta', function(id){
+    var verificaDelete = false;
+    try {
+      sessaoModel.delete(id);
+    } catch (e) {
+      verificaDelete = true;
+    }
+    if (verificaDelete) {
+      io.emit('deleta', id)
+    }else {
+      io.emit('deleta', false)
+    }
+  })
+
 });

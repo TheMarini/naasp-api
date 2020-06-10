@@ -11,7 +11,7 @@ exports.post = async function (req) {
 			dataTerminoSessao: req.dataSessao,
 			horaTerminoSessao: req.horaSessao,
 			AcolhidoId: req.AcolhidoId,
-			VoluntarioId: req.VoluntarioId,
+			SessaoId: req.SessaoId,
 			presenca: req.presenca,
 			observacao: req.observacao
 		})
@@ -26,6 +26,17 @@ exports.get = async function (req) {
 	let response = null
 	try {
 		response = await models.Sessao.lista()
+		return response;
+		// res.status(successStatus).json(response)
+	} catch (error) {
+		console.log("\n", error, "\n")
+		// res.status(error.code).json(error.message)
+	}
+}
+
+exports.delete = async function (req) {
+	try {
+		let response = await models.Sessao.deleta(req.id)
 		return response;
 		// res.status(successStatus).json(response)
 	} catch (error) {
