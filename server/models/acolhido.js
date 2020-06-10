@@ -64,10 +64,6 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: true,
       type: DataTypes.INTEGER
     },
-    ReligiaoId: {
-      allowNull: true,
-      type: DataTypes.INTEGER
-    },
     StatusId: {
       type: DataTypes.INTEGER,
       defaultValue: 1
@@ -82,9 +78,6 @@ module.exports = (sequelize, DataTypes) => {
     Acolhido.belongsTo(models.Pessoa, {
       foreignKey: 'PessoaId'
     })
-    Acolhido.belongsTo(models.Religiao, {
-      foreignKey: 'ReligiaoId'
-    });
     Acolhido.hasMany(models.Familiar, {
       as:{
         singular: "Familiar",
@@ -129,7 +122,6 @@ module.exports = (sequelize, DataTypes) => {
       }, queryOptions)
 
       await Acolhido.atualizaPessoa(models, param, acolhidoInstance, t)
-      await Acolhido.atualizaReligiao(models.Religiao, religiaoParam, acolhidoInstance, t)
       await Acolhido.atualizaFamiliares(models.Familiar, familiaresParam, acolhidoInstance, t)
 
       t.commit()
@@ -143,7 +135,6 @@ module.exports = (sequelize, DataTypes) => {
   Acolhido.edita = async function (models, param) {
     let { 
       acolhidoParam,
-      religiaoParam,
       familiaresParam = []
     } = param
     
@@ -182,8 +173,8 @@ module.exports = (sequelize, DataTypes) => {
       acolhidoInstance = acolhidoInstance[1][0]
       
       await Acolhido.atualizaPessoa(models, param, acolhidoInstance, t)
-      await Acolhido.atualizaReligiao(models.Religiao, religiaoParam, acolhidoInstance, t)
       await Acolhido.atualizaFamiliares(models.Familiar, familiaresParam, acolhidoInstance, t)
+      
       await t.commit()
       return true
     } catch (error) {
@@ -252,11 +243,7 @@ module.exports = (sequelize, DataTypes) => {
 
     try {
       let acolhidoInstance = await Acolhido.findAll({
-        include: [{
-          model: Religiao,
-          attributes: ['nome'],
-          as: 'Religiao'
-        },
+        include: [
         {
           model: Pessoa,
           as: 'Pessoa',
@@ -272,6 +259,11 @@ module.exports = (sequelize, DataTypes) => {
               attributes: ['nome'],
               as: 'Bairro'
             }]
+          },
+          {
+            model: Religiao,
+            attributes: ['nome'],
+            as: 'Religiao'
           }]
         }, {
           model: Familiar,
@@ -346,15 +338,6 @@ module.exports = (sequelize, DataTypes) => {
       pessoaInstance = await models.Pessoa.adiciona(models, param, t)
 
     await acolhidoInstance.setPessoa(pessoaInstance, queryOptions)
-  }
-
-  Acolhido.atualizaReligiao = async function (Religiao, religiaoParam, acolhidoInstance, t) {
-    let queryOptions = {
-      transaction: t
-    }
-    let religiaoInstance = await Religiao.pesquisaOuAdiciona(religiaoParam, t)
-
-    await acolhidoInstance.setReligiao(religiaoInstance, queryOptions)
   }
 
   Acolhido.atualizaFamiliares = async function (Familiar, familiaresParam, acolhidoInstance, t){

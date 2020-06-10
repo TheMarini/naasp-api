@@ -25,6 +25,10 @@ module.exports = (sequelize, DataTypes) => {
     telefoneCelular: DataTypes.STRING,
     telefoneResidencia: DataTypes.STRING,
     telefoneComercial: DataTypes.STRING,
+    ReligiaoId: {
+      allowNull: true,
+      type: DataTypes.INTEGER
+    },
     updatedAt: DataTypes.DATE,
     createdAt: DataTypes.DATE
   }, {
@@ -32,14 +36,18 @@ module.exports = (sequelize, DataTypes) => {
   });
 
   Pessoa.associate = function (models) {
-    Pessoa.hasOne(models.Acolhido);
-    Pessoa.hasOne(models.Voluntario);
-    Pessoa.hasOne(models.Endereco);
+    Pessoa.hasOne(models.Acolhido)
+    Pessoa.hasOne(models.Voluntario)
+    Pessoa.hasOne(models.Endereco)
+    Pessoa.belongsTo(models.Religiao, {
+      foreignKey: 'ReligiaoId'
+    });
   };
 
   Pessoa.adiciona = async function (models, param, t) {
     let {
-      pessoaParam
+      pessoaParam,
+      religiaoParam
     } = param
 
     let queryOptions = {}
@@ -69,6 +77,7 @@ module.exports = (sequelize, DataTypes) => {
       }, queryOptions)
 
       await Pessoa.atualizaEndereco(models, param, pessoaInstance, t)
+      await Pessoa.atualizaReligiao(models.Religiao, religiaoParam, pessoaInstance, t)
 
       return pessoaInstance
     } catch (error) {
@@ -174,6 +183,15 @@ module.exports = (sequelize, DataTypes) => {
       enderecoInstance = await models.Endereco.adiciona(models, param, t)
 
     await pessoaInstance.setEndereco(enderecoInstance, queryOptions)
+  }
+
+  Pessoa.atualizaReligiao = async function (Religiao, religiaoParam, pessoaInstance, t) {
+    let queryOptions = {
+      transaction: t
+    }
+    let religiaoInstance = await Religiao.pesquisaOuAdiciona(religiaoParam, t)
+
+    await pessoaInstance.setReligiao(religiaoInstance, queryOptions)
   }
 
   function valida(pessoa) {

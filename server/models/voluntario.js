@@ -186,7 +186,8 @@ module.exports = (sequelize, DataTypes) => {
       Bairro,
       Voluntario,
       Especialidade,
-      Usuario
+      Usuario,
+      Religiao
     } = models
 
     try {
@@ -207,7 +208,12 @@ module.exports = (sequelize, DataTypes) => {
                 model: Bairro,
                 attributes: ['nome'],
                 as: 'Bairro'
-              }]
+              }],              
+            },
+            {
+              model: Religiao,
+              attributes: ['nome'],
+              as: 'Religiao'
             }]
           },
           {

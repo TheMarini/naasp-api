@@ -7,13 +7,14 @@ exports.post = async function (req, res) {
 	try {
 		response = await models.Voluntario.adiciona(models, {
 			pessoaParam: 				 req.body.Pessoa,
+			religiaoParam: 				 req.body.Pessoa.Religiao.nome,
 			enderecoParam:			  	 req.body.Pessoa.Endereco,
 			cidadeParam: 				 req.body.Pessoa.Endereco.Cidade.nome,
 			bairroParam: 				 req.body.Pessoa.Endereco.Bairro.nome,
 			usuarioParam: 				 req.body.Voluntario.Usuario,
 			especialidadeParam: 		 req.body.Voluntario.Especialidade.nome,
 			faixaEtariaAtendimentoParam: req.body.Voluntario.faixaEtariaAtendimento,
-			tipoParam:						 req.body.Voluntario.tipo
+			tipoParam:					 req.body.Voluntario.tipo
 		})
 		res.status(successStatus).json(response)
 	} catch (error) {
@@ -46,6 +47,7 @@ exports.put = async function (req, res) {
 			enderecoParam:			  	 req.body.Pessoa.Endereco,
 			cidadeParam: 				 req.body.Pessoa.Endereco.Cidade.nome,
 			bairroParam: 				 req.body.Pessoa.Endereco.Bairro.nome,
+			religiaoParam: 				 req.body.Pessoa.Religiao.nome,
 			usuarioParam: 				 req.body.Voluntario.Usuario,
 			especialidadeParam: 		 req.body.Voluntario.Especialidade.nome,
 			faixaEtariaAtendimentoParam: req.body.Voluntario.faixaEtariaAtendimento,

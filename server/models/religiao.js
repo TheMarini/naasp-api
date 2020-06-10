@@ -25,7 +25,7 @@ module.exports = (sequelize, DataTypes) => {
   });
   Religiao.associate = function (models) {
     // associations can be defined here
-    Religiao.hasMany(models.Acolhido);
+    Religiao.hasMany(models.Pessoa);
   };
 
   Religiao.adiciona = async function (nome, transaction) {

@@ -11,8 +11,8 @@ exports.post = async function (req, res) {
 			enderecoParam: 		req.body.Pessoa.Endereco,
 			cidadeParam: 		req.body.Pessoa.Endereco.Cidade.nome,
 			bairroParam: 		req.body.Pessoa.Endereco.Bairro.nome,
+			religiaoParam: 		req.body.Pessoa.Religiao.nome,
 			acolhidoParam: 		req.body.Acolhido,
-			religiaoParam: 		req.body.Acolhido.Religiao.nome,
 			familiaresParam: 	req.body.Acolhido.Familiares
 		})
 		res.status(successStatus).json(response)
@@ -46,8 +46,8 @@ exports.put = async function (req, res) {
 			enderecoParam: 		req.body.Pessoa.Endereco,
 			cidadeParam: 		req.body.Pessoa.Endereco.Cidade.nome,
 			bairroParam: 		req.body.Pessoa.Endereco.Bairro.nome,
+			religiaoParam: 		req.body.Pessoa.Religiao.nome,
 			acolhidoParam: 		req.body.Acolhido,
-			religiaoParam: 		req.body.Acolhido.Religiao.nome,
 			familiaresParam: 	req.body.Acolhido.Familiares
 		})
 

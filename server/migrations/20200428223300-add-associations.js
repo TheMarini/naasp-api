@@ -170,7 +170,7 @@ module.exports = {
       )
     }).then(() => {
       return queryInterface.addColumn(
-        'Acolhido', // name of Source model
+        'Pessoa', // name of Source model
         'ReligiaoId', // name of the key we're adding 
         {
           allowNull: true,
@@ -334,7 +334,7 @@ module.exports = {
       )
     }).then(() => {
       return queryInterface.removeColumn(
-        'Acolhido', // name of Source model
+        'Pessoa', // name of Source model
         'ReligiaoId' // key we want to remove
       )
     }).then(() => {
