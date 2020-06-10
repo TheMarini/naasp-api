@@ -92,7 +92,7 @@ module.exports = (sequelize, DataTypes) => {
       }})
     Acolhido.hasMany(models.DoencaFamilia)
     Acolhido.hasMany(models.TentativaContato)
-    // Acolhido.hasMany(models.Sessao)
+    Acolhido.hasMany(models.Sessao)
   };
 
   Acolhido.adiciona = async function (models, param) {

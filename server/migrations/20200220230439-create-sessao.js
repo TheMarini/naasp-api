@@ -17,12 +17,6 @@ module.exports = {
       presenca: {
         type: Sequelize.STRING
       },
-      acolhidoId: {
-        type: Sequelize.STRING
-      },
-      voluntarioId: {
-        type: Sequelize.STRING
-      },
       observacao: {
         type: Sequelize.STRING
       },
