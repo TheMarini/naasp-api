@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+      integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
+      crossorigin="anonymous"
+    />
+    <title>Naasp</title>
+    <script src="/socket.io/socket.io.js"></script>
+  </head>
+  <body class="bg-dark text-white">
+    <nav class="navbar navbar-light bg-light">
+      <div class="container">
+        <span class="navbar-brand mb-0 h1">Naasp</span>
+      </div>
+    </nav>
+
+    <div class="container mt-5">
+      <div class="row">
+        <div class="col-md-6">
+          <h1 class="text-center mb-3">
+            Agenda
+          </h1>
+          <form id="form">
+            <div class="form-group">
+              <input
+                type="date"
+                id="dataSessao"
+                class="form-control bg-dark text-white"
+                placeholder="Data"
+                maxlength="30"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <input
+                type="time"
+                id="horaSessao"
+                class="form-control bg-dark text-white"
+                placeholder="Enter idea (30 chars max)"
+                maxlength="30"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <input
+                type="text"
+                id="voluntarioSessao"
+                class="form-control bg-dark text-white"
+                placeholder="Voluntario"
+                maxlength="30"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <input
+                type="text"
+                id="acolhidoSessao"
+                class="form-control bg-dark text-white"
+                placeholder="Acolhido"
+                maxlength="30"
+                required
+              />
+            </div>
+
+            <div class="form-group">
+              <input
+                type="text"
+                id="presenteSessao"
+                class="form-control bg-dark text-white"
+                placeholder="Presente"
+                maxlength="20"
+                required
+              />
+            </div>
+
+            <div class="form-group">
+              <input
+                type="text"
+                id="observacaoSessao"accept=""
+                class="form-control bg-dark text-white"
+                placeholder="observação"
+                maxlength="20"
+                required
+              />
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-block">
+              Enviar
+            </button>
+          </form>
+        </div>
+        <div class="col-md-6">
+          <div id="ideas">
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.js"></script>
+    <script>
+      // Socket.io setup
+      var socket = io();
+
+      // Init feathers app
+      // const app = feathers();
+
+      // Register socket.io to talk to server
+      // app.configure(feathers.socketio(socket));
+
+      document.getElementById('form').addEventListener('submit', sendIdea);
+
+      async function sendIdea(e) {
+        e.preventDefault();
+
+        const dataHTML = document.getElementById('dataSessao');
+        const horaHTML = document.getElementById('horaSessao');
+        const voluntarioHTML = document.getElementById('voluntarioSessao');
+        const acolhidoHTML = document.getElementById('acolhidoSessao');
+        const presenteHTML = document.getElementById('presenteSessao');
+        const observacaoHTML = document.getElementById('observacaoSessao');
+
+        // Create new idea
+        // app.service('ideas').create({
+        //   text: text.value,
+        //   tech: tech.value,
+        //   viewer: viewer.value
+        // });
+
+        const sessao = {
+          dataSessao: dataHTML.value,
+          horaSessao: horaHTML.value,
+          acolhidoId: voluntarioHTML.value,
+          voluntarioId: acolhidoHTML.value,
+          presenca: presenteHTML.value,
+          observacao: observacaoHTML.value
+        }
+        // envia para o back salvar
+        socket.emit('sessao', sessao);
+
+        // Clear inputs
+        dataHTML.value = '';
+        horaHTML.value = '';
+        voluntarioHTML.value = '';
+        acolhidoHTML.value = '';
+        presenteHTML.value = '';
+        observacaoHTML.value = '';
+      }
+
+      function renderIdea(sessao) {
+        document.getElementById(
+          'ideas'
+        ).innerHTML += `<div class="card bg-secondary my-3">
+              <div class="card-body">
+                <p class="lead">
+                  <strong>${sessao.dataSessao} às ${sessao.horaSessao}</strong>
+                  <br />
+                  <em> Acolhido: ${sessao.acolhidoId}</em>
+                  <br />
+                  <small>Voluntario: ${sessao.voluntarioId}</small>
+                  <br />
+                  <small>Presença: ${sessao.presenca}</small>
+                  <br />
+                  <small>Observação: ${sessao.observacao}</small>
+                </p>
+              </div>
+            </div>`;
+      }
+
+      socket.on('login', function(sessoes){
+        // cria os registros do banco de dados ao logar
+        for (var num in sessoes) {
+            renderIdea(sessoes[num])
+            // console.log(sessoes[num]);
+        }
+      });
+
+      socket.on('sessao', sessao =>{
+        // cria os registro ao cadastrar
+        renderIdea(sessao);
+      })
+
+
+    </script>
+  </body>
+</html>

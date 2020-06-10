@@ -49,44 +49,95 @@ module.exports = (sequelize, DataTypes) => {
     })
     Acolhido.belongsTo(models.Religiao, {
       foreignKey: 'ReligiaoId'
-    })
-    Acolhido.belongsTo(models.Status, {
-      foreignKey: 'StatusId'
-    })
-    Acolhido.hasMany(models.Familiar, {
-      as: {
-        singular: "familiar",
-        plural: "familiares"
-      }
-    })
-    Acolhido.hasMany(models.DoencaFamilia, {
-      as: {
-        singular: "doencaFamilia",
-        plural: "doencasFamilia"
-      }
-    })
-    Acolhido.hasMany(models.MedicamentoContinuo, {
-      as: {
-        singular: "medicamentoContinuo",
-        plural: "medicamentosContinuos"
-      }
-    })
-    Acolhido.hasMany(models.Sessao)
-  }
+    });
+    Acolhido.hasMany(models.Familiar)
+    Acolhido.hasMany(models.DoencaFamilia)
+    Acolhido.hasMany(models.MedicamentoContinuo)
+    Acolhido.hasMany(models.TentativaContato)
+    // Acolhido.hasMany(models.Sessao)
+  };
 
   Acolhido.adiciona = async function (models, param) {
     let t = await sequelize.transaction({ autocommit: false })
     let acolhidoParam = param.acolhidoParam ? param.acolhidoParam : {}
     let acolhidoInstance = null
 
+    let {
+      enderecoParam,
+      cidadeParam,
+      bairroParam,
+      pessoaParam,
+      religiaoParam,
+      familiaresParam = [],
+      medicamentos = [],
+      doencaFamilia = [],
+    } = param
+
+    let queryOptions = {}
+    let transaction = null
+    // let transaction = await sequelize.transaction({type: sequelize.Transaction})
+
     try {
       acolhidoInstance = await cadastra(acolhidoParam, t)
       let status = await cadastraAssociacoes(models, acolhidoInstance, param, t)
 
-      await t.commit()
-      return {
-        status: status
+      if(religiaoParam)
+        religiaoInstance = await models.Religiao.pesquisaOuAdiciona(religiaoParam, transaction)
+
+      if(pessoaParam)
+        pessoaRetorno = await models.Pessoa.adiciona(models, transaction, {
+          pessoaParam,
+          enderecoParam,
+          cidadeParam,
+          bairroParam
+        })
+
+      // if (!religiaoInstance)
+      //   return util.defineError(412, "Erro em religião")
+
+      // if (!pessoaInstance)
+      //   return util.defineError(412, "Erro em Pessoa")
+
+      if (transaction)
+        queryOptions.transaction = transaction
+
+      let data = {
+        atividade_fisica: acolhidoParam.atividade_fisica,
+        bebida_quantidade: acolhidoParam.bebida_quantidade,
+        bebida_periodicidade: acolhidoParam.bebida_periodicidade,
+        paroquia: acolhidoParam.paroquia,
+        atividades_religiosas: acolhidoParam.atividades_religiosas,
+        demanda: acolhidoParam.demanda,
+        encaminhamento: acolhidoParam.encaminhamento,
+        observacao: acolhidoParam.observacao,
+        prioridade: acolhidoParam.prioridade,
+        PessoaId: (pessoaRetorno)? pessoaRetorno.pessoaInstance.dataValues.id: null,
+        ReligiaoId: (religiaoInstance)? religiaoInstance[0].dataValues.id : null
       }
+
+      if(pessoaParam && pessoaParam.cpf)
+        data.StatusId = 2
+
+      let acolhidoInstance = await Acolhido.create( data, { queryOptions } )
+
+      let AcolhidoId = acolhidoInstance.dataValues.id
+      let medicamentoContinuoInstance
+      let familiaresInstance
+      if(medicamentos)
+        medicamentoContinuoInstance = await models.MedicamentoContinuo.adicionaVarios(medicamentos, AcolhidoId, transaction)
+
+      if(familiaresParam)
+        familiaresInstance = await models.Familiar.adicionaVarios(familiaresParam, AcolhidoId, transaction)
+
+      // await transaction.commit()
+      return {
+          pessoa: (pessoaParam)? pessoaRetorno.pessoaInstance.dataValues: null,
+          endereco: (enderecoParam)? pessoaRetorno.enderecoInstance.dataValues: null,
+          acolhido: acolhidoInstance.dataValues,
+          familiares:(familiaresParam)? familiaresInstance.dataValues : null,
+          medicamentoContinuo: (medicamentoContinuoInstance)? medicamentoContinuoInstance.dataValues : null
+        }
+
     } catch (error) {
       await t.rollback();
       console.log("\n", error, "\n")
@@ -122,8 +173,8 @@ module.exports = (sequelize, DataTypes) => {
 
     try {
 
-      if (models.Status.pesquisa(acolhidoParam.StatusId) == null)
-        throw util.defineError(404, "Status não existe.")
+      if(modelStatus.pesquisa(idStatus) == null)
+        throw util.defineError(404, "Status não econtrado.")
 
       religiaoInstance = await models.Religiao.pesquisaOuAdiciona(religiaoParam, t)
       pessoaInstance = await models.Pessoa.edita(models, t, {
@@ -158,12 +209,12 @@ module.exports = (sequelize, DataTypes) => {
         ReligiaoId: religiaoInstance[0].dataValues.id,
         StatusId: acolhidoParam.StatusId
       }
+      
+      if(pessoa.cpf && !data.StatusId)
+        data.StatusId = 2
+      
       let acolhidoInstance = await Acolhido.update({ data }, queryOptions)
-
-      // medicamentos.forEach(async medicamento => {
-      //   await models.MedicamentoContinuo.edita(medicamento)
-      // });
-
+      
       familiares.forEach(async familiar => {
         await models.Familiar.edita(familiar)
       });
@@ -326,7 +377,7 @@ module.exports = (sequelize, DataTypes) => {
 
     try {
 
-      if (modelStatus.pesquisa(idStatus) == null)
+      if(modelStatus.pesquisa(idStatus) == null)
         throw util.defineError(404, "Status não econtrado.")
 
       let acolhidoInstance = await Acolhido.findAll({

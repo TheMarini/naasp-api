@@ -9,9 +9,18 @@ module.exports = {
         type: Sequelize.INTEGER
       },
       dataSessao: {
-        type: Sequelize.DATE
+        type: Sequelize.DATEONLY
+      },
+      horaSessao: {
+        type: Sequelize.TIME
       },
       presenca: {
+        type: Sequelize.STRING
+      },
+      acolhidoId: {
+        type: Sequelize.STRING
+      },
+      voluntarioId: {
         type: Sequelize.STRING
       },
       observacao: {

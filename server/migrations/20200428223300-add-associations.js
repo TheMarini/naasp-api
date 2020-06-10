@@ -240,23 +240,38 @@ module.exports = {
           onDelete: 'SET NULL',
         }
       )
+    }).then(() => {
+      return queryInterface.addColumn(
+        'TentativaContato', // name of Source model
+        'UsuarioId', // name of the key we're adding 
+        {
+          allowNull: true,
+          type: Sequelize.INTEGER,
+          references: {
+            model: 'Usuario', // name of Target model
+            key: 'id', // key in Target model that we're referencing
+          },
+          onUpdate: 'CASCADE',
+          onDelete: 'SET NULL',
+        }
+      )
+    }).then(() => {
+      return queryInterface.addColumn(
+        'TentativaContato', // name of Source model
+        'AcolhidoId', // name of the key we're adding 
+        {
+          allowNull: true,
+          type: Sequelize.INTEGER,
+          references: {
+            model: 'Acolhido', // name of Target model
+            key: 'id', // key in Target model that we're referencing
+          },
+          onUpdate: 'CASCADE',
+          onDelete: 'SET NULL',
+        }
+      )
     })
 
-    // then(() => {
-    //   return queryInterface.addColumn(
-    //     'MedicamentoContinuo', // name of Source model
-    //     'FamiliarId', // name of the key we're adding 
-    //     {
-    //       type: Sequelize.INTEGER,
-    //       references: {
-    //         model: 'Familiar', // name of Target model
-    //         key: 'id', // key in Target model that we're referencing
-    //       },
-    //       onUpdate: 'CASCADE',
-    //       onDelete: 'SET NULL',
-    //     }
-    //   )
-    // }).
   },
   down: (queryInterface, Sequelize) => {
     return queryInterface.removeColumn(
@@ -338,6 +353,16 @@ module.exports = {
       return queryInterface.removeColumn(
         'Acolhido', // name of Source model
         'ReligiaoId' // key we want to remove
+      )
+    }).then(() => {
+      return queryInterface.removeColumn(
+        'TentativaContato', // name of Source model
+        'AcolhidoId' // key we want to remove
+      )
+    }).then(() => {
+      return queryInterface.removeColumn(
+        'TentativaContato', // name of Source model
+        'UsuarioId' // key we want to remove
       )
     });
 

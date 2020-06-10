@@ -348,5 +348,5 @@ module.exports = (sequelize, DataTypes) => {
     if (!enderecoParam)
       return util.defineError(412, "Erro em Endereco")
   }
-  return Voluntario;
-};
+  return Voluntario
+}
