@@ -11,6 +11,9 @@ module.exports = {
       faixaEtariaAtendimento: {
         type: Sequelize.STRING
       },
+      tipo:{
+        type: Sequelize.INTEGER
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE

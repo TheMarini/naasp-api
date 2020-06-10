@@ -10,6 +10,7 @@ module.exports = (sequelize, DataTypes) => {
       autoIncrement: true,
       primaryKey: true
     },
+    tipo: DataTypes.INTEGER,
     faixaEtariaAtendimento: DataTypes.STRING,
     EspecialidadeId: DataTypes.INTEGER,
     PessoaId: DataTypes.INTEGER,
@@ -57,7 +58,8 @@ module.exports = (sequelize, DataTypes) => {
       valida(param)
 
       voluntarioInstance = await Voluntario.create({
-        faixaEtariaAtendimento: faixaEtariaConcat
+        faixaEtariaAtendimento: faixaEtariaConcat,
+        tipo: param.tipoParam
       }, {
         queryOptions
       })
@@ -297,6 +299,7 @@ module.exports = (sequelize, DataTypes) => {
     voluntarioRaw.voluntario = {
       id: voluntarioRaw.id,
       faixaEtariaAtendimento: faixaEtariaAtendimento,
+      tipo: voluntarioRaw.tipo,
       EspecialidadeId: voluntarioRaw.EspecialidadeId,
       PessoaId: voluntarioRaw.PessoaId,
       updatedAt: voluntarioRaw.updatedAt,
@@ -306,6 +309,7 @@ module.exports = (sequelize, DataTypes) => {
     }
 
     delete voluntarioRaw.id
+    delete voluntarioRaw.tipo
     delete voluntarioRaw.faixaEtariaAtendimento
     delete voluntarioRaw.EspecialidadeId
     delete voluntarioRaw.PessoaId

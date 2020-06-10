@@ -12,7 +12,8 @@ exports.post = async function (req, res) {
 			bairroParam: 				 req.body.Pessoa.Endereco.Bairro.nome,
 			usuarioParam: 				 req.body.Voluntario.Usuario,
 			especialidadeParam: 		 req.body.Voluntario.Especialidade.nome,
-			faixaEtariaAtendimentoParam: req.body.Voluntario.faixaEtariaAtendimento
+			faixaEtariaAtendimentoParam: req.body.Voluntario.faixaEtariaAtendimento,
+			tipoParam:						 req.body.Voluntario.tipo
 		})
 		res.status(successStatus).json(response)
 	} catch (error) {
