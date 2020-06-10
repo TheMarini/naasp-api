@@ -30,8 +30,6 @@ module.exports = (sequelize, DataTypes) => {
 
   };
 
-  }
-
   Voluntario.adiciona = async function (models, param) {
     let {
       faixaEtariaAtendimento = []
@@ -350,5 +348,5 @@ module.exports = (sequelize, DataTypes) => {
     if (!enderecoParam)
       return util.defineError(412, "Erro em Endereco")
   }
-  return Voluntario;
-};
+  return Voluntario
+}

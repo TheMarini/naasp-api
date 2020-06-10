@@ -68,7 +68,6 @@ module.exports = (sequelize, DataTypes) => {
       bairroParam,
       pessoaParam,
       religiaoParam,
-      acolhidoParam,
       familiaresParam = [],
       medicamentos = [],
       doencaFamilia = [],
@@ -210,13 +209,12 @@ module.exports = (sequelize, DataTypes) => {
         ReligiaoId: religiaoInstance[0].dataValues.id,
         StatusId: acolhidoParam.StatusId
       }
-      let acolhidoInstance = await Acolhido.update({ data }, queryOptions)
-
+      
       if(pessoa.cpf && !data.StatusId)
         data.StatusId = 2
-
-      let acolhidoInstance = await Acolhido.update({data}, queryOptions)
-
+      
+      let acolhidoInstance = await Acolhido.update({ data }, queryOptions)
+      
       familiares.forEach(async familiar => {
         await models.Familiar.edita(familiar)
       });
