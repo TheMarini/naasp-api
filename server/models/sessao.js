@@ -10,20 +10,25 @@ module.exports = (sequelize, DataTypes) => {
       autoIncrement: true,
       primaryKey: true
     },
-    dataSessao: DataTypes.DATEONLY,
-    horaSessao: DataTypes.TIME,
-    acolhidoId: DataTypes.INTEGER,
-    voluntarioId: DataTypes.INTEGER,
+    dataInicioSessao: DataTypes.DATEONLY,
+    horaInicioSessao: DataTypes.TIME,
+    dataTerminoSessao: DataTypes.DATEONLY,
+    horaTerminoSessao: DataTypes.TIME,
+    AcolhidoId: DataTypes.INTEGER,
+    VoluntarioId: DataTypes.INTEGER,
+    SalaId: DataTypes.INTEGER,
     presenca: DataTypes.STRING,
     observacao: DataTypes.STRING
   }, {});
   Sessao.associate = function(models) {
     Sessao.belongsTo(models.Acolhido, {
-      foreignKey: 'acolhidoId'
+      foreignKey: 'AcolhidoId'
     })
-
     Sessao.belongsTo(models.Voluntario, {
-      foreignKey: 'voluntarioId'
+      foreignKey: 'VoluntarioId'
+    })
+    Sessao.belongsTo(models.Sala, {
+      foreignKey: 'SalaId'
     })
 
   };
@@ -31,13 +36,21 @@ module.exports = (sequelize, DataTypes) => {
   Sessao.adiciona = async function (models, param) {
 
     try {
+      let salaInstance = await models.Sala.pesquisaOuAdiciona(param.salanome, transaction)
+
+      if (!salaInstance)
+      return util.defineError(412, "Erro em Sala")
+
       let sessaoInstance = await Sessao.create({
-        dataSessao: param.dataSessao,
-        horaSessao: param.horaSessao,
+        dataInicioSessao: param.dataInicioSessao,
+        horaInicioSessao: param.horaInicioSessao,
+        dataTerminoSessao: param.dataTerminoSessao,
+        horaTerminoSessao: param.horaTerminoSessao,
+        SalaId: salaInstance[0].dataValues.id,
         presenca: param.presenca,
         observacao: param.observacao,
-        acolhidoId: param.acolhidoId,
-        voluntarioId: param.voluntarioId})
+        AcolhidoId: param.AcolhidoId,
+        VoluntarioId: param.VoluntarioId})
       return sessaoInstance
     } catch (error) {
       console.log("\n catch \n")

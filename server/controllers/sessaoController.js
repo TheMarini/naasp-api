@@ -6,10 +6,12 @@ exports.post = async function (req) {
 	let response = null
 	try {
 		response = await models.Sessao.adiciona(models, {
-			dataSessao: req.dataSessao,
-			horaSessao: req.horaSessao,
-			acolhidoId: req.acolhidoId,
-			voluntarioId: req.voluntarioId,
+			dataInicioSessao: req.dataSessao,
+			horaInicioSessao: req.horaSessao,
+			dataTerminoSessao: req.dataSessao,
+			horaTerminoSessao: req.horaSessao,
+			AcolhidoId: req.AcolhidoId,
+			VoluntarioId: req.VoluntarioId,
 			presenca: req.presenca,
 			observacao: req.observacao
 		})
