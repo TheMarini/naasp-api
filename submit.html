@@ -52,7 +52,7 @@
                 type="text"
                 id="voluntarioSessao"
                 class="form-control bg-dark text-white"
-                placeholder="Voluntario"
+                placeholder="VoluntarioId"
                 maxlength="30"
                 required
               />
@@ -62,7 +62,7 @@
                 type="text"
                 id="acolhidoSessao"
                 class="form-control bg-dark text-white"
-                placeholder="Acolhido"
+                placeholder="AcolhidoId"
                 maxlength="30"
                 required
               />
@@ -148,13 +148,15 @@
         // });
 
         const sessao = {
-          dataSessao: dataHTML.value,
-          horaSessao: horaHTML.value,
-          AcolhidoId: voluntarioHTML.value,
-          VoluntarioId: acolhidoHTML.value,
+          dataInicioSessao: dataHTML.value,
+          horaInicioSessao: horaHTML.value,
+          dataTerminoSessao: dataHTML.value,
+          horaTerminoSessao: horaHTML.value,
+          observacao: observacaoHTML.value,
           presenca: presenteHTML.value,
-          salanome: salaHTML.value,
-          observacao: observacaoHTML.value
+          AcolhidoId: acolhidoHTML.value,
+          VoluntarioId: acolhidoHTML.value,
+          salaNome: salaHTML.value
         }
         // envia para o back salvar
         socket.emit('sessao', sessao);
