@@ -198,11 +198,7 @@ module.exports = (sequelize, DataTypes) => {
 
     try {
       let acolhidoInstance = await Acolhido.findByPk(id, {
-        include: [{
-          model: Religiao,
-          attributes: ['nome'],
-          as: 'Religiao'
-        },
+        include: [
         {
           model: Pessoa,
           as: 'Pessoa',
@@ -218,6 +214,11 @@ module.exports = (sequelize, DataTypes) => {
               attributes: ['nome'],
               as: 'Bairro'
             }]
+          },
+          {
+            model: Religiao,
+            attributes: ['nome'],
+            as: 'Religiao'
           }]
         }, {
           model: Familiar,

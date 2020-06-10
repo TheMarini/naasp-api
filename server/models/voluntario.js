@@ -51,7 +51,6 @@ module.exports = (sequelize, DataTypes) => {
       if (index < faixaEtariaAtendimentoParam.length - 1)
         faixaEtariaConcat += ","
     }
-    console.log(faixaEtariaAtendimentoParam)
     try {
       let voluntarioInstance = null
       
@@ -141,7 +140,8 @@ module.exports = (sequelize, DataTypes) => {
       Cidade,
       Bairro,
       Voluntario,
-      Especialidade
+      Especialidade,
+      Religiao
     } = models
 
     try {
@@ -161,7 +161,12 @@ module.exports = (sequelize, DataTypes) => {
                 attributes: ['nome'],
                 as: 'Bairro'
               }]
-            }]
+            },{
+              model: Religiao,
+              attributes: ['nome'],
+              as:"Religiao"
+            }
+          ]
           },
           {
             model: Especialidade,
