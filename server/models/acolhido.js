@@ -50,7 +50,7 @@ module.exports = (sequelize, DataTypes) => {
     Acolhido.hasMany(models.Familiar)
     Acolhido.hasMany(models.DoencaFamilia)
     Acolhido.hasMany(models.MedicamentoContinuo)
-    // Acolhido.hasMany(models.Sessao)
+    Acolhido.hasMany(models.Sessao)
   };
 
   Acolhido.adiciona = async function (models, param) {

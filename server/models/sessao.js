@@ -12,21 +12,21 @@ module.exports = (sequelize, DataTypes) => {
     },
     dataSessao: DataTypes.DATEONLY,
     horaSessao: DataTypes.TIME,
-    acolhidoId: DataTypes.STRING,
-    voluntarioId: DataTypes.STRING,
+    acolhidoId: DataTypes.INTEGER,
+    voluntarioId: DataTypes.INTEGER,
     presenca: DataTypes.STRING,
     observacao: DataTypes.STRING
   }, {});
-  // Sessao.associate = function(models) {
-  //   Sessao.belongsTo(models.Acolhido, {
-  //     foreignKey: 'AcolhidoId'
-  //   })
-  //
-  //   Sessao.belongsTo(models.Voluntario, {
-  //     foreignKey: 'VoluntarioId'
-  //   })
-  //
-  // };
+  Sessao.associate = function(models) {
+    Sessao.belongsTo(models.Acolhido, {
+      foreignKey: 'acolhidoId'
+    })
+
+    Sessao.belongsTo(models.Voluntario, {
+      foreignKey: 'voluntarioId'
+    })
+
+  };
 
   Sessao.adiciona = async function (models, param) {
 

@@ -3,7 +3,7 @@ module.exports = {
   up: (queryInterface, Sequelize) => {
     return queryInterface.addColumn(
       'Endereco', // name of Source model
-      'PessoaId', // name of the key we're adding 
+      'PessoaId', // name of the key we're adding
       {
         type: Sequelize.INTEGER,
         references: {
@@ -73,7 +73,7 @@ module.exports = {
     }).then(() => {
       return queryInterface.addColumn(
         'Telefone', // name of Source model
-        'PessoaId', // name of the key we're adding 
+        'PessoaId', // name of the key we're adding
         {
           type: Sequelize.INTEGER,
           references: {
@@ -87,7 +87,7 @@ module.exports = {
     }).then(() => {
       return queryInterface.addColumn(
         'Familiar', // name of Source model
-        'AcolhidoId', // name of the key we're adding 
+        'AcolhidoId', // name of the key we're adding
         {
           type: Sequelize.INTEGER,
           references: {
@@ -101,7 +101,7 @@ module.exports = {
     }).then(() => {
       return queryInterface.addColumn(
         'MedicamentoContinuo', // name of Source model
-        'AcolhidoId', // name of the key we're adding 
+        'AcolhidoId', // name of the key we're adding
         {
           type: Sequelize.INTEGER,
           references: {
@@ -115,7 +115,7 @@ module.exports = {
     }).then(() => {
       return queryInterface.addColumn(
         'DoencaFamilia', // name of Source model
-        'AcolhidoId', // name of the key we're adding 
+        'AcolhidoId', // name of the key we're adding
         {
           type: Sequelize.INTEGER,
           references: {
@@ -129,7 +129,7 @@ module.exports = {
     }).then(() => {
       return queryInterface.addColumn(
         'Endereco', // name of Source model
-        'CidadeId', // name of the key we're adding 
+        'CidadeId', // name of the key we're adding
         {
           type: Sequelize.INTEGER,
           references: {
@@ -143,7 +143,7 @@ module.exports = {
     }).then(() => {
       return queryInterface.addColumn(
         'Endereco', // name of Source model
-        'BairroId', // name of the key we're adding 
+        'BairroId', // name of the key we're adding
         {
           type: Sequelize.INTEGER,
           references: {
@@ -157,7 +157,7 @@ module.exports = {
     }).then(() => {
       return queryInterface.addColumn(
         'Sessao', // name of Source model
-        'AcolhidoId', // name of the key we're adding 
+        'AcolhidoId', // name of the key we're adding
         {
           type: Sequelize.INTEGER,
           references: {
@@ -171,7 +171,7 @@ module.exports = {
     }).then(() => {
       return queryInterface.addColumn(
         'Sessao', // name of Source model
-        'VoluntarioId', // name of the key we're adding 
+        'VoluntarioId', // name of the key we're adding
         {
           type: Sequelize.INTEGER,
           references: {
@@ -185,7 +185,7 @@ module.exports = {
     }).then(() => {
       return queryInterface.addColumn(
         'DoencaFamilia', // name of Source model
-        'FamiliarId', // name of the key we're adding 
+        'FamiliarId', // name of the key we're adding
         {
           type: Sequelize.INTEGER,
           references: {
@@ -199,7 +199,7 @@ module.exports = {
     }).then(() => {
       return queryInterface.addColumn(
         'AbusoAlcoolFamilia', // name of Source model
-        'AcolhidoId', // name of the key we're adding 
+        'AcolhidoId', // name of the key we're adding
         {
           type: Sequelize.INTEGER,
           references: {
@@ -213,7 +213,7 @@ module.exports = {
     }).then(() => {
       return queryInterface.addColumn(
         'Acolhido', // name of Source model
-        'ReligiaoId', // name of the key we're adding 
+        'ReligiaoId', // name of the key we're adding
         {
           allowNull: true,
           type: Sequelize.INTEGER,
@@ -228,7 +228,7 @@ module.exports = {
     }).then(() => {
       return queryInterface.addColumn(
         'Acolhido', // name of Source model
-        'StatusId', // name of the key we're adding 
+        'StatusId', // name of the key we're adding
         {
           allowNull: true,
           type: Sequelize.INTEGER,
@@ -240,12 +240,42 @@ module.exports = {
           onDelete: 'SET NULL',
         }
       )
+    }).then(() => {
+      return queryInterface.addColumn(
+        'Sessao', // name of Source model
+        'acolhidoId', // name of the key we're adding
+        {
+          allowNull: true,
+          type: Sequelize.INTEGER,
+          references: {
+            model: 'Acolhido', // name of Target model
+            key: 'id', // key in Target model that we're referencing
+          },
+          onUpdate: 'CASCADE',
+          onDelete: 'SET NULL',
+        }
+      )
+    }).then(() => {
+      return queryInterface.addColumn(
+        'Sessao', // name of Source model
+        'voluntarioId', // name of the key we're adding
+        {
+          allowNull: true,
+          type: Sequelize.INTEGER,
+          references: {
+            model: 'Voluntario', // name of Target model
+            key: 'id', // key in Target model that we're referencing
+          },
+          onUpdate: 'CASCADE',
+          onDelete: 'SET NULL',
+        }
+      )
     })
 
     // then(() => {
     //   return queryInterface.addColumn(
     //     'MedicamentoContinuo', // name of Source model
-    //     'FamiliarId', // name of the key we're adding 
+    //     'FamiliarId', // name of the key we're adding
     //     {
     //       type: Sequelize.INTEGER,
     //       references: {
@@ -338,6 +368,16 @@ module.exports = {
       return queryInterface.removeColumn(
         'Acolhido', // name of Source model
         'ReligiaoId' // key we want to remove
+      )
+    }).then(() => {
+      return queryInterface.removeColumn(
+        'Sessao', // name of Source model
+        'voluntarioId' // key we want to remove
+      )
+    }).then(() => {
+      return queryInterface.removeColumn(
+        'Sessao', // name of Source model
+        'voluntarioId' // key we want to remove
       )
     });
 
