@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const moment = require('moment')
 
+const tentativaContatoController = require('./tentativaContatoController')
 const voluntarioController = require('./voluntarioController')
 const acolhidoController = require('./acolhidoController')
 const pessoaController = require('./pessoaController')
@@ -79,5 +80,14 @@ router.get('/bairro', pessoaController.getBairro)
 router.put('/bairro', pessoaController.putBairro)
 
 router.delete('/bairro', pessoaController.deleteBairro)
+
+// ROTAS DE TENTATIVA DE CONTATO
+router.post('/contato', tentativaContatoController.post)
+
+router.get('/contato', tentativaContatoController.get)
+
+router.put('/contato', tentativaContatoController.put)
+
+router.delete('/contato', tentativaContatoController.delete)
 
 module.exports = router;
