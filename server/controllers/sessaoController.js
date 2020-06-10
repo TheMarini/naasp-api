@@ -3,17 +3,20 @@ const models = require('../models')
 var successStatus = 200
 
 exports.post = async function (req) {
+	console.log(req)
+
 	let response = null
 	try {
 		response = await models.Sessao.adiciona(models, {
-			dataInicioSessao: req.dataSessao,
-			horaInicioSessao: req.horaSessao,
-			dataTerminoSessao: req.dataSessao,
-			horaTerminoSessao: req.horaSessao,
-			AcolhidoId: req.AcolhidoId,
-			SessaoId: req.SessaoId,
+			dataInicioSessao: req.dataInicioSessao,
+			horaInicioSessao: req.horaInicioSessao,
+			dataTerminoSessao: req.dataTerminoSessao,
+			horaTerminoSessao: req.horaTerminoSessao,
+			observacao: req.observacao,
 			presenca: req.presenca,
-			observacao: req.observacao
+			acolhidoId: req.AcolhidoId,
+			voluntarioId: req.VoluntarioId,
+			salaNome: req.salaNome
 		})
 		// res.status(successStatus).json(response)
 	} catch (error) {
@@ -25,7 +28,7 @@ exports.post = async function (req) {
 exports.get = async function (req) {
 	let response = null
 	try {
-		response = await models.Sessao.lista()
+		response = await models.Sessao.lista(models)
 		return response;
 		// res.status(successStatus).json(response)
 	} catch (error) {
