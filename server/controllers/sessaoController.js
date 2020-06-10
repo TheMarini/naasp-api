@@ -3,16 +3,21 @@ const models = require('../models')
 var successStatus = 200
 
 exports.post = async function (req) {
+	console.log(req)
+
 	let response = null
 	try {
 		response = await models.Sessao.adiciona(models, {
-			dataSessao: req.dataSessao,
-			horaSessao: req.horaSessao,
-			acolhidoId: req.acolhidoId,
-			voluntarioId: req.voluntarioId,
+			dataInicioSessao: req.dataInicioSessao,
+			horaInicioSessao: req.horaInicioSessao,
+			dataTerminoSessao: req.dataTerminoSessao,
+			horaTerminoSessao: req.horaTerminoSessao,
+			observacao: req.observacao,
 			presenca: req.presenca,
-			observacao: req.observacao
-				})
+			acolhidoId: req.AcolhidoId,
+			voluntarioId: req.VoluntarioId,
+			salaNome: req.salaNome
+		})
 		// res.status(successStatus).json(response)
 	} catch (error) {
 		console.log("\n", error, "\n")
@@ -23,12 +28,8 @@ exports.post = async function (req) {
 exports.get = async function (req) {
 	let response = null
 	try {
-		// if (req.id)
-		// 	response = await models.Sessao.pesquisa(req.id)
-		// else
-			response = await models.Sessao.lista()
-			// console.log(response);
-			return response;
+		response = await models.Sessao.lista(models)
+		return response;
 		// res.status(successStatus).json(response)
 	} catch (error) {
 		console.log("\n", error, "\n")
@@ -36,63 +37,13 @@ exports.get = async function (req) {
 	}
 }
 
-
-
-
-//
-// exports.getFull = async function (req, res) {
-// 	let response = null
-// 	try {
-// 		response = await models.Voluntario.pesquisaVoluntarioCompleto(models, req.query.id)
-//
-// 		res.status(successStatus).json(response)
-// 	} catch (error) {
-// 		console.log("\n", error, "\n")
-// 		res.status(error.code).json(error.message)
-// 	}
-//
-// }
-//
-// exports.get = async function (req, res) {
-// 	let response = null
-// 	try {
-// 		if (req.query.id)
-// 			response = await models.Voluntario.pesquisa(req.query.id)
-// 		else
-// 			response = await models.Voluntario.lista()
-//
-// 		res.status(successStatus).json(response)
-// 	} catch (error) {
-// 		console.log("\n", error, "\n")
-// 		res.status(error.code).json(error.message)
-// 	}
-// }
-//
-// exports.put = async function (req, res) {
-// 	let response = null
-// 	try {
-// 		response = await models.Voluntario.edita(models, {
-// 			endereco: req.body.endereco,
-// 			cidade: req.body.cidade,
-// 			bairro: req.body.bairro,
-// 			pessoa: req.body.pessoa,
-// 			especialidade: req.body.especialidade,
-// 			voluntarioId: req.body.voluntarioId
-// 		})
-//
-// 		res.status(successStatus).json(response)
-// 	} catch (error) {
-// 		console.log("\n", error, "\n")
-// 		res.status(error.code).json(error.message)
-// 	}
-// }
-//
-// exports.delete = async function (req, res) {
-// 	try {
-// 		let response = await models.Voluntario.deleta(req.query.id)
-// 		res.status(successStatus).json(response)
-// 	} catch (error) {
-// 		console.log("\n", error, "\n")
-// 		res.status(error.code).json(error.message)
-// 	}
-// }
+exports.delete = async function (req) {
+	try {
+		let response = await models.Sessao.deleta(req.id)
+		return response;
+		// res.status(successStatus).json(response)
+	} catch (error) {
+		console.log("\n", error, "\n")
+		// res.status(error.code).json(error.message)
+	}
+}

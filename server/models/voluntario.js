@@ -28,7 +28,7 @@ module.exports = (sequelize, DataTypes) => {
       foreignKey: 'PessoaId'
     });
     Voluntario.hasOne(models.Usuario);
-    // Voluntario.hasMany(models.Sessao)
+    Voluntario.hasMany(models.Sessao)
   };
 
   Voluntario.adiciona = async function (models, param) {

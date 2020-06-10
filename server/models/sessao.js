@@ -10,44 +10,98 @@ module.exports = (sequelize, DataTypes) => {
       autoIncrement: true,
       primaryKey: true
     },
-    dataSessao: DataTypes.DATEONLY,
-    horaSessao: DataTypes.TIME,
-    acolhidoId: DataTypes.STRING,
-    voluntarioId: DataTypes.STRING,
+    dataInicioSessao: DataTypes.DATEONLY,
+    horaInicioSessao: DataTypes.TIME,
+    dataTerminoSessao: DataTypes.DATEONLY,
+    horaTerminoSessao: DataTypes.TIME,
+    AcolhidoId: DataTypes.INTEGER,
+    VoluntarioId: DataTypes.INTEGER,
+    SalaId: DataTypes.INTEGER,
     presenca: DataTypes.STRING,
     observacao: DataTypes.STRING
   }, {});
-  // Sessao.associate = function(models) {
-  //   Sessao.belongsTo(models.Acolhido, {
-  //     foreignKey: 'AcolhidoId'
-  //   })
-  //
-  //   Sessao.belongsTo(models.Voluntario, {
-  //     foreignKey: 'VoluntarioId'
-  //   })
-  //
-  // };
+  Sessao.associate = function(models) {
+    Sessao.belongsTo(models.Acolhido, {
+      foreignKey: 'AcolhidoId'
+    })
+    Sessao.belongsTo(models.Voluntario, {
+      foreignKey: 'VoluntarioId'
+    })
+    Sessao.belongsTo(models.Sala, {
+      foreignKey: 'SalaId'
+    })
+
+  };
 
   Sessao.adiciona = async function (models, param) {
-
+    let t = await sequelize.transaction({
+      type: sequelize.Transaction
+    })
+    let queryOptions = {
+      transaction: t
+    }
     try {
       let sessaoInstance = await Sessao.create({
-        dataSessao: param.dataSessao,
-        horaSessao: param.horaSessao,
+        dataInicioSessao: param.dataInicioSessao,
+        horaInicioSessao: param.horaInicioSessao,
+        dataTerminoSessao: param.dataTerminoSessao,
+        horaTerminoSessao: param.horaTerminoSessao,
         presenca: param.presenca,
-        observacao: param.observacao,
-        acolhidoId: param.acolhidoId,
-        voluntarioId: param.voluntarioId})
+        observacao: param.observacao
+      }, queryOptions)
+      
+      await Sessao.atualizaSala(models.Sala, param, sessaoInstance, t)
+      await Sessao.atualizaAcolhido(models.Acolhido, param, sessaoInstance, t)
+      await Sessao.atualizaVoluntario(models.Voluntario, param, sessaoInstance, t)
+
+      await t.commit()
       return sessaoInstance
     } catch (error) {
+      await t.rollback()
       console.log("\n catch \n")
       throw util.checkError(error, modelName)
     }
   }
 
-  Sessao.lista = async function () {
+  Sessao.lista = async function (models) {
+    let {
+      Acolhido,
+      Pessoa,
+      Voluntario,
+      Sala
+    } = models
+    
     try {
-      let sessaoInstance = await Sessao.findAll()
+      let sessaoInstance = await Sessao.findAll(
+        {
+          raw: true,
+          nest: true,
+          include: [
+            {
+              model: Sala,
+              attributes: ['nome'],
+              as: "Sala"
+            },
+            {
+              model: Acolhido,
+              as: "Acolhido",
+              include: [{
+                model: Pessoa,
+                as: "Pessoa"
+              }]
+            },
+            {
+              model: Voluntario,
+              as: "Voluntario",
+              include: [{
+                model: Pessoa,
+                as: "Pessoa"
+              }]
+            }
+          ]
+        }
+      )
+      console.log(sessaoInstance)
       return sessaoInstance
     } catch (error) {
       console.log("\n catch \n")
@@ -65,6 +119,49 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
 
+  Sessao.deleta = async function (id) {
+    let queryOptions = {
+      where: {
+        id: id
+      }
+    }
+    try {
+      let sessaoInstance = await Sessao.destroy(queryOptions)
+      return sessaoInstance
+    } catch (error) {
+      console.log("\n catch \n")
+      throw util.checkError(error, modelName)
+    }
+  }
+
+  Sessao.atualizaAcolhido = async function(Acolhido, param, sessaoInstance, t) {
+    let queryOptions = {
+      transaction: t
+    }
+
+    let acolhidoInstance = await Acolhido.findByPk(param.acolhidoId)
+    await sessaoInstance.setAcolhido(acolhidoInstance, queryOptions)
+  }
+
+  Sessao.atualizaVoluntario = async function(Voluntario, param, sessaoInstance, t) {
+    let queryOptions = {
+      transaction: t
+    }
+
+    let voluntarioInstance = await Voluntario.findByPk(param.voluntarioId)
+
+    await sessaoInstance.setAcolhido(voluntarioInstance, queryOptions)
+  }
+
+  Sessao.atualizaSala = async function(Sala, param, sessaoInstance, t) {
+    let queryOptions = {
+      transaction: t
+    }
+
+    let salaInstance = await Sala.pesquisaOuAdiciona(param.salaNome, t)
+
+    await sessaoInstance.setSala(salaInstance, queryOptions)
+  }
 
   return Sessao;
 };

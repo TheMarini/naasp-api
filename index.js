@@ -1,30 +1,27 @@
 const Sequelize = require('sequelize');
-const cors = require('cors')
 const express = require('express');
+const cors = require('cors')
 const router = require('./server/controllers/routes')
 const sessaoModel = require('./server/controllers/sessaoController')
 
 var app = express()
+var http = require('http').Server(app);
+var io = require('socket.io')(http);
+
 app.use(cors())
 app.use(express.json())
 app.use(express.urlencoded({
   extended: false
 }))
 
-app.use('/api', router)
-
-
-
-var http = require('http').Server(app);
-var io = require('socket.io')(http);
-
 app.get('/', function(req, res){
   res.sendFile(__dirname + '/submit.html');
-});
+})
 
+app.use('/api', router)
 
 if (process.env.DATABASE_URL) {
-  console.log("heroku");
+  console.log("Heroku");
   // the application is executed on Heroku ... use the postgres database
   sequelize = new Sequelize(process.env.DATABASE_URL, {
     dialect:  'postgres',
@@ -33,16 +30,9 @@ if (process.env.DATABASE_URL) {
     host:     'ec2-34-234-228-127.compute-1.amazonaws.com',
     logging:  true //false
   })
-  sequelize.sync({ force: true }).then(() => {
-    console.log("All models were synchronized successfully.");
-  })
 }else {
   sequelize = new Sequelize('postgres://postgres:postgres@postgresdb:5432/database_development');
   // sequelize = new Sequelize('postgres://postgres:postgres@localhost:5432/database_development');
-
-  sequelize.sync({ force: true }).then(() => {
-    console.log("All models were synchronized successfully.");
-  })
 }
 
 // sequelize.sync({
@@ -64,7 +54,6 @@ if (process.env.DATABASE_URL) {
     });
 // })
 
-
 io.on('connection', socket => {
   async function emiteDados(){
     let sessoes = await sessaoModel.get();
@@ -74,7 +63,31 @@ io.on('connection', socket => {
   emiteDados();
   socket.on('sessao', function(sessao){
       // recebe o dado
-      sessaoModel.post(sessao);
-      io.emit('sessao', sessao);
+      var verificaSessao = false;
+      try {
+        sessaoModel.post(sessao);
+
+      } catch (error) {
+        verificaSessao = true;
+      }
+      if (verificaSessao) {
+        io.emit('sessao', sessao);
+      }else {
+        io.emit('sessao', false);
+      }
   });
+  socket.on('deleta', function(id){
+    var verificaDelete = false;
+    try {
+      sessaoModel.delete(id);
+    } catch (e) {
+      verificaDelete = true;
+    }
+    if (verificaDelete) {
+      io.emit('deleta', id)
+    }else {
+      io.emit('deleta', false)
+    }
+  })
+
 });

@@ -52,7 +52,7 @@
                 type="text"
                 id="voluntarioSessao"
                 class="form-control bg-dark text-white"
-                placeholder="Voluntario"
+                placeholder="VoluntarioId"
                 maxlength="30"
                 required
               />
@@ -62,7 +62,7 @@
                 type="text"
                 id="acolhidoSessao"
                 class="form-control bg-dark text-white"
-                placeholder="Acolhido"
+                placeholder="AcolhidoId"
                 maxlength="30"
                 required
               />
@@ -89,6 +89,18 @@
                 required
               />
             </div>
+
+            <div class="form-group">
+              <input
+                type="text"
+                id="salaSessao"accept=""
+                class="form-control bg-dark text-white"
+                placeholder="Sala"
+                maxlength="20"
+                required
+              />
+            </div>
+
 
             <button type="submit" class="btn btn-primary btn-block">
               Enviar
@@ -126,6 +138,7 @@
         const acolhidoHTML = document.getElementById('acolhidoSessao');
         const presenteHTML = document.getElementById('presenteSessao');
         const observacaoHTML = document.getElementById('observacaoSessao');
+        const salaHTML = document.getElementById('salaSessao');
 
         // Create new idea
         // app.service('ideas').create({
@@ -135,12 +148,15 @@
         // });
 
         const sessao = {
-          dataSessao: dataHTML.value,
-          horaSessao: horaHTML.value,
-          acolhidoId: voluntarioHTML.value,
-          voluntarioId: acolhidoHTML.value,
+          dataInicioSessao: dataHTML.value,
+          horaInicioSessao: horaHTML.value,
+          dataTerminoSessao: dataHTML.value,
+          horaTerminoSessao: horaHTML.value,
+          observacao: observacaoHTML.value,
           presenca: presenteHTML.value,
-          observacao: observacaoHTML.value
+          AcolhidoId: acolhidoHTML.value,
+          VoluntarioId: acolhidoHTML.value,
+          salaNome: salaHTML.value
         }
         // envia para o back salvar
         socket.emit('sessao', sessao);
@@ -151,6 +167,7 @@
         voluntarioHTML.value = '';
         acolhidoHTML.value = '';
         presenteHTML.value = '';
+        salaHTML.value = '';
         observacaoHTML.value = '';
       }
 
@@ -162,13 +179,15 @@
                 <p class="lead">
                   <strong>${sessao.dataSessao} às ${sessao.horaSessao}</strong>
                   <br />
-                  <em> Acolhido: ${sessao.acolhidoId}</em>
+                  <em> Acolhido: ${sessao.AcolhidoId}</em>
                   <br />
-                  <small>Voluntario: ${sessao.voluntarioId}</small>
+                  <small>Voluntario: ${sessao.VoluntarioId}</small>
                   <br />
                   <small>Presença: ${sessao.presenca}</small>
                   <br />
                   <small>Observação: ${sessao.observacao}</small>
+                  <br />
+                  <small>Sala: ${sessao.salanome}</small>
                 </p>
               </div>
             </div>`;
