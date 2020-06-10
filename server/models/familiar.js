@@ -18,7 +18,10 @@ module.exports = (sequelize, DataTypes) => {
     cohabita: DataTypes.BOOLEAN,
     telefone: DataTypes.INTEGER,
     renda: DataTypes.DOUBLE,
-    responsavel: DataTypes.BOOLEAN,
+    responsavel: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false
+    },
     rg: DataTypes.STRING,
     AcolhidoId: DataTypes.INTEGER,
     createdAt: {
@@ -29,13 +32,16 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       type: DataTypes.DATE
     }
-  }, {});
-  Familiar.associate = function(models) {
-      Familiar.belongsTo(models.Acolhido)
-      Familiar.hasMany(models.DoencaFamilia)
-  };
+  }, {})
 
-  Familiar.adiciona = async function (AcolhidoId, familiar, transaction) {
+  Familiar.associate = function(models) {
+      Familiar.belongsTo(models.Acolhido, {
+        foreignKey: "AcolhidoId"
+      })
+      Familiar.hasMany(models.DoencaFamilia)
+  }
+
+  Familiar.adiciona = async function (familiar, transaction) {
     let queryOptions = {}
 
     if (transaction)
@@ -52,8 +58,7 @@ module.exports = (sequelize, DataTypes) => {
         telefone: familiar.telefone,
         renda: familiar.renda,
         responsavel: familiar.responsavel,
-        rg: familiar.rg,
-        AcolhidoId: AcolhidoId
+        rg: familiar.rg
       }, queryOptions)
       return familiarInstance
     } catch (error) {
@@ -161,7 +166,7 @@ module.exports = (sequelize, DataTypes) => {
   }
 
   Familiar.adicionaVarios = async function(familiares = [], transaction) {
-    let queryOptions = {}
+    let queryOptions = { returning: true }
 
     if (transaction)
       queryOptions.transaction = transaction
