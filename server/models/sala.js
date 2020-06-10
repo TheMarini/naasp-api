@@ -1,4 +1,7 @@
 'use strict';
+const util = require('../util')
+const modelName = "Sala"
+
 module.exports = (sequelize, DataTypes) => {
   const Sala = sequelize.define('Sala', {
     id: {
@@ -24,7 +27,7 @@ module.exports = (sequelize, DataTypes) => {
     }
     try {
       let salaInstance = await Sala.findOrCreate(queryOptions)
-      return salaInstance
+      return salaInstance[0]
     } catch (error) {
       console.log("\n catch \n")
       throw util.checkError(error, modelName)
