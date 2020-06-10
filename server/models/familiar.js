@@ -87,15 +87,16 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
 
-  Familiar.edita = async function (familiar, transaction) {
+  Familiar.edita = async function (familiar, t) {
     let queryOptions = {
       where: {
         id: familiar.id
-      }
+      },
+      returning: true
     }
 
-    if (transaction)
-      queryOptions.transaction = transaction
+    if (t)
+      queryOptions.transaction = t
 
     try {
       let familiarInstance = await Familiar.update({
@@ -110,6 +111,9 @@ module.exports = (sequelize, DataTypes) => {
         responsavel: familiar.responsavel,
         rg: familiar.rg
       }, queryOptions)
+
+      familiarInstance = familiarInstance[1][0]
+      
       return familiarInstance
     } catch (error) {
       console.log("\n catch \n")
@@ -173,6 +177,7 @@ module.exports = (sequelize, DataTypes) => {
 
     try {
       let familiarInstance = await Familiar.bulkCreate(familiares, queryOptions)
+
       return familiarInstance
     } catch (error) {
       console.log("\n catch \n")
