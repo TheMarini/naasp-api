@@ -34,33 +34,74 @@ module.exports = (sequelize, DataTypes) => {
   };
 
   Sessao.adiciona = async function (models, param) {
-
+    let t = await sequelize.transaction({
+      type: sequelize.Transaction
+    })
+    let queryOptions = {
+      transaction: t
+    }
     try {
-      let salaInstance = await models.Sala.pesquisaOuAdiciona(param.salanome, transaction)
-
-      if (!salaInstance)
-      return util.defineError(412, "Erro em Sala")
-
       let sessaoInstance = await Sessao.create({
         dataInicioSessao: param.dataInicioSessao,
         horaInicioSessao: param.horaInicioSessao,
         dataTerminoSessao: param.dataTerminoSessao,
         horaTerminoSessao: param.horaTerminoSessao,
-        SalaId: salaInstance[0].dataValues.id,
         presenca: param.presenca,
-        observacao: param.observacao,
-        AcolhidoId: param.AcolhidoId,
-        VoluntarioId: param.VoluntarioId})
+        observacao: param.observacao
+      }, queryOptions)
+      
+      await Sessao.atualizaSala(models.Sala, param, sessaoInstance, t)
+      await Sessao.atualizaAcolhido(models.Acolhido, param, sessaoInstance, t)
+      await Sessao.atualizaVoluntario(models.Voluntario, param, sessaoInstance, t)
+
+      await t.commit()
       return sessaoInstance
     } catch (error) {
+      await t.rollback()
       console.log("\n catch \n")
       throw util.checkError(error, modelName)
     }
   }
 
-  Sessao.lista = async function () {
+  Sessao.lista = async function (models) {
+    let {
+      Acolhido,
+      Pessoa,
+      Voluntario,
+      Sala
+    } = models
+    
     try {
-      let sessaoInstance = await Sessao.findAll()
+      let sessaoInstance = await Sessao.findAll(
+        {
+          raw: true,
+          nest: true,
+          include: [
+            {
+              model: Sala,
+              attributes: ['nome'],
+              as: "Sala"
+            },
+            {
+              model: Acolhido,
+              as: "Acolhido",
+              include: [{
+                model: Pessoa,
+                as: "Pessoa"
+              }]
+            },
+            {
+              model: Voluntario,
+              as: "Voluntario",
+              include: [{
+                model: Pessoa,
+                as: "Pessoa"
+              }]
+            }
+          ]
+        }
+      )
+      console.log(sessaoInstance)
       return sessaoInstance
     } catch (error) {
       console.log("\n catch \n")
@@ -91,6 +132,35 @@ module.exports = (sequelize, DataTypes) => {
       console.log("\n catch \n")
       throw util.checkError(error, modelName)
     }
+  }
+
+  Sessao.atualizaAcolhido = async function(Acolhido, param, sessaoInstance, t) {
+    let queryOptions = {
+      transaction: t
+    }
+
+    let acolhidoInstance = await Acolhido.findByPk(param.acolhidoId)
+    await sessaoInstance.setAcolhido(acolhidoInstance, queryOptions)
+  }
+
+  Sessao.atualizaVoluntario = async function(Voluntario, param, sessaoInstance, t) {
+    let queryOptions = {
+      transaction: t
+    }
+
+    let voluntarioInstance = await Voluntario.findByPk(param.voluntarioId)
+
+    await sessaoInstance.setAcolhido(voluntarioInstance, queryOptions)
+  }
+
+  Sessao.atualizaSala = async function(Sala, param, sessaoInstance, t) {
+    let queryOptions = {
+      transaction: t
+    }
+
+    let salaInstance = await Sala.pesquisaOuAdiciona(param.salaNome, t)
+
+    await sessaoInstance.setSala(salaInstance, queryOptions)
   }
 
   return Sessao;
