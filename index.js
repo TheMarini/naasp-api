@@ -16,9 +16,9 @@ app.use(
   })
 );
 
-app.get("/", function (req, res) {
-  res.sendFile(__dirname + "/submit.html");
-});
+// app.get("/", function (req, res) {
+//   res.sendFile(__dirname + "/submit.html");
+// });
 
 app.use("/api", router);
 
@@ -29,7 +29,7 @@ if (process.env.DATABASE_URL) {
     dialect: "postgres",
     protocol: "postgres",
     port: "5432",
-    host: "ec2-34-234-228-127.compute-1.amazonaws.com",
+    host: "ec2-18-214-211-47.compute-1.amazonaws.com",
     logging: true, //false
   });
 } else {
