@@ -94,6 +94,7 @@ module.exports = (sequelize, DataTypes) => {
       returning: true,
       transaction: t
     }
+    //monta string faixa etaria 
     let faixaEtariaConcat = ""
 
     for (let index = 0; index < faixaEtariaAtendimento.length; index++) {
