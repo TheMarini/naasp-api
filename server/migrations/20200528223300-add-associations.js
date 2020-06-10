@@ -143,6 +143,20 @@ module.exports = {
     }).then(() => {
       return queryInterface.addColumn(
         'Sessao', // name of Source model
+        'SalaId', // name of the key we're adding
+        {
+          type: Sequelize.INTEGER,
+          references: {
+            model: 'Sala', // name of Target model
+            key: 'id', // key in Target model that we're referencing
+          },
+          onUpdate: 'CASCADE',
+          onDelete: 'SET NULL',
+        }
+      )
+    }).then(() => {
+      return queryInterface.addColumn(
+        'Sessao', // name of Source model
         'VoluntarioId', // name of the key we're adding
         {
           type: Sequelize.INTEGER,
@@ -326,6 +340,11 @@ module.exports = {
       return queryInterface.removeColumn(
         'Sessao', // name of Source model
         'VoluntarioId' // key we want to remove
+      )
+    }).then(() => {
+      return queryInterface.removeColumn(
+        'Sessao', // name of Source model
+        'SalaId' // key we want to remove
       )
     }).then(() => {
       return queryInterface.removeColumn(
