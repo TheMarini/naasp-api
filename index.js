@@ -63,7 +63,14 @@ io.on('connection', socket => {
   emiteDados();
   socket.on('sessao', function(sessao){
       // recebe o dado
-      sessaoModel.post(sessao);
-      io.emit('sessao', sessao);
+      try {
+        sessaoModel.post(sessao);
+
+      } catch (error) {
+        var verifica = true;
+      }
+      if (verifica) {
+        io.emit('sessao', sessao);
+      }
   });
 });
