@@ -118,7 +118,7 @@ module.exports = (sequelize, DataTypes) => {
         prioridade: acolhidoParam.prioridade, 
         tipoBeneficioGoverno: acolhidoParam.tipoBeneficioGoverno, 
         valorBeneficioGoverno: acolhidoParam.valorBeneficioGoverno,
-        StatusId: (param.pessoaParam.cpf != "")? 2 : 1
+        StatusId: (param.pessoaParam.cpf == null)? 1 : 2
       }, queryOptions)
 
       await Acolhido.atualizaPessoa(models, param, acolhidoInstance, t)
